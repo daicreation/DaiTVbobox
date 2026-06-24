@@ -478,94 +478,44 @@ def _build_config_json(
     all_items: dict = None,
 ) -> Path:
     """
-    生成主 config.json (TVBox 入口) — Chill-AI-TV 品牌版
+    生成主 config.json — Chill-AI-TV 聚合搜尋版
+    只有一個主站點，搜尋自動合併暴風+索尼+海外看+非凡
     """
-    # ---- 從抓取數據中提取真實站點配置 ----
-    all_sites = []
-    if all_items:
-        for category_items in all_items.values():
-            for item in category_items:
-                if item.type_name == "站點" and item.sources:
-                    src = item.sources[0]
-                    if src.url and src.url.startswith("http"):
-                        site_name = item.vod_name.replace("[站點] ", "").replace("[直播] ", "")
-                        site_key = item.vod_id.replace("site_", "").replace("live_", "")
-                        # 判定類別（根據站點名稱關鍵字）
-                        cat = "影視"
-                        name_lower = site_name.lower()
-                        if any(kw in name_lower for kw in ["动漫", "動漫", "anime", "卡通", "bilibili", "哔哩"]):
-                            cat = "動漫"
-                        elif any(kw in name_lower for kw in ["直播", "虎牙", "斗鱼", "live", "tv", "iptv", "cctv"]):
-                            cat = "直播"
-                        elif any(kw in name_lower for kw in ["音乐", "mv", "音樂", "热舞", "戏曲"]):
-                            cat = "音樂"
-                        elif any(kw in name_lower for kw in ["儿童", "学习", "教程", "美食"]):
-                            cat = "其他"
-                        # 通過 Worker 代理 API（URL 編碼避免解析失敗）
-                        proxy_api = f"{domain}/proxy?url={quote(src.url, safe='')}"
-                        all_sites.append({
-                            "key": site_key[:30],
-                            "name": f"{site_name}",
-                            "type": 1,
-                            "api": proxy_api,
-                            "searchable": 1,
-                            "quickSearch": 1,
-                            "cat": cat,
-                        })
-
-    # 去重
-    seen_apis = set()
-    unique_sites = []
-    for s in all_sites:
-        if s["api"] not in seen_apis:
-            seen_apis.add(s["api"])
-            unique_sites.append(s)
-    logger.info(f"  config.json: 從上游提取 {len(unique_sites)} 個真實站點")
-
-    # ---- 按類別分組站點 ----
-    groups = {"影視": [], "動漫": [], "直播": [], "音樂": [], "其他": []}
-    for s in unique_sites:
-        cat = s.pop("cat", "影視")
-        if cat not in groups:
-            cat = "影視"
-        groups[cat].append(s)
-
-    # 組裝最終 sites 列表（分組標記）
-    final_sites = []
-    for cat_name, cat_sites in groups.items():
-        if not cat_sites:
-            continue
-        emoji = {"影視": "🎬", "動漫": "🎭", "直播": "📡", "音樂": "🎵", "其他": "📦"}
-        # 每個類別第一條作為分隔標題（用不同的 key 避免重複）
-        header = {
-            "key": f"cat_{cat_name}_{len(cat_sites)}",
-            "name": f"── {emoji.get(cat_name, '')} {cat_name} ── ({len(cat_sites)}站)",
-            "type": 1,
-            "api": cat_sites[0]["api"],
-            "searchable": 0,
-        }
-        final_sites.append(header)
-        final_sites.extend(cat_sites)
-
-    # 品牌首條：Chill-AI-TV 聚合
-    brand_site = {
-        "key": "Chill_AI_TV",
-        "name": "🧊 Chill-AI-TV｜聚合搜尋",
-        "type": 3,
-        "api": f"{domain}/api",
-        "searchable": 1,
-        "quickSearch": 1,
-        "filterable": 1,
-    }
-
     config = {
         "storeHouse": [
-            {"sourceName": "🎬 電影", "sourceUrl": f"{domain}/movie"},
-            {"sourceName": "📺 電視劇", "sourceUrl": f"{domain}/tv"},
-            {"sourceName": "🎪 綜藝", "sourceUrl": f"{domain}/variety"},
-            {"sourceName": "📡 直播", "sourceUrl": f"{domain}/live"},
+            {"sourceName": "🎬 首頁",    "sourceUrl": f"{domain}/home"},
+            {"sourceName": "🔍 搜尋",    "sourceUrl": f"{domain}/search"},
+            {"sourceName": "📺 電視劇",  "sourceUrl": f"{domain}/tv"},
+            {"sourceName": "📡 直播",    "sourceUrl": f"{domain}/live"},
         ],
-        "sites": [brand_site] + final_sites,
+        "sites": [
+            {
+                "key": "Chill_AI_TV",
+                "name": "🧊 Chill-AI-TV｜聚合搜尋",
+                "type": 1,
+                "api": f"{domain}/search",
+                "searchable": 1,
+                "quickSearch": 1,
+                "filterable": 0,
+            },
+            # 備用站點：直連暴風（搜尋最穩的海外源）
+            {
+                "key": "bfzy",
+                "name": "🔥 暴風｜備用搜尋",
+                "type": 1,
+                "api": "https://bfzyapi.com/api.php/provide/vod",
+                "searchable": 1,
+                "quickSearch": 1,
+            },
+            {
+                "key": "haiwaikan",
+                "name": "🌏 海外看｜備用搜尋",
+                "type": 1,
+                "api": "https://haiwaikan.com/api.php/provide/vod",
+                "searchable": 1,
+                "quickSearch": 1,
+            },
+        ],
         "lives": [],
         "flags": ["4K", "1080P", "720P", "優酷", "愛奇藝", "騰訊", "芒果"],
         "update_time": now_display(),
