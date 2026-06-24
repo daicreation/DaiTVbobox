@@ -536,11 +536,15 @@ def _build_config_json(
         if not cat_sites:
             continue
         emoji = {"影視": "🎬", "動漫": "🎭", "直播": "📡", "音樂": "🎵", "其他": "📦"}
-        # 每個類別第一條作為分隔標題
-        first = cat_sites[0].copy()
-        first["name"] = f"── {emoji.get(cat_name, '')} {cat_name} ── ({len(cat_sites)}站)"
-        first["searchable"] = 0  # 分隔線不可搜
-        final_sites.append(first)
+        # 每個類別第一條作為分隔標題（用不同的 key 避免重複）
+        header = {
+            "key": f"cat_{cat_name}_{len(cat_sites)}",
+            "name": f"── {emoji.get(cat_name, '')} {cat_name} ── ({len(cat_sites)}站)",
+            "type": 1,
+            "api": cat_sites[0]["api"],
+            "searchable": 0,
+        }
+        final_sites.append(header)
         final_sites.extend(cat_sites)
 
     # 品牌首條：Chill-AI-TV 聚合
