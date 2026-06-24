@@ -8,10 +8,23 @@ export default {
     const path = url.pathname;
     const wd = url.searchParams.get('wd') || '';
 
-    // 聚合搜尋端點（新增，不影響現有 7 站）
+    // 聚合品牌端點：瀏覽 → 暴風代理，搜尋 → 多源聚合
     if (path === '/search') {
-      if (!wd) return json({ code:0, msg:"請輸入關鍵字", list:[], class:[] });
-      return handleSearch(wd);
+      if (wd) return handleSearch(wd);
+      return proxyBrowse();
+    }
+
+    // 瀏覽代理暴風
+    async function proxyBrowse() {
+      try {
+        const r = await fetch('https://bfzyapi.com/api.php/provide/vod', { headers:{ 'User-Agent':'ChillAITV/1.0' }, signal:AbortSignal.timeout(8000) });
+        if (!r.ok) return json({ code:0, list:[], class:[] });
+        const data = await r.json();
+        const bad = [29,73];
+        if (data.list) data.list = data.list.filter(it => !bad.includes(it.type_id));
+        if (data.class) data.class = data.class.filter(it => !bad.includes(it.type_id));
+        return json(data);
+      } catch { return json({ code:0, list:[], class:[] }); }
     }
 
     // 現有 7 站直連（不變）
