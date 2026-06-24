@@ -179,24 +179,6 @@
       "source_rank": 80
     },
     {
-      "vod_id": "site_小蘋果_T4直播转点播",
-      "vod_name": "[站點] 📺︎电视点播",
-      "vod_pic": "",
-      "vod_remarks": "配置源·小蘋果",
-      "type_name": "站點",
-      "vod_year": "",
-      "vod_area": "",
-      "vod_actor": "",
-      "vod_director": "",
-      "vod_content": "",
-      "vod_score": "",
-      "vod_play_from": "小蘋果·未知",
-      "vod_play_url": "第1集$http://120.53.102.254/live?url=aHR0cDovL2hvbWUuanVuZGllLnRvcDo4MS9yYXkvdHZsaXZlLnR4dA",
-      "vod_quality": "未知",
-      "source_count": 1,
-      "source_rank": 80
-    },
-    {
       "vod_id": "site_小蘋果_每天看看",
       "vod_name": "[站點] 🍌每天看看(优)",
       "vod_pic": "",
@@ -210,6 +192,24 @@
       "vod_score": "",
       "vod_play_from": "小蘋果·未知",
       "vod_play_url": "第1集$http://47.113.126.237:1234/api.php/provide/vod/",
+      "vod_quality": "未知",
+      "source_count": 1,
+      "source_rank": 80
+    },
+    {
+      "vod_id": "site_小蘋果_土狗 360",
+      "vod_name": "[站點] 🥒土狗 360(官)",
+      "vod_pic": "",
+      "vod_remarks": "配置源·小蘋果",
+      "type_name": "站點",
+      "vod_year": "",
+      "vod_area": "",
+      "vod_actor": "",
+      "vod_director": "",
+      "vod_content": "",
+      "vod_score": "",
+      "vod_play_from": "小蘋果·未知",
+      "vod_play_url": "第1集$http://360.tgzy.cc/api.php/provide/vod/",
       "vod_quality": "未知",
       "source_count": 1,
       "source_rank": 80
@@ -233,24 +233,6 @@
       "source_rank": 80
     },
     {
-      "vod_id": "site_小蘋果_盘看影视",
-      "vod_name": "[站點] 🥑盘看影视(聚)",
-      "vod_pic": "",
-      "vod_remarks": "配置源·小蘋果",
-      "type_name": "站點",
-      "vod_year": "",
-      "vod_area": "",
-      "vod_actor": "",
-      "vod_director": "",
-      "vod_content": "",
-      "vod_score": "",
-      "vod_play_from": "小蘋果·未知",
-      "vod_play_url": "第1集$http://tvcaiji.pankk.cn/api.php/provide/vod/",
-      "vod_quality": "未知",
-      "source_count": 1,
-      "source_rank": 80
-    },
-    {
       "vod_id": "site_小蘋果_小鸟动漫",
       "vod_name": "[站點] 🍚小鸟动漫(聚)",
       "vod_pic": "",
@@ -269,8 +251,8 @@
       "source_rank": 80
     },
     {
-      "vod_id": "site_小蘋果_土狗 360",
-      "vod_name": "[站點] 🥒土狗 360(官)",
+      "vod_id": "site_小蘋果_T4直播转点播",
+      "vod_name": "[站點] 📺︎电视点播",
       "vod_pic": "",
       "vod_remarks": "配置源·小蘋果",
       "type_name": "站點",
@@ -281,7 +263,25 @@
       "vod_content": "",
       "vod_score": "",
       "vod_play_from": "小蘋果·未知",
-      "vod_play_url": "第1集$http://360.tgzy.cc/api.php/provide/vod/",
+      "vod_play_url": "第1集$http://120.53.102.254/live?url=aHR0cDovL2hvbWUuanVuZGllLnRvcDo4MS9yYXkvdHZsaXZlLnR4dA",
+      "vod_quality": "未知",
+      "source_count": 1,
+      "source_rank": 79
+    },
+    {
+      "vod_id": "site_小蘋果_盘看影视",
+      "vod_name": "[站點] 🥑盘看影视(聚)",
+      "vod_pic": "",
+      "vod_remarks": "配置源·小蘋果",
+      "type_name": "站點",
+      "vod_year": "",
+      "vod_area": "",
+      "vod_actor": "",
+      "vod_director": "",
+      "vod_content": "",
+      "vod_score": "",
+      "vod_play_from": "小蘋果·未知",
+      "vod_play_url": "第1集$http://tvcaiji.pankk.cn/api.php/provide/vod/",
       "vod_quality": "未知",
       "source_count": 1,
       "source_rank": 79
@@ -302,7 +302,7 @@
       "vod_play_url": "第1集$http://cj.ffzyapi.com/api.php/provide/vod",
       "vod_quality": "未知",
       "source_count": 1,
-      "source_rank": 79
+      "source_rank": 78
     },
     {
       "vod_id": "site_小蘋果_天堂资源",
@@ -320,25 +320,7 @@
       "vod_play_url": "第1集$http://vipmv.cc/api.php/provide/vod/",
       "vod_quality": "未知",
       "source_count": 1,
-      "source_rank": 77
-    },
-    {
-      "vod_id": "site_小蘋果_雨哥影视",
-      "vod_name": "[站點] 🍟雨哥影视(聚)",
-      "vod_pic": "",
-      "vod_remarks": "配置源·小蘋果",
-      "type_name": "站點",
-      "vod_year": "",
-      "vod_area": "",
-      "vod_actor": "",
-      "vod_director": "",
-      "vod_content": "",
-      "vod_score": "",
-      "vod_play_from": "小蘋果·未知",
-      "vod_play_url": "第1集$http://cj.baozi66.top:66/api.php/provide/vod/",
-      "vod_quality": "未知",
-      "source_count": 1,
-      "source_rank": 75
+      "source_rank": 64
     },
     {
       "vod_id": "site_蜂蜜_商店",
@@ -2789,6 +2771,24 @@
       "source_rank": 0
     },
     {
+      "vod_id": "site_小蘋果_雨哥影视",
+      "vod_name": "[站點] 🍟雨哥影视(聚)",
+      "vod_pic": "",
+      "vod_remarks": "配置源·小蘋果",
+      "type_name": "站點",
+      "vod_year": "",
+      "vod_area": "",
+      "vod_actor": "",
+      "vod_director": "",
+      "vod_content": "",
+      "vod_score": "",
+      "vod_play_from": "",
+      "vod_play_url": "",
+      "vod_quality": "未知",
+      "source_count": 0,
+      "source_rank": 0
+    },
+    {
       "vod_id": "site_小蘋果_天天影视",
       "vod_name": "[站點] 🥗天天影视(聚)",
       "vod_pic": "",
@@ -2951,7 +2951,7 @@
       "source_rank": 0
     },
     {
-      "vod_id": "live_小蘋果_-879173800797564794",
+      "vod_id": "live_小蘋果_-1903860710040783445",
       "vod_name": "[直播] 未知頻道",
       "vod_pic": "",
       "vod_remarks": "redirect·小蘋果",
@@ -2973,5 +2973,5 @@
   "page": 1,
   "pagecount": 4,
   "limit": 50,
-  "update_time": "2026-06-24 16:15:34"
+  "update_time": "2026-06-24 16:23:45"
 }

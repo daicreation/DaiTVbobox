@@ -1,22 +1,4 @@
 {
-  "storeHouse": [
-    {
-      "sourceName": "🎬 首頁",
-      "sourceUrl": "https://daitvbobox.chungshare.workers.dev/home"
-    },
-    {
-      "sourceName": "🔍 搜尋",
-      "sourceUrl": "https://daitvbobox.chungshare.workers.dev/search"
-    },
-    {
-      "sourceName": "📺 電視劇",
-      "sourceUrl": "https://daitvbobox.chungshare.workers.dev/tv"
-    },
-    {
-      "sourceName": "📡 直播",
-      "sourceUrl": "https://daitvbobox.chungshare.workers.dev/live"
-    }
-  ],
   "sites": [
     {
       "key": "Chill_AI_TV",
@@ -29,7 +11,7 @@
     },
     {
       "key": "bfzy",
-      "name": "🔥 暴風｜備用搜尋",
+      "name": "🔥 暴風",
       "type": 1,
       "api": "https://bfzyapi.com/api.php/provide/vod",
       "searchable": 1,
@@ -37,14 +19,13 @@
     },
     {
       "key": "haiwaikan",
-      "name": "🌏 海外看｜備用搜尋",
+      "name": "🌏 海外看",
       "type": 1,
       "api": "https://haiwaikan.com/api.php/provide/vod",
       "searchable": 1,
       "quickSearch": 1
     }
   ],
-  "lives": [],
   "flags": [
     "4K",
     "1080P",
@@ -54,5 +35,5 @@
     "騰訊",
     "芒果"
   ],
-  "update_time": "2026-06-24 16:15:34"
+  "update_time": "2026-06-24 16:23:45"
 }
