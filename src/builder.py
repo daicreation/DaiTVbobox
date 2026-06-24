@@ -139,7 +139,7 @@ def build_all_outputs(
         )
 
     # 步驟 6: 生成主 config.json
-    config_path = _build_config_json(domain, output_paths, compress)
+    config_path = _build_config_json(domain, output_paths, compress, all_items)
     output_paths["config"] = config_path
 
     logger.info(f"所有輸出已生成: {len(output_paths)} 個檔案")
@@ -474,20 +474,66 @@ def _build_config_json(
     domain: str,
     output_paths: dict[str, Path],
     compress: bool,
+    all_items: dict = None,
 ) -> Path:
     """
     生成主 config.json (TVBox 入口)
 
-    包含 storeHouse (多倉入口) 和主 sites 配置
+    包含 storeHouse (多倉入口) 和從上游源抓取的真實 sites 配置
 
     Args:
         domain: Worker 域名
         output_paths: 各類別的輸出檔案路徑
         compress: 是否壓縮 JSON
+        all_items: 所有分類的 VideoItem (用於提取真實站點)
 
     Returns:
         config.json 的路徑
     """
+    # ---- 從抓取數據中提取真實站點配置 ----
+    real_sites = []
+    if all_items:
+        for category_items in all_items.values():
+            for item in category_items:
+                # 提取站點類型的項目（我們在 source_fetcher 中標記為「站點」）
+                if item.type_name == "站點" and item.sources:
+                    src = item.sources[0]
+                    if src.url and src.url.startswith("http"):
+                        # 從站點名稱中提取 key（去除 [站點] 前綴和 emoji）
+                        site_name = item.vod_name.replace("[站點] ", "").replace("[直播] ", "")
+                        site_key = item.vod_id.replace("site_", "").replace("live_", "")
+                        real_sites.append({
+                            "key": site_key[:30] or "site",
+                            "name": site_name or "未知站點",
+                            "type": 1,
+                            "api": src.url,
+                            "searchable": 1,
+                            "quickSearch": 1,
+                        })
+
+    # 去重（相同 api 的只保留一個）
+    seen_apis = set()
+    unique_sites = []
+    for s in real_sites:
+        if s["api"] not in seen_apis:
+            seen_apis.add(s["api"])
+            unique_sites.append(s)
+
+    logger.info(f"  config.json: 從上游提取 {len(unique_sites)} 個真實站點")
+
+    # 如果沒有提取到站點，使用預設的聚合站點
+    if not unique_sites:
+        unique_sites = [{
+            "key": "聚合搜尋",
+            "name": "🎯 聚合搜尋|4K 1080P 720P",
+            "type": 3,
+            "api": f"{domain}/api",
+            "searchable": 1,
+            "quickSearch": 1,
+            "filterable": 1,
+            "jar": f"{domain}/spider.jar",
+        }]
+
     config = {
         "storeHouse": [
             {
@@ -507,18 +553,7 @@ def _build_config_json(
                 "sourceUrl": f"{domain}/live",
             },
         ],
-        "sites": [
-            {
-                "key": "聚合搜尋",
-                "name": "🎯 聚合搜尋|4K 1080P 720P",
-                "type": 3,
-                "api": f"{domain}/api",
-                "searchable": 1,
-                "quickSearch": 1,
-                "filterable": 1,
-                "jar": f"{domain}/spider.jar",
-            }
-        ],
+        "sites": unique_sites,
         "lives": [
             {
                 "group": "央視",
