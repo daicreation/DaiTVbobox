@@ -12,7 +12,7 @@ export default {
 
     // 首頁 config
     if (path === '/' || path === '/api') {
-      return json({
+      return new Response(JSON.stringify({
         sites: [{
           key: "Chill_AI_TV",
           name: "🧊 Chill-AI-TV",
@@ -21,6 +21,9 @@ export default {
           searchable: 1, quickSearch: 1, filterable: 1,
         }],
         flags: ["4K", "1080P", "720P", "優酷", "愛奇藝", "騰訊", "芒果"],
+      }), {
+        status: 200,
+        headers: { 'Content-Type': 'application/json; charset=utf-8', 'Access-Control-Allow-Origin': '*', 'Cache-Control': 'no-cache' },
       });
     }
 
