@@ -1,5 +1,5 @@
 /**
- * DaiTVbobox — Cloudflare Worker (最簡版，確保可運行)
+ * DaiTVbobox — Cloudflare Worker
  */
 export default {
   async fetch(request, env, ctx) {
@@ -7,16 +7,17 @@ export default {
     const path = url.pathname;
 
     // GitHub Raw 基礎 URL
-    const BASE = 'https://raw.githubusercontent.com/daicreation/DaiTVbobox/main/output';
+    const BASE = 'https://raw.githubusercontent.com/daicreation/DaiTVbobox/main';
 
     // 路由表
     const routes = {
-      '/':         BASE + '/config.json',
-      '/api':      BASE + '/config.json',
-      '/movie':    BASE + '/movie.json',
-      '/tv':       BASE + '/tv.json',
-      '/variety':  BASE + '/variety.json',
-      '/live':     BASE + '/live.json',
+      '/':            BASE + '/output/config.json',
+      '/api':         BASE + '/output/config.json',
+      '/movie':       BASE + '/output/movie.json',
+      '/tv':          BASE + '/output/tv.json',
+      '/variety':     BASE + '/output/variety.json',
+      '/live':        BASE + '/output/live.json',
+      '/spider.jar':  BASE + '/spider/spider.jar',
     };
 
     // 健康檢查
@@ -61,13 +62,18 @@ export default {
         });
       }
 
-      // 回傳結果
+      const ct = path.endsWith('.jar')
+        ? 'application/java-archive'
+        : 'application/json; charset=utf-8';
+
       return new Response(response.body, {
         status: 200,
         headers: {
-          'Content-Type': 'application/json; charset=utf-8',
+          'Content-Type': ct,
           'Access-Control-Allow-Origin': '*',
-          'Cache-Control': 'public, max-age=3600',
+          'Cache-Control': path.endsWith('.jar')
+            ? 'public, max-age=86400'
+            : 'public, max-age=3600',
         },
       });
     } catch (err) {
