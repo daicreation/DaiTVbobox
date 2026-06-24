@@ -1,7 +1,7 @@
 # ============================================================
-# DaiTVbobox — 上游源配置
-# 所有 URL 使用 ASCII 域名，確保 GitHub Actions 能解析
-# 更新時間: 2026-06-24
+# Chill-AI-TV — 精選上游源配置
+# 專注：香港 + 深圳雙邊可用、支援搜尋、高品質
+# 更新時間: 2026-06-25
 # ============================================================
 
 settings:
@@ -13,99 +13,46 @@ settings:
 
 sources:
 
-  # ========== OK線路 (ASCII 域名 · 穩定) ==========
-  ok_tv:
-    name: "OK線路"
-    url: "http://ok321.top/tv"
+  # ========== 寶盒 VIP 配置（精選優質源）==========
+  baohu_vip:
+    name: "寶盒VIP"
+    url: "https://ghp.ci/raw.githubusercontent.com/guot55/YGBH/main/vip2.json"
     type: "json"
     encoding: "utf-8"
     category: ["movie", "tv", "variety", "live"]
-    quality_support: ["1080P", "720P"]
-    priority: 1
-    timeout: 30
-    retry: 3
-    enabled: true
-
-  # ========== OK佬 ==========
-  ok_lao:
-    name: "OK佬"
-    url: "http://ok321.top/ok"
-    type: "json"
-    encoding: "utf-8"
-    category: ["movie", "tv", "variety"]
-    quality_support: ["1080P", "720P"]
-    priority: 1
-    timeout: 30
-    retry: 3
-    enabled: true
-
-  # ========== 小盒子4K ==========
-  xiaohezi_4k:
-    name: "小盒子4K"
-    url: "http://xhztv.top/4k.json"
-    type: "json"
-    encoding: "utf-8"
-    category: ["movie", "tv"]
-    quality_support: ["4K", "1080P"]
-    quality_filter: "4k"
-    priority: 1
-    timeout: 30
-    retry: 3
-    enabled: true
-
-  # ========== 飯太硬 (CDN版 · ASCII域名) ==========
-  fantaiying_cdn:
-    name: "飯太硬CDN"
-    url: "http://fty.xxooo.cf/tv"
-    type: "json"
-    encoding: "utf-8"
-    category: ["movie", "tv", "variety"]
     quality_support: ["4K", "1080P", "720P"]
     priority: 1
     timeout: 30
     retry: 3
     enabled: true
 
-  # ========== 小蘋果 (Bitbucket · ASCII) ==========
+  # ========== 歐歌多倉（老牌穩定）==========
+  ouge_duocang:
+    name: "歐歌多倉"
+    url: "http://tv.nxog.top/m/111.php?ou=公众号欧歌app&mz=all&jar=all&b=欧歌"
+    type: "json"
+    encoding: "utf-8"
+    category: ["movie", "tv", "variety"]
+    quality_support: ["1080P", "720P"]
+    priority: 1
+    timeout: 30
+    retry: 3
+    enabled: true
+
+  # ========== 小蘋果（Bitbucket · ASCII域名）==========
   xiaopingguo:
     name: "小蘋果"
     url: "https://bitbucket.org/xduo/duoapi/raw/master/xpg.json"
     type: "json"
     encoding: "utf-8"
-    category: ["movie", "tv", "variety"]
+    category: ["movie", "tv", "variety", "live"]
     quality_support: ["1080P", "720P"]
     priority: 2
     timeout: 30
     retry: 3
     enabled: true
 
-  # ========== 肥貓 (ASCII備用域名) ==========
-  feimao_ascii:
-    name: "肥貓"
-    url: "http://xn--4kqz55e.com/"
-    type: "json"
-    encoding: "utf-8"
-    category: ["movie", "tv", "variety"]
-    quality_support: ["1080P", "720P"]
-    priority: 2
-    timeout: 30
-    retry: 3
-    enabled: true
-
-  # ========== 騷零 (ASCII域名) ==========
-  saoling:
-    name: "騷零"
-    url: "https://100km.top/0"
-    type: "json"
-    encoding: "utf-8"
-    category: ["movie", "tv", "variety"]
-    quality_support: ["1080P", "720P"]
-    priority: 2
-    timeout: 30
-    retry: 3
-    enabled: true
-
-  # ========== 蜂蜜 (jsdelivr CDN · 全球可用) ==========
+  # ========== 蜂蜜（jsdelivr CDN · 全球可用）==========
   fongmi:
     name: "蜂蜜"
     url: "https://cdn.jsdelivr.net/gh/qirenzhidao/tvbox18@main/fongmi.json"
@@ -118,23 +65,49 @@ sources:
     retry: 3
     enabled: true
 
-  # ========== 歐歌 (ASCII域名) ==========
-  ouge:
-    name: "歐歌"
-    url: "http://tv.nxog.top/m/111.php?ou=公众号欧歌app&mz=index&jar=index&123&b=tv"
+  # ========== OK線路（ASCII域名 · 穩定）==========
+  ok_tv:
+    name: "OK線路"
+    url: "http://ok321.top/tv"
     type: "json"
     encoding: "utf-8"
-    category: ["movie", "tv", "variety"]
+    category: ["movie", "tv", "variety", "live"]
     quality_support: ["1080P", "720P"]
     priority: 2
     timeout: 30
     retry: 3
     enabled: true
 
-  # ========== 小米 ==========
-  xiaomi:
-    name: "小米"
-    url: "https://www.mpanso.com/%E5%B0%8F%E7%B1%B3/DEMO.json"
+  # ========== 小盒子4K ==========
+  xiaohezi_4k:
+    name: "小盒子4K"
+    url: "http://xhztv.top/4k.json"
+    type: "json"
+    encoding: "utf-8"
+    category: ["movie", "tv"]
+    quality_support: ["4K", "1080P"]
+    priority: 2
+    timeout: 30
+    retry: 3
+    enabled: true
+
+  # ========== 飯太硬 備用CDN（ASCII域名）==========
+  fantaiying_cdn:
+    name: "飯太硬CDN"
+    url: "http://fty.xxooo.cf/tv"
+    type: "json"
+    encoding: "utf-8"
+    category: ["movie", "tv", "variety"]
+    quality_support: ["4K", "1080P", "720P"]
+    priority: 3
+    timeout: 30
+    retry: 3
+    enabled: true
+
+  # ========== 瀟灑 ==========
+  xiaosa:
+    name: "瀟灑"
+    url: "https://raw.githubusercontent.com/PizazzGY/TVBox/main/api.json"
     type: "json"
     encoding: "utf-8"
     category: ["movie", "tv", "variety"]
@@ -144,10 +117,10 @@ sources:
     retry: 3
     enabled: true
 
-  # ========== 巧兒 ==========
-  qiaoer:
-    name: "巧兒"
-    url: "http://cdn.qiaoji8.com/tvbox.json"
+  # ========== 南風 ==========
+  nanfeng:
+    name: "南風"
+    url: "https://ghp.ci/raw.githubusercontent.com/yoursmile66/TVBox/main/XC.json"
     type: "json"
     encoding: "utf-8"
     category: ["movie", "tv", "variety"]
@@ -157,10 +130,10 @@ sources:
     retry: 3
     enabled: true
 
-  # ========== PG ==========
-  pg:
-    name: "PG"
-    url: "http://www.fish2018.us.kg/p/jsm.json"
+  # ========== 騷零（ASCII域名）==========
+  saoling:
+    name: "騷零"
+    url: "https://100km.top/0"
     type: "json"
     encoding: "utf-8"
     category: ["movie", "tv", "variety"]
@@ -170,7 +143,7 @@ sources:
     retry: 3
     enabled: true
 
-  # ========== 直播：IPTV (ASCII域名) ==========
+  # ========== 直播：IPTV ==========
   live_iptv4:
     name: "IPTV4直播"
     url: "https://live.zbds.top/tv/iptv4.txt"
@@ -178,20 +151,7 @@ sources:
     encoding: "utf-8"
     category: ["live"]
     quality_support: ["1080P", "720P"]
-    priority: 2
-    timeout: 60
-    retry: 5
-    enabled: true
-
-  # ========== 直播：范明明 IPv6 ==========
-  live_fanmingming:
-    name: "范明明IPv6"
-    url: "https://live.fanmingming.cn/tv/m3u/ipv6.m3u"
-    type: "text"
-    encoding: "utf-8"
-    category: ["live"]
-    quality_support: ["4K", "1080P"]
-    priority: 2
+    priority: 3
     timeout: 60
     retry: 5
     enabled: true
