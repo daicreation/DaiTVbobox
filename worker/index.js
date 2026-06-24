@@ -57,15 +57,16 @@ async function proxyBrowse() {
 // ========== 聚合搜尋 ==========
 async function handleSearch(wd) {
   const sources = [
-    { name: "🔥 暴風",   api: "https://bfzyapi.com/api.php/provide/vod" },
-    { name: "⚡ 非凡",   api: "http://cj.ffzyapi.com/api.php/provide/vod" },
-    { name: "🎯 索尼",   api: "https://suoniapi.com/api.php/provide/vod" },
-    { name: "🔮 量子",   api: "https://cj.lziapi.com/api.php/provide/vod/" },
-    { name: "💠 360",    api: "https://360zyzz.com/api.php/provide/vod/" },
-    { name: "⚡ 極速",   api: "https://jszyapi.com/api.php/provide/vod/" },
-    { name: "🦅 金鷹",   api: "https://jyzyapi.com/provide/vod/" },
+    { key: "bfzy", name: "🔥 暴風", api: "https://bfzyapi.com/api.php/provide/vod" },
+    { key: "ff",   name: "⚡ 非凡", api: "http://cj.ffzyapi.com/api.php/provide/vod" },
+    { key: "sn",   name: "🎯 索尼", api: "https://suoniapi.com/api.php/provide/vod" },
+    { key: "lz",   name: "🔮 量子", api: "https://cj.lziapi.com/api.php/provide/vod/" },
+    { key: "360",  name: "💠 360",  api: "https://360zyzz.com/api.php/provide/vod/" },
+    { key: "js",   name: "⚡ 極速", api: "https://jszyapi.com/api.php/provide/vod/" },
+    { key: "jy",   name: "🦅 金鷹", api: "https://jyzyapi.com/provide/vod/" },
   ];
 
+  const sourceMap = {}; // vod_id → api_url
   const results = await Promise.all(sources.map(async (src) => {
     try {
       const r = await fetch(`${src.api}?ac=detail&wd=${encodeURIComponent(wd)}`, {
@@ -74,10 +75,16 @@ async function handleSearch(wd) {
       });
       if (!r.ok) return [];
       const d = await r.json();
-      return (d.list || []).map(it => ({
-        ...it, _source: src.name,
-        vod_remarks: src.name + "·" + (it.vod_remarks || ''),
-      }));
+      return (d.list || []).map(it => {
+        const taggedId = src.key + "_" + it.vod_id;
+        sourceMap[taggedId] = src.api; // 記錄來源
+        return {
+          ...it,
+          vod_id: taggedId,
+          _source: src.name,
+          vod_remarks: src.name + "·" + (it.vod_remarks || ''),
+        };
+      });
     } catch { return []; }
   }));
 
@@ -97,18 +104,45 @@ async function handleSearch(wd) {
   });
 }
 
-// ========== 通用代理（詳情請求）==========
+// 來源 key → API URL 對照（與 handleSearch 的 sources 一致）
+const SRC_MAP = {
+  "bfzy": "https://bfzyapi.com/api.php/provide/vod",
+  "ff":    "http://cj.ffzyapi.com/api.php/provide/vod",
+  "sn":    "https://suoniapi.com/api.php/provide/vod",
+  "lz":    "https://cj.lziapi.com/api.php/provide/vod/",
+  "360":   "https://360zyzz.com/api.php/provide/vod/",
+  "js":    "https://jszyapi.com/api.php/provide/vod/",
+  "jy":    "https://jyzyapi.com/provide/vod/",
+};
+
+// ========== 通用代理（詳情請求，根據 vod_id 路由到正確 API）==========
 async function proxyAny(search) {
-  const apis = [
-    "https://bfzyapi.com/api.php/provide/vod",
-    "http://cj.ffzyapi.com/api.php/provide/vod",
-    "https://suoniapi.com/api.php/provide/vod",
-    "https://cj.lziapi.com/api.php/provide/vod/",
-    "https://360zyzz.com/api.php/provide/vod/",
-    "https://jszyapi.com/api.php/provide/vod/",
-    "https://jyzyapi.com/provide/vod/",
-  ];
-  for (const api of apis) {
+  const url = new URL("https://localhost" + search);
+  const ids = url.searchParams.get('ids') || '';
+
+  // 從 vod_id 解析來源（格式: src_key_realid）
+  for (const [key, api] of Object.entries(SRC_MAP)) {
+    if (ids.startsWith(key + "_")) {
+      // 去除前綴，用正確的 API
+      const realIds = ids.replace(key + "_", "");
+      const newSearch = search.replace(ids, realIds);
+      try {
+        const r = await fetch(api + newSearch, {
+          headers: { 'User-Agent': 'ChillAITV/1.0' },
+          signal: AbortSignal.timeout(5000),
+        });
+        if (r.ok) {
+          const text = await r.text();
+          if (text.length > 50) return new Response(text, {
+            headers: { 'Content-Type': 'application/json; charset=utf-8', 'Access-Control-Allow-Origin': '*', 'Cache-Control': 'public, max-age=300' },
+          });
+        }
+      } catch {}
+      break;
+    }
+  }
+  // 備用：嘗試所有 API
+  for (const api of Object.values(SRC_MAP)) {
     try {
       const r = await fetch(api + search, {
         headers: { 'User-Agent': 'ChillAITV/1.0' },
