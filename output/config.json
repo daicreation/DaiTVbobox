@@ -19,6 +19,31 @@
   ],
   "sites": [
     {
+      "key": "Chill_AI_TV",
+      "name": "🧊 Chill-AI-TV｜聚合搜尋",
+      "type": 3,
+      "api": "https://daitvbobox.chungshare.workers.dev/api",
+      "searchable": 1,
+      "quickSearch": 1,
+      "filterable": 1
+    },
+    {
+      "key": "小蘋果_T4直播转点播",
+      "name": "── 🎬 影視 ── (11站)",
+      "type": 1,
+      "api": "http://120.53.102.254/live?url=aHR0cDovL2hvbWUuanVuZGllLnRvcDo4MS9yYXkvdHZsaXZlLnR4dA",
+      "searchable": 0,
+      "quickSearch": 1
+    },
+    {
+      "key": "小蘋果_T4直播转点播",
+      "name": "📺︎电视点播",
+      "type": 1,
+      "api": "http://120.53.102.254/live?url=aHR0cDovL2hvbWUuanVuZGllLnRvcDo4MS9yYXkvdHZsaXZlLnR4dA",
+      "searchable": 1,
+      "quickSearch": 1
+    },
+    {
       "key": "小蘋果_每天看看",
       "name": "🍌每天看看(优)",
       "type": 1,
@@ -39,14 +64,6 @@
       "name": "🍑诺讯资源(官)",
       "type": 1,
       "api": "http://caiji.nxflv.com/api.php/provide/vod/",
-      "searchable": 1,
-      "quickSearch": 1
-    },
-    {
-      "key": "小蘋果_小鸟动漫",
-      "name": "🍚小鸟动漫(聚)",
-      "type": 1,
-      "api": "http://xydm.baicai.buzz/api.php/provide/vod/",
       "searchable": 1,
       "quickSearch": 1
     },
@@ -91,10 +108,10 @@
       "quickSearch": 1
     },
     {
-      "key": "小蘋果_T4直播转点播",
-      "name": "📺︎电视点播",
+      "key": "小蘋果_雨哥影视",
+      "name": "🍟雨哥影视(聚)",
       "type": 1,
-      "api": "http://120.53.102.254/live?url=aHR0cDovL2hvbWUuanVuZGllLnRvcDo4MS9yYXkvdHZsaXZlLnR4dA",
+      "api": "http://cj.baozi66.top:66/api.php/provide/vod/",
       "searchable": 1,
       "quickSearch": 1
     },
@@ -105,17 +122,25 @@
       "api": "http://vipmv.cc/api.php/provide/vod/",
       "searchable": 1,
       "quickSearch": 1
-    }
-  ],
-  "lives": [
+    },
     {
-      "group": "央視",
-      "name": "CCTV-1 綜合",
-      "urls": [
-        "https://daitvbobox.chungshare.workers.dev/live"
-      ]
+      "key": "小蘋果_小鸟动漫",
+      "name": "── 🎭 動漫 ── (1站)",
+      "type": 1,
+      "api": "http://xydm.baicai.buzz/api.php/provide/vod/",
+      "searchable": 0,
+      "quickSearch": 1
+    },
+    {
+      "key": "小蘋果_小鸟动漫",
+      "name": "🍚小鸟动漫(聚)",
+      "type": 1,
+      "api": "http://xydm.baicai.buzz/api.php/provide/vod/",
+      "searchable": 1,
+      "quickSearch": 1
     }
   ],
+  "lives": [],
   "flags": [
     "4K",
     "1080P",
@@ -125,5 +150,5 @@
     "騰訊",
     "芒果"
   ],
-  "update_time": "2026-06-24 15:17:56"
+  "update_time": "2026-06-24 15:36:43"
 }
