@@ -482,12 +482,6 @@ def _build_config_json(
     只有一個主站點，搜尋自動合併暴風+索尼+海外看+非凡
     """
     config = {
-        "storeHouse": [
-            {"sourceName": "🎬 首頁",    "sourceUrl": f"{domain}/home"},
-            {"sourceName": "🔍 搜尋",    "sourceUrl": f"{domain}/search"},
-            {"sourceName": "📺 電視劇",  "sourceUrl": f"{domain}/tv"},
-            {"sourceName": "📡 直播",    "sourceUrl": f"{domain}/live"},
-        ],
         "sites": [
             {
                 "key": "Chill_AI_TV",
@@ -498,10 +492,9 @@ def _build_config_json(
                 "quickSearch": 1,
                 "filterable": 0,
             },
-            # 備用站點：直連暴風（搜尋最穩的海外源）
             {
                 "key": "bfzy",
-                "name": "🔥 暴風｜備用搜尋",
+                "name": "🔥 暴風",
                 "type": 1,
                 "api": "https://bfzyapi.com/api.php/provide/vod",
                 "searchable": 1,
@@ -509,14 +502,13 @@ def _build_config_json(
             },
             {
                 "key": "haiwaikan",
-                "name": "🌏 海外看｜備用搜尋",
+                "name": "🌏 海外看",
                 "type": 1,
                 "api": "https://haiwaikan.com/api.php/provide/vod",
                 "searchable": 1,
                 "quickSearch": 1,
             },
         ],
-        "lives": [],
         "flags": ["4K", "1080P", "720P", "優酷", "愛奇藝", "騰訊", "芒果"],
         "update_time": now_display(),
     }
