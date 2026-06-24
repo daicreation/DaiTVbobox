@@ -487,7 +487,7 @@ def _build_config_json(
                 "key": "Chill_AI_TV",
                 "name": "🧊 Chill-AI-TV｜聚合搜尋",
                 "type": 1,
-                "api": f"{domain}/search",
+                "api": f"{domain}/api.php/provide/vod",
                 "searchable": 1,
                 "quickSearch": 1,
                 "filterable": 1,

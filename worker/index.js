@@ -29,8 +29,8 @@ export default {
       });
     }
 
-    // ---- 聚合搜尋 + 瀏覽 ----
-    if (path === '/search') return handleSearch(request);
+    // ---- 聚合搜尋 + 瀏覽（標準 applecms 路徑）----
+    if (path === '/search' || path === '/api.php/provide/vod') return handleSearch(request);
 
     // ---- 健康檢查 ----
     if (path === '/health') return new Response('OK', { status: 200 });
