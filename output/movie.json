@@ -179,6 +179,24 @@
       "source_rank": 80
     },
     {
+      "vod_id": "site_小蘋果_盘看影视",
+      "vod_name": "[站點] 🥑盘看影视(聚)",
+      "vod_pic": "",
+      "vod_remarks": "配置源·小蘋果",
+      "type_name": "站點",
+      "vod_year": "",
+      "vod_area": "",
+      "vod_actor": "",
+      "vod_director": "",
+      "vod_content": "",
+      "vod_score": "",
+      "vod_play_from": "小蘋果·未知",
+      "vod_play_url": "第1集$http://tvcaiji.pankk.cn/api.php/provide/vod/",
+      "vod_quality": "未知",
+      "source_count": 1,
+      "source_rank": 80
+    },
+    {
       "vod_id": "site_小蘋果_小鸟动漫",
       "vod_name": "[站點] 🍚小鸟动漫(聚)",
       "vod_pic": "",
@@ -323,6 +341,42 @@
       "source_rank": 80
     },
     {
+      "vod_id": "site_極客小盒_泥泥视频",
+      "vod_name": "[站點] 泥泥┃视频",
+      "vod_pic": "",
+      "vod_remarks": "配置源·極客小盒",
+      "type_name": "站點",
+      "vod_year": "",
+      "vod_area": "",
+      "vod_actor": "",
+      "vod_director": "",
+      "vod_content": "",
+      "vod_score": "",
+      "vod_play_from": "極客小盒·未知",
+      "vod_play_url": "第1集$http://rihou.cc:88/js/drpy2.min.js",
+      "vod_quality": "未知",
+      "source_count": 1,
+      "source_rank": 80
+    },
+    {
+      "vod_id": "site_極客小盒_csp_AppXY",
+      "vod_name": "[站點] 星牙┃短剧",
+      "vod_pic": "",
+      "vod_remarks": "配置源·極客小盒",
+      "type_name": "站點",
+      "vod_year": "",
+      "vod_area": "",
+      "vod_actor": "",
+      "vod_director": "",
+      "vod_content": "",
+      "vod_score": "",
+      "vod_play_from": "極客小盒·未知",
+      "vod_play_url": "第1集$https://git.yylx.win/raw.githubusercontent.com/PizazzGY/NewTVBox/main/movie/py/XYDJ.py",
+      "vod_quality": "未知",
+      "source_count": 1,
+      "source_rank": 80
+    },
+    {
       "vod_id": "site_小蘋果_T4直播转点播",
       "vod_name": "[站點] 📺︎电视点播",
       "vod_pic": "",
@@ -341,60 +395,6 @@
       "source_rank": 79
     },
     {
-      "vod_id": "site_極客小盒_泥泥视频",
-      "vod_name": "[站點] 泥泥┃视频",
-      "vod_pic": "",
-      "vod_remarks": "配置源·極客小盒",
-      "type_name": "站點",
-      "vod_year": "",
-      "vod_area": "",
-      "vod_actor": "",
-      "vod_director": "",
-      "vod_content": "",
-      "vod_score": "",
-      "vod_play_from": "極客小盒·未知",
-      "vod_play_url": "第1集$http://rihou.cc:88/js/drpy2.min.js",
-      "vod_quality": "未知",
-      "source_count": 1,
-      "source_rank": 79
-    },
-    {
-      "vod_id": "site_小蘋果_盘看影视",
-      "vod_name": "[站點] 🥑盘看影视(聚)",
-      "vod_pic": "",
-      "vod_remarks": "配置源·小蘋果",
-      "type_name": "站點",
-      "vod_year": "",
-      "vod_area": "",
-      "vod_actor": "",
-      "vod_director": "",
-      "vod_content": "",
-      "vod_score": "",
-      "vod_play_from": "小蘋果·未知",
-      "vod_play_url": "第1集$http://tvcaiji.pankk.cn/api.php/provide/vod/",
-      "vod_quality": "未知",
-      "source_count": 1,
-      "source_rank": 79
-    },
-    {
-      "vod_id": "site_極客小盒_csp_AppXY",
-      "vod_name": "[站點] 星牙┃短剧",
-      "vod_pic": "",
-      "vod_remarks": "配置源·極客小盒",
-      "type_name": "站點",
-      "vod_year": "",
-      "vod_area": "",
-      "vod_actor": "",
-      "vod_director": "",
-      "vod_content": "",
-      "vod_score": "",
-      "vod_play_from": "極客小盒·未知",
-      "vod_play_url": "第1集$https://git.yylx.win/raw.githubusercontent.com/PizazzGY/NewTVBox/main/movie/py/XYDJ.py",
-      "vod_quality": "未知",
-      "source_count": 1,
-      "source_rank": 78
-    },
-    {
       "vod_id": "site_小蘋果_天堂资源",
       "vod_name": "[站點] 🌶天堂资源(官)",
       "vod_pic": "",
@@ -410,7 +410,7 @@
       "vod_play_url": "第1集$http://vipmv.cc/api.php/provide/vod/",
       "vod_quality": "未知",
       "source_count": 1,
-      "source_rank": 73
+      "source_rank": 67
     },
     {
       "vod_id": "site_極客小盒_猫头鹰",
@@ -428,7 +428,7 @@
       "vod_play_url": "第1集$https://gitee.com/monosodium-glutamate/wjwj/raw/master/lib/get.js",
       "vod_quality": "未知",
       "source_count": 1,
-      "source_rank": 59
+      "source_rank": 65
     },
     {
       "vod_id": "site_小蘋果_小苹果",
@@ -2555,7 +2555,7 @@
       "source_rank": 0
     },
     {
-      "vod_id": "live_小蘋果_585895705706525622",
+      "vod_id": "live_小蘋果_6137391962178162389",
       "vod_name": "[直播] 未知頻道",
       "vod_pic": "",
       "vod_remarks": "redirect·小蘋果",
@@ -3977,7 +3977,7 @@
       "source_rank": 0
     },
     {
-      "vod_id": "live_驸馬_-3754828280974001697",
+      "vod_id": "live_驸馬_5185647382876144186",
       "vod_name": "[直播] 驸马影视•ITV",
       "vod_pic": "",
       "vod_remarks": "·驸馬",
@@ -3995,7 +3995,7 @@
       "source_rank": 0
     },
     {
-      "vod_id": "live_驸馬_5448857467473431989",
+      "vod_id": "live_驸馬_-9205318103325274627",
       "vod_name": "[直播] 驸马影视•电信专线",
       "vod_pic": "",
       "vod_remarks": "·驸馬",
@@ -4013,7 +4013,7 @@
       "source_rank": 0
     },
     {
-      "vod_id": "live_驸馬_-3227702030571724731",
+      "vod_id": "live_驸馬_-5707093946923783855",
       "vod_name": "[直播] 驸马影视•移动专线",
       "vod_pic": "",
       "vod_remarks": "·驸馬",
@@ -4031,7 +4031,7 @@
       "source_rank": 0
     },
     {
-      "vod_id": "live_驸馬_-3781295317235225173",
+      "vod_id": "live_驸馬_7339476682786296106",
       "vod_name": "[直播] 驸马影视•港澳台",
       "vod_pic": "",
       "vod_remarks": "·驸馬",
@@ -4697,7 +4697,7 @@
       "source_rank": 0
     },
     {
-      "vod_id": "live_極客小盒_-4549376817122478790",
+      "vod_id": "live_極客小盒_-4219823210513728243",
       "vod_name": "[直播] 奥斯卡",
       "vod_pic": "",
       "vod_remarks": "·極客小盒",
@@ -4715,7 +4715,7 @@
       "source_rank": 0
     },
     {
-      "vod_id": "live_極客小盒_6398824508768984741",
+      "vod_id": "live_極客小盒_-8196216913176200090",
       "vod_name": "[直播] 平台直播",
       "vod_pic": "",
       "vod_remarks": "·極客小盒",
@@ -4733,7 +4733,7 @@
       "source_rank": 0
     },
     {
-      "vod_id": "live_極客小盒_-4611276207460505202",
+      "vod_id": "live_極客小盒_5446421773138818901",
       "vod_name": "[直播] 日后",
       "vod_pic": "",
       "vod_remarks": "·極客小盒",
@@ -4751,7 +4751,7 @@
       "source_rank": 0
     },
     {
-      "vod_id": "live_極客小盒_-39555493382649435",
+      "vod_id": "live_極客小盒_2812051120275234085",
       "vod_name": "[直播] 影音",
       "vod_pic": "",
       "vod_remarks": "·極客小盒",
@@ -4769,7 +4769,7 @@
       "source_rank": 0
     },
     {
-      "vod_id": "live_極客小盒_518086629408654847",
+      "vod_id": "live_極客小盒_-2021684536816092135",
       "vod_name": "[直播] superiptv",
       "vod_pic": "",
       "vod_remarks": "·極客小盒",
@@ -5921,7 +5921,7 @@
       "source_rank": 0
     },
     {
-      "vod_id": "live_王二小_8376763060925384930",
+      "vod_id": "live_王二小_7450942843848416908",
       "vod_name": "[直播] Kimentanm",
       "vod_pic": "",
       "vod_remarks": "·王二小",
@@ -5939,7 +5939,7 @@
       "source_rank": 0
     },
     {
-      "vod_id": "live_王二小_-6617978878530512006",
+      "vod_id": "live_王二小_179455807321575294",
       "vod_name": "[直播] 综合直播",
       "vod_pic": "",
       "vod_remarks": "·王二小",
@@ -5961,5 +5961,5 @@
   "page": 1,
   "pagecount": 7,
   "limit": 50,
-  "update_time": "2026-06-24 17:16:20"
+  "update_time": "2026-06-24 17:22:18"
 }
