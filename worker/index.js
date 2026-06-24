@@ -42,18 +42,23 @@ async function serveConfig() {
   }
 }
 
-// ========== 代理暴風 ==========
+// ========== 代理暴風（過濾成人分類）==========
+// 要過濾的 type_id：29(理论片), 73(福利)
+const BLOCKED_IDS = [29, 73];
+const BLOCKED_NAMES = ['理论片', '福利'];
+
 async function proxyToBfzy(search) {
   try {
     const r = await fetch('https://bfzyapi.com/api.php/provide/vod' + search, {
       headers: { 'User-Agent': 'ChillAITV/1.0' },
       signal: AbortSignal.timeout(10000),
     });
-    const body = await r.text();
-    return new Response(body, {
-      status: r.status,
-      headers: { 'Content-Type': 'application/json; charset=utf-8', 'Access-Control-Allow-Origin': '*', 'Cache-Control': 'public, max-age=300' },
-    });
+    const text = await r.text();
+    const data = JSON.parse(text);
+    // 過濾 list 和 class
+    if (data.list) data.list = data.list.filter(it => !BLOCKED_IDS.includes(it.type_id) && !BLOCKED_NAMES.includes(it.type_name));
+    if (data.class) data.class = data.class.filter(it => !BLOCKED_IDS.includes(it.type_id) && !BLOCKED_NAMES.includes(it.type_name));
+    return json(data);
   } catch (e) {
     return json({ error: e.message }, 503);
   }
@@ -87,14 +92,17 @@ async function handleSearch(wd) {
 
   const sourcesHit = [primary.length > 0 ? '暴風' : null, ...secondary.map((s, i) => s.length > 0 ? ['海外看', '非凡', '索尼'][i] : null)].filter(Boolean);
 
+  // 過濾成人內容
+  const filtered = all.filter(it => !BLOCKED_IDS.includes(it.type_id) && !BLOCKED_NAMES.includes(it.type_name));
+
   return json({
     code: 1,
-    msg: `「${wd}」- ${all.length} 結果 (${sourcesHit.join('+')})`,
+    msg: `「${wd}」- ${filtered.length} 結果 (${sourcesHit.join('+')})`,
     page: 1,
-    pagecount: Math.max(1, Math.ceil(all.length / 20)),
+    pagecount: Math.max(1, Math.ceil(filtered.length / 20)),
     limit: 20,
-    total: all.length,
-    list: all.slice(0, 100),
+    total: filtered.length,
+    list: filtered.slice(0, 100),
     class: [],
   });
 }
