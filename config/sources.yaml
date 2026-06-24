@@ -1,5 +1,6 @@
 # ============================================================
-# Chill-AI-TV — 精選源配置（從 Excel 篩選 ASCII 域名優先）
+# Chill-AI-TV — 精選源配置
+# 從 tvbox.clbug.com 檢測篩選：速度 < 1000ms + HTTP 200
 # ============================================================
 settings:
   user_agent: "Mozilla/5.0"
@@ -9,45 +10,126 @@ settings:
   retry_delay: 2
 
 sources:
-  # ---- 寶盒系列（香港最穩）----
-  baohe_vip:
-    name: "寶盒VIP"
-    url: "http://mzjk.top/vip"
-    type: "json"
-    category: ["movie", "tv", "variety"]
-    priority: 1
-    timeout: 30
-    retry: 3
-    enabled: true
-
-  baohe_duocang:
-    name: "寶盒多倉"
-    url: "https://bhapp.top/DC"
+  # ---- 極速 CDN 源 ----
+  liu673cn:
+    name: "liu673cn"
+    url: "https://cdn.jsdelivr.net/gh/liu673cn/box@main/m.json"
     type: "json"
     category: ["movie", "tv", "variety", "live"]
     priority: 1
+    timeout: 20
+    retry: 2
+    enabled: true
+
+  fantaiying_cdn:
+    name: "飯太硬CDN"
+    url: "https://qist.wyfc.qzz.io/fty.json"
+    type: "json"
+    category: ["movie", "tv", "variety"]
+    priority: 1
+    timeout: 20
+    retry: 2
+    enabled: true
+
+  xiaosa_cdn:
+    name: "瀟灑CDN"
+    url: "https://qist.wyfc.qzz.io/xiaosa/api.json"
+    type: "json"
+    category: ["movie", "tv", "variety"]
+    priority: 1
+    timeout: 20
+    retry: 2
+    enabled: true
+
+  jianpian:
+    name: "荐片"
+    url: "https://tv.203511.xyz/0821.json"
+    type: "json"
+    category: ["movie", "tv", "variety"]
+    priority: 2
+    timeout: 20
+    retry: 2
+    enabled: true
+
+  ok_gist:
+    name: "OKgist"
+    url: "https://gist.githubusercontent.com/ph7368/20ee6c7b64d77d82f8f4162cdd04ad61/raw/gistfile1.txt"
+    type: "json"
+    category: ["movie", "tv", "variety"]
+    priority: 2
+    timeout: 20
+    retry: 2
+    enabled: true
+
+  # ---- 快速穩定源 ----
+  xiaohezi_4k:
+    name: "小盒子4K"
+    url: "http://xhztv.top/4k.json"
+    type: "json"
+    category: ["movie", "tv"]
+    quality_support: ["4K", "1080P"]
+    priority: 2
     timeout: 30
     retry: 3
     enabled: true
 
-  # ---- 瀟灑 ----
-  xiaosa:
-    name: "瀟灑"
-    url: "https://9877.kstore.space/ONE/one.json"
+  moyuer:
+    name: "摸魚兒"
+    url: "https://6800.kstore.vip/fish.json"
     type: "json"
     category: ["movie", "tv", "variety"]
-    priority: 1
+    priority: 2
     timeout: 30
     retry: 3
     enabled: true
 
-  # ---- 歐歌 ----
-  ouge:
-    name: "歐歌"
-    url: "https://tv.nxog.top/m/?&0uu"
+  feimao_backup:
+    name: "肥貓備用"
+    url: "http://feimao.pro"
     type: "json"
     category: ["movie", "tv", "variety"]
-    priority: 1
+    priority: 2
+    timeout: 30
+    retry: 3
+    enabled: true
+
+  wangerxiao:
+    name: "王二小"
+    url: "https://9280.kstore.vip/newwex.json"
+    type: "json"
+    category: ["movie", "tv", "variety"]
+    priority: 3
+    timeout: 30
+    retry: 3
+    enabled: true
+
+  fmys:
+    name: "fmys"
+    url: "http://fmys.top/fmys.json"
+    type: "json"
+    category: ["movie", "tv", "variety"]
+    priority: 3
+    timeout: 30
+    retry: 3
+    enabled: true
+
+  # ---- 原寶盒/歐歌系列 ----
+  baohe:
+    name: "寶盒"
+    url: "http://宝盒接口.top"
+    type: "json"
+    category: ["movie", "tv", "variety"]
+    priority: 2
+    timeout: 30
+    retry: 3
+    enabled: true
+
+  jundie:
+    name: "俊哥"
+    url: "http://home.jundie.top:81/top98.json"
+    type: "json"
+    category: ["movie", "tv", "variety"]
+    priority: 3
     timeout: 30
     retry: 3
     enabled: true
@@ -57,85 +139,8 @@ sources:
     name: "小蘋果"
     url: "https://bitbucket.org/xduo/duoapi/raw/master/xpg.json"
     type: "json"
-    category: ["movie", "tv", "variety"]
-    priority: 2
-    timeout: 30
-    retry: 3
-    enabled: true
-
-  # ---- 老劉備 ----
-  laoliubei:
-    name: "老劉備"
-    url: "https://raw.liucn.cc/box/m.json"
-    type: "json"
-    category: ["movie", "tv", "variety"]
-    priority: 2
-    timeout: 30
-    retry: 3
-    enabled: true
-
-  # ---- 驸馬 ----
-  fuma:
-    name: "驸馬"
-    url: "http://fmys.top/fmys.json"
-    type: "json"
-    category: ["movie", "tv", "variety"]
-    priority: 2
-    timeout: 30
-    retry: 3
-    enabled: true
-
-  # ---- wzh ----
-  wzh:
-    name: "wzh"
-    url: "https://gh-proxy.com/https://raw.githubusercontent.com/wzh15802/tvbox/main/tv.json"
-    type: "json"
-    category: ["movie", "tv", "variety"]
-    priority: 2
-    timeout: 30
-    retry: 3
-    enabled: true
-
-  # ---- OK ----
-  ok:
-    name: "OK"
-    url: "http://ok321.top/ok"
-    type: "json"
     category: ["movie", "tv", "variety", "live"]
     priority: 2
-    timeout: 30
-    retry: 3
-    enabled: true
-
-  # ---- 王二小 kstore 備用 ----
-  wangerxiao:
-    name: "王二小"
-    url: "https://9280.kstore.space/wex.json"
-    type: "json"
-    category: ["movie", "tv", "variety"]
-    priority: 3
-    timeout: 30
-    retry: 3
-    enabled: true
-
-  # ---- 極客小盒 ----
-  jike:
-    name: "極客小盒"
-    url: "https://gist.githubusercontent.com/ph7368/20ee6c7b64d77d82f8f4162cdd04ad61/raw/gistfile1.txt"
-    type: "json"
-    category: ["movie", "tv", "variety"]
-    priority: 3
-    timeout: 30
-    retry: 3
-    enabled: true
-
-  # ---- 南風 ----
-  nanfeng:
-    name: "南風"
-    url: "https://github.moeyy.xyz/https://raw.githubusercontent.com/yoursmile66/TVBox/main/XC.json"
-    type: "json"
-    category: ["movie", "tv", "variety"]
-    priority: 3
     timeout: 30
     retry: 3
     enabled: true
