@@ -1,26 +1,36 @@
 /**
- * Chill-AI-TV — Cloudflare Worker (聚合搜尋版 v2)
+ * Chill-AI-TV — Cloudflare Worker v3
+ * 請求記錄 + 聚合搜尋 + 分類
  */
+// 記錄最近 20 筆請求（用來 debug TVBox）
+let requestLog = [];
+
 export default {
   async fetch(request, env, ctx) {
     const url = new URL(request.url);
     const path = url.pathname;
     const GITHUB_API = 'https://api.github.com/repos/daicreation/DaiTVbobox/contents';
 
-    // ---- Debug：查看 TVBox 傳來的完整請求 ----
-    if (path === '/debug') {
-      const info = {
-        url: request.url,
-        method: request.method,
-        path: url.pathname,
-        params: Object.fromEntries(url.searchParams),
-        headers: Object.fromEntries(request.headers),
-      };
-      return json(info);
+    // 記錄請求（保留最近 20 筆）
+    requestLog.unshift({
+      time: new Date().toISOString(),
+      path: path,
+      method: request.method,
+      params: Object.fromEntries(url.searchParams),
+      ua: (request.headers.get('User-Agent') || '').substring(0, 80),
+    });
+    if (requestLog.length > 20) requestLog = requestLog.slice(0, 20);
+
+    // ---- 查看 TVBox 請求記錄 ----
+    if (path === '/log') {
+      return new Response(JSON.stringify(requestLog, null, 2), {
+        status: 200,
+        headers: { 'Content-Type': 'application/json; charset=utf-8' },
+      });
     }
 
-    // ---- 聚合搜尋 ----
-    if (path === '/search') return handleAggregatedSearch(request);
+    // ---- 聚合搜尋 + 瀏覽 ----
+    if (path === '/search') return handleSearch(request);
 
     // ---- 健康檢查 ----
     if (path === '/health') return new Response('OK', { status: 200 });
@@ -29,10 +39,6 @@ export default {
     const routes = {
       '/':         '/output/config.json',
       '/api':      '/output/config.json',
-      '/movie':    '/output/movie.json',
-      '/tv':       '/output/tv.json',
-      '/variety':  '/output/variety.json',
-      '/live':     '/output/live.json',
     };
     const fp = routes[path];
     if (!fp) return json({ error: 'Not Found' }, 404);
@@ -56,49 +62,32 @@ export default {
   },
 };
 
-// ============================================================
-// 聚合搜尋
-// ============================================================
-async function handleAggregatedSearch(request) {
+async function handleSearch(request) {
   const url = new URL(request.url);
-  // 支援所有可能的搜尋參數名
-  const wd = url.searchParams.get('wd')
-          || url.searchParams.get('keyword')
-          || url.searchParams.get('q')
-          || url.searchParams.get('search')
-          || url.searchParams.get('t')
-          || '';
+  const wd = url.searchParams.get('wd') || url.searchParams.get('keyword') || url.searchParams.get('q') || '';
 
-  const sources = [
-    { name: '暴風',   api: 'https://bfzyapi.com/api.php/provide/vod' },
-    { name: '海外看', api: 'https://haiwaikan.com/api.php/provide/vod' },
-    { name: '非凡',   api: 'http://cj.ffzyapi.com/api.php/provide/vod' },
-  ];
-
-  // 有搜尋關鍵字 → 聚合搜尋
-  if (wd && wd.length > 0) {
-    const promises = sources.map(async (src) => {
+  // ---- 有搜尋關鍵字 → 聚合暴風+海外看+非凡 ----
+  if (wd && wd.length >= 1) {
+    const sources = [
+      { name: '暴風',   api: 'https://bfzyapi.com/api.php/provide/vod' },
+      { name: '非凡',   api: 'http://cj.ffzyapi.com/api.php/provide/vod' },
+      { name: '海外看', api: 'https://haiwaikan.com/api.php/provide/vod' },
+    ];
+    const results = await Promise.all(sources.map(async (src) => {
       try {
-        const formats = [`?wd=${encodeURIComponent(wd)}`, `?ac=detail&wd=${encodeURIComponent(wd)}`, `?ac=videolist&wd=${encodeURIComponent(wd)}`];
-        for (const fmt of formats) {
-          const r = await fetch(src.api + fmt, {
-            headers: { 'User-Agent': 'ChillAITV/1.0' },
-            signal: AbortSignal.timeout(5000),
-          });
-          if (r.ok) {
-            const data = await r.json();
-            if ((data.list || []).length > 0) {
-              return data.list.map(it => ({ ...it, _source: src.name, vod_remarks: src.name + '·' + (it.vod_remarks || '') }));
-            }
-          }
-        }
-        return [];
+        const r = await fetch(`${src.api}?ac=detail&wd=${encodeURIComponent(wd)}`, {
+          headers: { 'User-Agent': 'ChillAITV/1.0' },
+          signal: AbortSignal.timeout(6000),
+        });
+        if (!r.ok) return [];
+        const d = await r.json();
+        return (d.list || []).map(it => ({ ...it, _source: src.name, vod_remarks: src.name + '·' + (it.vod_remarks || '') }));
       } catch { return []; }
-    });
+    }));
 
-    const all = (await Promise.all(promises)).flat();
+    const all = results.flat();
     const seen = new Set();
-    const merged = all.filter(it => {
+    const list = all.filter(it => {
       const k = (it.vod_name || '').replace(/\s+/g, '').toLowerCase().slice(0, 20);
       if (seen.has(k) || !k) return false;
       seen.add(k);
@@ -106,32 +95,34 @@ async function handleAggregatedSearch(request) {
     });
 
     return json({
-      code: 1, msg: `「${wd}」- ${merged.length} 結果`,
-      page: 1, pagecount: Math.max(1, Math.ceil(merged.length / 20)),
-      limit: 20, total: merged.length, list: merged.slice(0, 100),
+      code: 1, msg: `「${wd}」- ${list.length} 結果`,
+      page: 1, pagecount: Math.max(1, Math.ceil(list.length / 20)),
+      limit: 20, total: list.length, list: list.slice(0, 100),
+      class: [],
     });
   }
 
-  // 無關鍵字 → 回傳暴風預設推薦 + class 分類
+  // ---- 無關鍵字 → 回傳暴風首頁（含全部分類）----
   try {
-    const r = await fetch('https://bfzyapi.com/api.php/provide/vod?ac=detail', {
+    const r = await fetch('https://bfzyapi.com/api.php/provide/vod', {
       headers: { 'User-Agent': 'ChillAITV/1.0' },
-      signal: AbortSignal.timeout(5000),
+      signal: AbortSignal.timeout(6000),
     });
     if (r.ok) {
-      const data = await r.json();
+      const d = await r.json();
+      const list = (d.list || []).map(it => ({
+        ...it, vod_remarks: '暴風·' + (it.vod_remarks || ''),
+      }));
       return json({
         code: 1, msg: 'Chill-AI-TV 推薦',
-        page: 1, pagecount: Math.ceil((data.list || []).length / 20),
-        limit: 20, total: (data.list || []).length,
-        list: (data.list || []).slice(0, 100),
-        class: data.class || [],
+        page: 1, pagecount: Math.max(1, Math.ceil(list.length / 20)),
+        limit: 20, total: list.length, list: list,
+        class: d.class || [],
       });
     }
   } catch {}
 
-  // 最終 fallback
-  return json({ code: 1, msg: 'Chill-AI-TV', list: [], class: [] });
+  return json({ code: 0, msg: '暫無數據', list: [], class: [] });
 }
 
 function json(data, status = 200) {
