@@ -31,6 +31,8 @@ from .models import (
     PlaySource,
     HealthCheckResult,
     SourceCache,
+    Quality,
+    Category,
 )
 from .utils import (
     logger,
@@ -379,8 +381,7 @@ def _dict_to_item(raw: dict) -> VideoItem:
     )
 
 
-# 需要從 models import (放在檔案末尾避免循環引用)
-from .models import Quality
+
 
 
 # ---- 命令列入口 ----
