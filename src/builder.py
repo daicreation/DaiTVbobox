@@ -500,11 +500,13 @@ def _build_config_json(
                             cat = "音樂"
                         elif any(kw in name_lower for kw in ["儿童", "学习", "教程", "美食"]):
                             cat = "其他"
+                        # 通過 Worker 代理 API（HK + 大陸都能通）
+                        proxy_api = f"{domain}/proxy?url={src.url}"
                         all_sites.append({
                             "key": site_key[:30],
                             "name": f"{site_name}",
                             "type": 1,
-                            "api": src.url,
+                            "api": proxy_api,
                             "searchable": 1,
                             "quickSearch": 1,
                             "cat": cat,
