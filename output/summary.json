@@ -1,8 +1,8 @@
 {
-  "build_time": "2026-06-24 14:57:27",
-  "build_iso": "2026-06-24T14:57:27.600328+00:00",
-  "total_items": 0,
-  "total_sources": 0,
+  "build_time": "2026-06-24 15:05:02",
+  "build_iso": "2026-06-24T15:05:02.432717+00:00",
+  "total_items": 158,
+  "total_sources": 11,
   "availability_rate": "N/A",
   "categories": {
     "live": {
@@ -14,8 +14,8 @@
       "sources": 0
     },
     "movie": {
-      "total": 0,
-      "sources": 0
+      "total": 158,
+      "sources": 11
     },
     "variety": {
       "total": 0,
