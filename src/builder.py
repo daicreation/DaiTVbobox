@@ -490,7 +490,7 @@ def _build_config_json(
                 "api": f"{domain}/search",
                 "searchable": 1,
                 "quickSearch": 1,
-                "filterable": 0,
+                "filterable": 1,
             },
             {
                 "key": "bfzy",

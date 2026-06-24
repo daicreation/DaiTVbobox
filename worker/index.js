@@ -7,6 +7,18 @@ export default {
     const path = url.pathname;
     const GITHUB_API = 'https://api.github.com/repos/daicreation/DaiTVbobox/contents';
 
+    // ---- Debug：查看 TVBox 傳來的完整請求 ----
+    if (path === '/debug') {
+      const info = {
+        url: request.url,
+        method: request.method,
+        path: url.pathname,
+        params: Object.fromEntries(url.searchParams),
+        headers: Object.fromEntries(request.headers),
+      };
+      return json(info);
+    }
+
     // ---- 聚合搜尋 ----
     if (path === '/search') return handleAggregatedSearch(request);
 
@@ -49,8 +61,13 @@ export default {
 // ============================================================
 async function handleAggregatedSearch(request) {
   const url = new URL(request.url);
-  const wd = url.searchParams.get('wd') || '';
-  if (!wd) return json({ code: 1, msg: 'Chill-AI-TV', list: [] });
+  // TVBox 各版本可能用不同參數名：wd / keyword / q / search / t
+  const wd = url.searchParams.get('wd')
+          || url.searchParams.get('keyword')
+          || url.searchParams.get('q')
+          || url.searchParams.get('search')
+          || '';
+  if (!wd) return json({ code: 1, msg: 'Chill-AI-TV｜請輸入關鍵字搜尋', list: [] });
 
   const sources = [
     { name: '暴風',   api: 'https://bfzyapi.com/api.php/provide/vod' },
