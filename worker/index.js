@@ -8,23 +8,10 @@ export default {
     const path = url.pathname;
     const wd = url.searchParams.get('wd') || '';
 
-    // 聚合品牌端點：瀏覽 → 暴風代理，搜尋 → 多源聚合
+    // 品牌聚合：瀏覽=暴風代理, 搜尋=多源
     if (path === '/search') {
       if (wd) return handleSearch(wd);
-      return proxyBrowse();
-    }
-
-    // 瀏覽代理暴風
-    async function proxyBrowse() {
-      try {
-        const r = await fetch('https://bfzyapi.com/api.php/provide/vod', { headers:{ 'User-Agent':'ChillAITV/1.0' }, signal:AbortSignal.timeout(8000) });
-        if (!r.ok) return json({ code:0, list:[], class:[] });
-        const data = await r.json();
-        const bad = [29,73];
-        if (data.list) data.list = data.list.filter(it => !bad.includes(it.type_id));
-        if (data.class) data.class = data.class.filter(it => !bad.includes(it.type_id));
-        return json(data);
-      } catch { return json({ code:0, list:[], class:[] }); }
+      return proxyBF();
     }
 
     // 現有 7 站直連（不變）
@@ -38,11 +25,27 @@ export default {
         { key: "360",  name: "💠 360",  type: 1, api: "https://360zyzz.com/api.php/provide/vod/", searchable: 1, quickSearch: 1 },
         { key: "js",   name: "⚡ 極速", type: 1, api: "https://jszyapi.com/api.php/provide/vod/", searchable: 1, quickSearch: 1 },
         { key: "jy",   name: "🦅 金鷹", type: 1, api: "https://jyzyapi.com/provide/vod/", searchable: 1, quickSearch: 1 },
+        { key: "xiaohezi", name: "📺 小盒子4K", type: 1, api: "http://xhztv.top/4k.json", searchable: 1, quickSearch: 1 },
+        { key: "fantaiying", name: "🍚 飯太硬", type: 1, api: "https://qist.wyfc.qzz.io/fty.json", searchable: 1, quickSearch: 1 },
+        { key: "xiaosa", name: "💨 瀟灑", type: 1, api: "https://qist.wyfc.qzz.io/xiaosa/api.json", searchable: 1, quickSearch: 1 },
       ],
       flags: ["4K","1080P","720P","優酷","愛奇藝","騰訊","芒果"],
     }), { status:200, headers:{ 'Content-Type':'application/json; charset=utf-8', 'Access-Control-Allow-Origin':'*', 'Cache-Control':'no-cache' }});
   },
 };
+
+// ====== 瀏覽代理暴風（品牌首頁內容）======
+async function proxyBF() {
+  try {
+    const r = await fetch('https://bfzyapi.com/api.php/provide/vod', { headers:{ 'User-Agent':'ChillAITV/1.0' }, signal:AbortSignal.timeout(8000) });
+    if (!r.ok) return json({ code:0, list:[], class:[] });
+    const data = await r.json();
+    const bad = [29,73];
+    if (data.list) data.list = data.list.filter(it => !bad.includes(it.type_id));
+    if (data.class) data.class = data.class.filter(it => !bad.includes(it.type_id));
+    return json(data);
+  } catch { return json({ code:0, list:[], class:[] }); }
+}
 
 // ====== 聚合搜尋 ======
 async function handleSearch(wd) {
