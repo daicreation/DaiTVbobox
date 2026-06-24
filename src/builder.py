@@ -531,7 +531,6 @@ def _build_config_json(
             "searchable": 1,
             "quickSearch": 1,
             "filterable": 1,
-            "jar": f"{domain}/spider.jar",
         }]
 
     config = {
@@ -565,9 +564,6 @@ def _build_config_json(
             "4K", "1080P", "720P",
             "優酷", "愛奇藝", "騰訊", "芒果",
         ],
-        "wallpaper": f"{domain}/wallpaper.jpg",
-        "logo": f"{domain}/logo.png",
-        "spider": f"{domain}/spider.jar",
         "update_time": now_display(),
     }
 
