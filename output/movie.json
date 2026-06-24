@@ -1,0 +1,151 @@
+{
+  "class": [
+    {
+      "type_name": "全部",
+      "type_id": "0"
+    },
+    {
+      "type_name": "動作",
+      "type_id": "1"
+    },
+    {
+      "type_name": "喜劇",
+      "type_id": "2"
+    },
+    {
+      "type_name": "科幻",
+      "type_id": "3"
+    },
+    {
+      "type_name": "恐怖",
+      "type_id": "4"
+    },
+    {
+      "type_name": "劇情",
+      "type_id": "5"
+    },
+    {
+      "type_name": "動畫",
+      "type_id": "6"
+    },
+    {
+      "type_name": "紀錄片",
+      "type_id": "7"
+    },
+    {
+      "type_name": "4K專區",
+      "type_id": "99"
+    }
+  ],
+  "filters": {
+    "0": [
+      {
+        "key": "year",
+        "name": "年份",
+        "value": [
+          {
+            "n": "全部",
+            "v": "0"
+          },
+          {
+            "n": "2025",
+            "v": "2025"
+          },
+          {
+            "n": "2024",
+            "v": "2024"
+          },
+          {
+            "n": "2023",
+            "v": "2023"
+          },
+          {
+            "n": "2022",
+            "v": "2022"
+          },
+          {
+            "n": "更早",
+            "v": "old"
+          }
+        ]
+      },
+      {
+        "key": "quality",
+        "name": "畫質",
+        "value": [
+          {
+            "n": "全部",
+            "v": "0"
+          },
+          {
+            "n": "4K",
+            "v": "4k"
+          },
+          {
+            "n": "1080P",
+            "v": "1080p"
+          },
+          {
+            "n": "720P",
+            "v": "720p"
+          }
+        ]
+      },
+      {
+        "key": "area",
+        "name": "地區",
+        "value": [
+          {
+            "n": "全部",
+            "v": "0"
+          },
+          {
+            "n": "中國",
+            "v": "中國"
+          },
+          {
+            "n": "美國",
+            "v": "美國"
+          },
+          {
+            "n": "韓國",
+            "v": "韓國"
+          },
+          {
+            "n": "日本",
+            "v": "日本"
+          },
+          {
+            "n": "其他",
+            "v": "其他"
+          }
+        ]
+      }
+    ]
+  },
+  "list": [
+    {
+      "vod_id": "movie_002",
+      "vod_name": "測試電影A",
+      "vod_pic": "https://img.example.com/a2.jpg",
+      "vod_remarks": "4K·飯太硬·肥貓·2源",
+      "type_name": "動作",
+      "vod_year": "2025",
+      "vod_area": "美國",
+      "vod_actor": "",
+      "vod_director": "",
+      "vod_content": "",
+      "vod_score": "",
+      "vod_play_from": "飯太硬·4K$$$肥貓·1080P",
+      "vod_play_url": "第1集$https://example.com/play/movie_a_4k#第1集$https://example.com/play/movie_a_1080",
+      "vod_quality": "4K",
+      "source_count": 2,
+      "source_rank": 87
+    }
+  ],
+  "total": 1,
+  "page": 1,
+  "pagecount": 1,
+  "limit": 50,
+  "update_time": "2026-06-24 21:36:57"
+}

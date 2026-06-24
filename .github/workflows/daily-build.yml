@@ -1,0 +1,351 @@
+# ============================================================
+# TVBox 影視聚合系統 — GitHub Actions 每日自動建構
+#
+# 排程:
+#   - 每日 UTC 00:00 (北京時間 08:00) 自動執行
+#   - 支援手動觸發 (workflow_dispatch)
+#
+# 流程:
+#   1. Checkout Repo
+#   2. 設定 Python 環境
+#   3. 安裝依賴
+#   4. 執行 source_fetcher → health_checker → ranker → builder → publisher
+#   5. 上傳日誌作為 Artifact
+#
+# 需要的 GitHub Secrets:
+#   - GH_PAT: Personal Access Token (用於 git push)
+#   - CF_API_TOKEN: (可選) Cloudflare API Token (清除快取)
+#   - CF_ZONE_ID: (可選) Cloudflare Zone ID
+#   - WORKER_DOMAIN: (可選) Worker 域名
+#   - TELEGRAM_BOT_TOKEN: (可選) Telegram 通知
+#   - TELEGRAM_CHAT_ID: (可選) Telegram 通知
+# ============================================================
+
+name: 📺 每日聚合更新
+
+on:
+  # ---- 每日排程 (UTC 00:00 = 北京時間 08:00) ----
+  schedule:
+    - cron: '0 0 * * *'
+
+  # ---- 手動觸發 ----
+  workflow_dispatch:
+    inputs:
+      skip_health_check:
+        description: '跳過健康檢查 (更快但無評分)'
+        required: false
+        type: boolean
+        default: false
+      force_rebuild:
+        description: '強制重建 (忽略快取)'
+        required: false
+        type: boolean
+        default: false
+
+  # ---- PR 觸發 (可選，用於測試) ----
+  # pull_request:
+  #   branches: [main]
+
+# 並行控制：同一時間只允許一個 workflow 執行
+concurrency:
+  group: daily-build
+  cancel-in-progress: false
+
+jobs:
+  build:
+    name: 🔄 聚合構建
+    runs-on: ubuntu-latest
+    timeout-minutes: 60  # 最大執行時間 60 分鐘
+
+    # 設定環境變數
+    env:
+      PYTHONUNBUFFERED: 1
+      GITHUB_REPOSITORY: ${{ github.repository }}
+      GITHUB_REPOSITORY_OWNER: ${{ github.repository_owner }}
+      WORKER_DOMAIN: ${{ secrets.WORKER_DOMAIN || 'https://tv.xxx.com' }}
+
+    steps:
+      # ============================================================
+      # 步驟 1: Checkout Repo
+      # ============================================================
+      - name: 📥 Checkout Repo
+        uses: actions/checkout@v4
+        with:
+          token: ${{ secrets.GH_PAT || github.token }}
+          fetch-depth: 0  # 完整歷史 (用於 git push)
+
+      # ============================================================
+      # 步驟 2: 設定 Python 環境
+      # ============================================================
+      - name: 🐍 Setup Python 3.11
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+          cache: 'pip'
+          cache-dependency-path: 'requirements.txt'
+
+      # ============================================================
+      # 步驟 3: 安裝依賴
+      # ============================================================
+      - name: 📦 Install Dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+          echo "===== 已安裝套件 ====="
+          pip list --format=columns
+
+      # ============================================================
+      # 步驟 4: 建立必要目錄
+      # ============================================================
+      - name: 📁 建立目錄結構
+        run: |
+          mkdir -p output sources cache logs
+
+      # ============================================================
+      # 步驟 5: 執行 source_fetcher (來源抓取)
+      # ============================================================
+      - name: ① 來源抓取 (source_fetcher)
+        id: fetch
+        run: |
+          echo "===== 開始抓取上游源 ====="
+          python -c "
+          import sys; sys.path.insert(0, '.')
+          from src.utils import setup_logging; setup_logging('INFO')
+          from src.source_fetcher import fetch_all_sources
+          import json, pickle
+          from pathlib import Path
+
+          results = fetch_all_sources()
+          # 保存結果供後續步驟使用
+          Path('cache/fetcher_results.pkl').write_bytes(pickle.dumps(results))
+          # 輸出統計
+          total_items = sum(c.item_count for c in results.values())
+          print(f'\\n總計: {len(results)} 個來源成功, {total_items} 個影片')
+          "
+        timeout-minutes: 20
+
+      # ============================================================
+      # 步驟 6: 執行 health_checker (健康檢查)
+      # ============================================================
+      - name: ② 健康檢查 (health_checker)
+        id: health
+        if: ${{ !inputs.skip_health_check }}
+        run: |
+          echo "===== 開始健康檢查 ====="
+          python -c "
+          import sys; sys.path.insert(0, '.')
+          from src.utils import setup_logging, load_yaml
+          setup_logging('INFO')
+          from src.health_checker import check_all_sources
+          from src.constants import RULES_YAML_PATH
+          import pickle, json
+          from pathlib import Path
+
+          rules = load_yaml(RULES_YAML_PATH)
+          # 讀取 fetcher 的結果
+          cache_file = Path('cache/fetcher_results.pkl')
+          if not cache_file.exists():
+              print('ERROR: fetcher_results.pkl 不存在')
+              import sys; sys.exit(1)
+
+          source_caches = pickle.loads(cache_file.read_bytes())
+          all_items = check_all_sources(source_caches, rules)
+
+          # 保存結果
+          Path('cache/checked_items.pkl').write_bytes(pickle.dumps(all_items))
+          # 輸出統計
+          for cat, items in all_items.items():
+              total_src = sum(len(it.sources) for it in items)
+              avail_src = sum(1 for it in items for s in it.sources if s.is_available)
+              print(f'  [{cat}] {len(items)} 個影片, {avail_src}/{total_src} 個可用來源')
+          "
+        timeout-minutes: 30
+
+      # ============================================================
+      # 步驟 7: 執行 ranker (評分排序)
+      # ============================================================
+      - name: ③ 評分排序 (ranker)
+        id: rank
+        run: |
+          echo "===== 開始評分排序 ====="
+          python -c "
+          import sys; sys.path.insert(0, '.')
+          from src.utils import setup_logging, load_yaml
+          setup_logging('INFO')
+          from src.ranker import rank_all_items
+          from src.constants import RULES_YAML_PATH
+          import pickle
+          from pathlib import Path
+
+          rules = load_yaml(RULES_YAML_PATH)
+
+          # 讀取 health checker 的結果
+          cache_file = Path('cache/checked_items.pkl')
+          if not cache_file.exists():
+              # 如果沒有健康檢查結果，直接從 fetcher 結果構建
+              print('WARNING: checked_items.pkl 不存在，直接使用 fetcher 結果')
+              cache_file = Path('cache/fetcher_results.pkl')
+              if cache_file.exists():
+                  source_caches = pickle.loads(cache_file.read_bytes())
+                  from src.health_checker import check_all_sources
+                  all_items = check_all_sources(source_caches, rules)
+              else:
+                  print('ERROR: 無可用數據')
+                  import sys; sys.exit(1)
+          else:
+              all_items = pickle.loads(cache_file.read_bytes())
+
+          ranked = rank_all_items(all_items, rules)
+          Path('cache/ranked_items.pkl').write_bytes(pickle.dumps(ranked))
+
+          for cat, items in ranked.items():
+              print(f'  [{cat}] {len(items)} 個影片 (已排序)')
+          "
+        timeout-minutes: 10
+
+      # ============================================================
+      # 步驟 8: 執行 builder (JSON 生成)
+      # ============================================================
+      - name: ④ JSON 生成 (builder)
+        id: build
+        run: |
+          echo "===== 開始生成 JSON ====="
+          python -c "
+          import sys; sys.path.insert(0, '.')
+          from src.utils import setup_logging, load_yaml
+          setup_logging('INFO')
+          from src.builder import build_all_outputs
+          from src.constants import RULES_YAML_PATH
+          import pickle, os
+          from pathlib import Path
+
+          rules = load_yaml(RULES_YAML_PATH)
+          domain = os.environ.get('WORKER_DOMAIN', 'https://tv.xxx.com')
+
+          # 讀取 ranker 的結果
+          cache_file = Path('cache/ranked_items.pkl')
+          if not cache_file.exists():
+              print('ERROR: ranked_items.pkl 不存在')
+              import sys; sys.exit(1)
+
+          ranked = pickle.loads(cache_file.read_bytes())
+          paths = build_all_outputs(ranked, rules, domain)
+
+          print(f'\\n輸出檔案:')
+          for cat, path in paths.items():
+              size = path.stat().st_size
+              print(f'  {cat}: {path.name} ({size:,} bytes)')
+          "
+        timeout-minutes: 10
+
+      # ============================================================
+      # 步驟 9: 檢查輸出是否為空
+      # ============================================================
+      - name: ✅ 驗證輸出
+        run: |
+          echo "===== 驗證輸出檔案 ====="
+          for file in output/config.json output/movie.json output/tv.json output/variety.json output/live.json; do
+            if [ -f "$file" ]; then
+              size=$(stat -c%s "$file" 2>/dev/null || stat -f%z "$file" 2>/dev/null || echo "0")
+              items=$(python -c "import json; d=json.load(open('$file','r',encoding='utf-8')); print(len(d.get('list',[])))" 2>/dev/null || echo "N/A")
+              echo "  ✓ $file ($size bytes, $items items)"
+            else
+              echo "  ✗ $file 不存在!"
+            fi
+          done
+
+      # ============================================================
+      # 步驟 10: 執行 publisher (Git Push)
+      # ============================================================
+      - name: ⑤ 發布到 Repo (publisher)
+        id: publish
+        run: |
+          echo "===== 開始發布 ====="
+          python -c "
+          import sys; sys.path.insert(0, '.')
+          from src.utils import setup_logging
+          setup_logging('INFO')
+          from src.publisher import publish
+          from src.constants import OUTPUT_DIR
+          from pathlib import Path
+
+          # 收集輸出檔案路徑
+          output_paths = {}
+          for json_file in OUTPUT_DIR.glob('*.json'):
+              if json_file.name != 'summary.json':
+                  output_paths[json_file.stem] = json_file
+
+          success = publish(output_paths)
+          if not success:
+              print('WARNING: 發布過程有問題，請檢查日誌')
+          "
+
+      # ============================================================
+      # 步驟 11: 清除 Cloudflare 快取 (可選)
+      # ============================================================
+      - name: 🧹 清除 Cloudflare 快取
+        if: ${{ env.CF_API_TOKEN != '' }}
+        run: |
+          echo "===== 清除 Cloudflare 快取 ====="
+          python -c "
+          import sys; sys.path.insert(0, '.')
+          from src.publisher import purge_cloudflare_cache
+          import os
+
+          success = purge_cloudflare_cache()
+          print(f'Cloudflare 快取清除: {\"成功\" if success else \"失敗\"}')"
+
+      # ============================================================
+      # 步驟 12: 上傳日誌 (Artifact)
+      # ============================================================
+      - name: 📤 上傳日誌
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: build-logs-${{ github.run_id }}
+          path: |
+            logs/
+            output/summary.json
+          retention-days: 7
+
+      # ============================================================
+      # 步驟 13: 發送通知 (Telegram)
+      # ============================================================
+      - name: 📢 發送通知
+        if: ${{ always() && env.TELEGRAM_BOT_TOKEN != '' && env.TELEGRAM_CHAT_ID != '' }}
+        run: |
+          STATUS="${{ job.status }}"
+          if [ "$STATUS" = "success" ]; then
+            EMOJI="✅"
+          else
+            EMOJI="❌"
+          fi
+
+          MESSAGE="${EMOJI} TVBox 聚合更新 ${STATUS}%0A"
+          MESSAGE+="時間: $(date '+%Y-%m-%d %H:%M:%S') UTC%0A"
+          MESSAGE+="Repo: ${{ github.repository }}%0A"
+
+          # 嘗試讀取摘要
+          if [ -f "output/summary.json" ]; then
+            MOVIE_COUNT=$(python -c "import json;d=json.load(open('output/summary.json'));print(d.get('categories',{}).get('movie',{}).get('total',0))" 2>/dev/null || echo "?")
+            TV_COUNT=$(python -c "import json;d=json.load(open('output/summary.json'));print(d.get('categories',{}).get('tv',{}).get('total',0))" 2>/dev/null || echo "?")
+            MESSAGE+="電影: ${MOVIE_COUNT} 部%0A"
+            MESSAGE+="電視劇: ${TV_COUNT} 部"
+          fi
+
+          curl -s -X POST "https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}/sendMessage" \
+            -d "chat_id=${TELEGRAM_CHAT_ID}" \
+            -d "text=${MESSAGE}" \
+            -d "parse_mode=HTML"
+
+      # ============================================================
+      # 完成
+      # ============================================================
+      - name: 🎉 完成
+        if: always()
+        run: |
+          echo "========================================="
+          echo "  執行結果: ${{ job.status }}"
+          echo "  執行時間: $(date '+%Y-%m-%d %H:%M:%S') UTC"
+          echo "  Workflow URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}"
+          echo "========================================="

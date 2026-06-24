@@ -1,0 +1,68 @@
+{
+  "class": [
+    {
+      "type_name": "央視",
+      "type_id": "cctv"
+    },
+    {
+      "type_name": "衛視",
+      "type_id": "satellite"
+    },
+    {
+      "type_name": "地方",
+      "type_id": "local"
+    },
+    {
+      "type_name": "體育",
+      "type_id": "sports"
+    },
+    {
+      "type_name": "電影",
+      "type_id": "movie"
+    },
+    {
+      "type_name": "4K",
+      "type_id": "4k"
+    }
+  ],
+  "filters": {
+    "0": [
+      {
+        "key": "year",
+        "name": "年份",
+        "value": [
+          {
+            "n": "全部",
+            "v": "0"
+          },
+          {
+            "n": "2025",
+            "v": "2025"
+          },
+          {
+            "n": "2024",
+            "v": "2024"
+          },
+          {
+            "n": "2023",
+            "v": "2023"
+          },
+          {
+            "n": "2022",
+            "v": "2022"
+          },
+          {
+            "n": "更早",
+            "v": "old"
+          }
+        ]
+      }
+    ]
+  },
+  "list": [],
+  "total": 0,
+  "page": 1,
+  "pagecount": 1,
+  "limit": 50,
+  "update_time": "2026-06-24 21:36:57"
+}

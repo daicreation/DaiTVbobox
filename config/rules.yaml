@@ -1,0 +1,81 @@
+# ============================================================
+# TVBox 影視聚合系統 — 評分規則 & 系統配置
+# 調整評分權重、閾值、去重規則，無需修改程式碼
+# ============================================================
+
+# ---- 評分權重 (總和必須為 1.0) ----
+scoring:
+  weights:
+    speed: 0.25          # 速度權重 — 響應越快分數越高
+    success_rate: 0.30   # 成功率權重 — 最重要的維度
+    stability: 0.25      # 穩定性權重 — 多次測試的方差
+    quality: 0.20        # 畫質權重 — 4K > 1080P > 720P
+
+  # ---- 畫質加分 (加到 quality 維度) ----
+  quality_bonus:
+    "4K": 100
+    "1080P": 70
+    "720P": 40
+    "480P": 10
+    "未知": 0
+
+  # ---- 響應時間轉分數 (線性映射) ----
+  # speed_score = max(0, 100 - response_time * speed_penalty_per_second)
+  speed_penalty_per_second: 10
+
+  # ---- 穩定性計算 ----
+  # stability_score = 100 * (1 - 方差/平均響應時間)
+  stability_max_variance_ratio: 2.0    # 方差超過平均值的 2 倍則 0 分
+
+# ---- 合格閾值 ----
+thresholds:
+  min_score: 50                        # 最低合格分數 (低於此分數的來源會被過濾)
+  min_success_rate: 0.7                # 最低成功率 (70%)
+  max_response_time: 10.0              # 最大響應時間 (秒)
+  min_sources_per_video: 2             # 每個影片最少需要幾個來源才算合格
+
+# ---- 去重設定 ----
+dedup:
+  title_similarity_threshold: 0.80     # 標題相似度閾值 (>0.80 視為同一影片)
+  use_levenshtein: true                # 使用 Levenshtein 距離算法
+  normalize_title: true                # 比較前先正規化標題 (去括號/去空格/去年份差異)
+  prefer_higher_quality: true          # 合併時保留畫質更高的版本
+
+# ---- 排序優先級 ----
+ranking:
+  # 排序順序: 畫質 > 評分 > 年份 > 來源數
+  order:
+    - "quality"       # 4K 優先
+    - "score"         # 高分次之
+    - "year"          # 新內容優先
+    - "source_count"  # 多來源優先
+
+# ---- 輸出設定 ----
+output:
+  max_items_per_category: 5000         # 每個類別最多輸出條數
+  max_sources_per_video: 10            # 每個影片最多保留幾個來源 (避免 JSON 太大)
+  compress_json: false                 # 是否壓縮 JSON (false = 人類可讀)
+  update_time_format: "%Y-%m-%d %H:%M:%S"
+
+# ---- 日誌設定 ----
+logging:
+  level: "INFO"                        # DEBUG / INFO / WARNING / ERROR
+  save_raw_sources: true               # 是否保存原始抓取數據到 /sources/
+  save_health_check: true              # 是否保存健康檢查快取到 /cache/
+  save_logs: true                      # 是否保存執行日誌到 /logs/
+  log_retention_days: 7                # 日誌保留天數
+
+# ---- 平台映射 (電視劇用) ----
+platform_keywords:
+  iqiyi:
+    name: "愛奇藝"
+    keywords: ["iqiyi", "iq.com", "愛奇藝", "爱奇艺"]
+  tencent:
+    name: "騰訊"
+    keywords: ["v.qq.com", "騰訊", "腾讯", "tencent", "qq.com"]
+  youku:
+    name: "優酷"
+    keywords: ["youku", "優酷", "优酷", "youku.com"]
+  mgtv:
+    name: "芒果"
+    keywords: ["mgtv", "芒果", "mgtv.com", "hunan"]

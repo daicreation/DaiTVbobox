@@ -1,0 +1,55 @@
+# ============================================================
+# TVBox 影視聚合系統 — Git 忽略規則
+# ============================================================
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+*.egg-info/
+dist/
+build/
+.eggs/
+*.egg
+
+# 虛擬環境
+venv/
+.env
+.venv/
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# 暫存 / 快取 (不要提交抓取暫存，因為會很大)
+sources/*/
+cache/*.pkl
+cache/*.json
+!cache/.gitkeep
+
+# 日誌
+logs/*.log
+!logs/.gitkeep
+
+# 輸出 (由 Actions 自動生成，本機測試用)
+# output/*.json  # 註解掉：因為需要提交 output 供 Worker 讀取
+
+# 系統
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# 環境變數 (包含 Token 等敏感資訊)
+.env
+.env.local
+*.secret
+
+# 測試覆蓋率
+htmlcov/
+.coverage
+.coverage.*
+coverage.xml

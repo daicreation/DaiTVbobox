@@ -1,0 +1,110 @@
+# ============================================================
+# TVBox 影視聚合系統 — 上游源配置
+# 新增來源只需在此 YAML 新增一條配置，無需修改程式碼
+# ============================================================
+
+# ---- 全局設定 ----
+settings:
+  user_agent: "Mozilla/5.0 (Linux; Android 11; TV) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36"
+  max_concurrent: 5          # 最大並行抓取數
+  default_timeout: 30        # 預設超時 (秒)
+  default_retry: 3           # 預設重試次數
+  retry_delay: 2             # 重試間隔 (秒)
+
+# ---- 上游源列表 ----
+sources:
+
+  # ========== 飯太硬 ==========
+  # 老牌穩定源，支援 4K，電影+電視劇+綜藝
+  fantaiying:
+    name: "飯太硬"
+    url: "http://www.饭太硬.com/tv"
+    type: "json"                          # json 格式
+    encoding: "utf-8"
+    category: ["movie", "tv", "variety"]  # 支援的類別
+    quality_support: ["4K", "1080P", "720P"]
+    priority: 1                           # 優先級 (數字越小越優先)
+    timeout: 30
+    retry: 3
+    enabled: true                         # 是否啟用
+
+  # ========== 肥貓 ==========
+  # 老牌穩定源，電影+電視劇+綜藝
+  feimao:
+    name: "肥貓"
+    url: "http://肥貓.com/"
+    type: "json"
+    encoding: "utf-8"
+    category: ["movie", "tv", "variety"]
+    quality_support: ["1080P", "720P"]
+    priority: 1
+    timeout: 30
+    retry: 3
+    enabled: true
+
+  # ========== OK 影視 ==========
+  ok:
+    name: "OK"
+    url: "https://ok.example.com/api"
+    type: "json"
+    encoding: "utf-8"
+    category: ["movie", "tv", "variety", "live"]
+    quality_support: ["1080P", "720P"]
+    priority: 2
+    timeout: 30
+    retry: 3
+    enabled: true
+
+  # ========== 小蘋果 ==========
+  xiaopingguo:
+    name: "小蘋果"
+    url: "http://xiaopingguo.example.com/tv"
+    type: "json"
+    encoding: "utf-8"
+    category: ["movie", "tv", "variety"]
+    quality_support: ["1080P", "720P"]
+    priority: 2
+    timeout: 30
+    retry: 3
+    enabled: true
+
+  # ========== 4K 專用倉 ==========
+  # 專門提供 4K 資源，電影+電視劇
+  source_4k:
+    name: "4K專用倉"
+    url: "http://4k.example.com/api"
+    type: "json"
+    encoding: "utf-8"
+    category: ["movie", "tv"]
+    quality_support: ["4K", "1080P"]
+    quality_filter: "4k"                  # 只取 4K 資源
+    priority: 1
+    timeout: 30
+    retry: 3
+    enabled: true
+
+  # ========== 直播聚合源 ==========
+  live_aggregator:
+    name: "直播聚合"
+    url: "http://live.example.com/api"
+    type: "json"
+    encoding: "utf-8"
+    category: ["live"]
+    quality_support: ["1080P", "720P"]
+    priority: 1
+    timeout: 60                           # 直播源較慢，增加超時
+    retry: 5                              # 直播源較不穩定，增加重試
+    enabled: true
+
+  # ========== 模板：新增來源參考 ==========
+  # new_source:
+  #   name: "新來源名稱"
+  #   url: "https://new-source.example.com/api"
+  #   type: "json"
+  #   encoding: "utf-8"
+  #   category: ["movie", "tv", "variety"]
+  #   quality_support: ["1080P", "720P"]
+  #   priority: 3
+  #   timeout: 30
+  #   retry: 3
+  #   enabled: true

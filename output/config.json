@@ -1,0 +1,54 @@
+{
+  "storeHouse": [
+    {
+      "sourceName": "🎬 電影",
+      "sourceUrl": "https://tv.xxx.com/movie"
+    },
+    {
+      "sourceName": "📺 電視劇",
+      "sourceUrl": "https://tv.xxx.com/tv"
+    },
+    {
+      "sourceName": "🎪 綜藝",
+      "sourceUrl": "https://tv.xxx.com/variety"
+    },
+    {
+      "sourceName": "📡 直播",
+      "sourceUrl": "https://tv.xxx.com/live"
+    }
+  ],
+  "sites": [
+    {
+      "key": "聚合搜尋",
+      "name": "🎯 聚合搜尋|4K 1080P 720P",
+      "type": 3,
+      "api": "https://tv.xxx.com/api",
+      "searchable": 1,
+      "quickSearch": 1,
+      "filterable": 1,
+      "jar": "https://tv.xxx.com/spider.jar"
+    }
+  ],
+  "lives": [
+    {
+      "group": "央視",
+      "name": "CCTV-1 綜合",
+      "urls": [
+        "https://tv.xxx.com/live"
+      ]
+    }
+  ],
+  "flags": [
+    "4K",
+    "1080P",
+    "720P",
+    "優酷",
+    "愛奇藝",
+    "騰訊",
+    "芒果"
+  ],
+  "wallpaper": "https://tv.xxx.com/wallpaper.jpg",
+  "logo": "https://tv.xxx.com/logo.png",
+  "spider": "https://tv.xxx.com/spider.jar",
+  "update_time": "2026-06-24 21:36:57"
+}
