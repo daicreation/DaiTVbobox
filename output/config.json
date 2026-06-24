@@ -28,11 +28,19 @@
       "filterable": 1
     },
     {
-      "key": "小蘋果_每天看看",
+      "key": "小蘋果_T4直播转点播",
       "name": "── 🎬 影視 ── (11站)",
       "type": 1,
-      "api": "https://daitvbobox.chungshare.workers.dev/proxy?url=http%3A%2F%2F47.113.126.237%3A1234%2Fapi.php%2Fprovide%2Fvod%2F",
+      "api": "https://daitvbobox.chungshare.workers.dev/proxy?url=http%3A%2F%2F120.53.102.254%2Flive%3Furl%3DaHR0cDovL2hvbWUuanVuZGllLnRvcDo4MS9yYXkvdHZsaXZlLnR4dA",
       "searchable": 0,
+      "quickSearch": 1
+    },
+    {
+      "key": "小蘋果_T4直播转点播",
+      "name": "📺︎电视点播",
+      "type": 1,
+      "api": "https://daitvbobox.chungshare.workers.dev/proxy?url=http%3A%2F%2F120.53.102.254%2Flive%3Furl%3DaHR0cDovL2hvbWUuanVuZGllLnRvcDo4MS9yYXkvdHZsaXZlLnR4dA",
+      "searchable": 1,
       "quickSearch": 1
     },
     {
@@ -40,6 +48,14 @@
       "name": "🍌每天看看(优)",
       "type": 1,
       "api": "https://daitvbobox.chungshare.workers.dev/proxy?url=http%3A%2F%2F47.113.126.237%3A1234%2Fapi.php%2Fprovide%2Fvod%2F",
+      "searchable": 1,
+      "quickSearch": 1
+    },
+    {
+      "key": "小蘋果_土狗 360",
+      "name": "🥒土狗 360(官)",
+      "type": 1,
+      "api": "https://daitvbobox.chungshare.workers.dev/proxy?url=http%3A%2F%2F360.tgzy.cc%2Fapi.php%2Fprovide%2Fvod%2F",
       "searchable": 1,
       "quickSearch": 1
     },
@@ -76,14 +92,6 @@
       "quickSearch": 1
     },
     {
-      "key": "小蘋果_土狗 360",
-      "name": "🥒土狗 360(官)",
-      "type": 1,
-      "api": "https://daitvbobox.chungshare.workers.dev/proxy?url=http%3A%2F%2F360.tgzy.cc%2Fapi.php%2Fprovide%2Fvod%2F",
-      "searchable": 1,
-      "quickSearch": 1
-    },
-    {
       "key": "小蘋果_盘看影视",
       "name": "🥑盘看影视(聚)",
       "type": 1,
@@ -100,10 +108,10 @@
       "quickSearch": 1
     },
     {
-      "key": "小蘋果_T4直播转点播",
-      "name": "📺︎电视点播",
+      "key": "小蘋果_雨哥影视",
+      "name": "🍟雨哥影视(聚)",
       "type": 1,
-      "api": "https://daitvbobox.chungshare.workers.dev/proxy?url=http%3A%2F%2F120.53.102.254%2Flive%3Furl%3DaHR0cDovL2hvbWUuanVuZGllLnRvcDo4MS9yYXkvdHZsaXZlLnR4dA",
+      "api": "https://daitvbobox.chungshare.workers.dev/proxy?url=http%3A%2F%2Fcj.baozi66.top%3A66%2Fapi.php%2Fprovide%2Fvod%2F",
       "searchable": 1,
       "quickSearch": 1
     },
@@ -112,14 +120,6 @@
       "name": "🌶天堂资源(官)",
       "type": 1,
       "api": "https://daitvbobox.chungshare.workers.dev/proxy?url=http%3A%2F%2Fvipmv.cc%2Fapi.php%2Fprovide%2Fvod%2F",
-      "searchable": 1,
-      "quickSearch": 1
-    },
-    {
-      "key": "小蘋果_雨哥影视",
-      "name": "🍟雨哥影视(聚)",
-      "type": 1,
-      "api": "https://daitvbobox.chungshare.workers.dev/proxy?url=http%3A%2F%2Fcj.baozi66.top%3A66%2Fapi.php%2Fprovide%2Fvod%2F",
       "searchable": 1,
       "quickSearch": 1
     },
@@ -150,5 +150,5 @@
     "騰訊",
     "芒果"
   ],
-  "update_time": "2026-06-24 15:44:50"
+  "update_time": "2026-06-24 15:51:45"
 }
