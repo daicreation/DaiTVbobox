@@ -7,7 +7,7 @@
       "api": "https://daitvbobox.chungshare.workers.dev/search",
       "searchable": 1,
       "quickSearch": 1,
-      "filterable": 0
+      "filterable": 1
     },
     {
       "key": "bfzy",
@@ -35,5 +35,5 @@
     "騰訊",
     "芒果"
   ],
-  "update_time": "2026-06-24 16:30:16"
+  "update_time": "2026-06-24 16:37:47"
 }
