@@ -199,7 +199,8 @@ def _parse_source_data(
     解析上游源的 JSON 數據為 VideoItem 列表
 
     支援多種 JSON 格式：
-    - TVBox 標準格式: {"list": [...]}
+    - TVBox 內容格式: {"list": [...]}
+    - TVBox 配置格式: {"sites": [...], "lives": [...]}
     - 部分源可能用 "data" / "videos" / "items" 等鍵名
     - 部分源直接返回列表
 
@@ -222,26 +223,72 @@ def _parse_source_data(
         or safe_get(data, "result")
     )
 
-    # 如果上述鍵名都沒找到，嘗試 data 本身是否為列表
-    if raw_list is None and isinstance(data, list):
-        raw_list = data
+    # ---- 處理 TVBox 配置格式 (sites / lives) ----
+    # 如果沒有 list，但有 sites（這是 TVBox 多倉配置，不是內容）
+    if raw_list is None:
+        sites = safe_get(data, "sites")
+        if isinstance(sites, list) and len(sites) > 0:
+            logger.info(f"[{source_name}] 檢測到配置格式 (sites), 提取 {len(sites)} 個站點")
+            for site in sites:
+                if isinstance(site, dict):
+                    api_url = site.get("api", "") or site.get("ext", "") or ""
+                    site_name = site.get("name", site.get("key", "未知"))
+                    items.append(VideoItem(
+                        vod_id=f"site_{source_name}_{site.get('key', hash(site_name))}",
+                        vod_name=f"[站點] {site_name}",
+                        vod_remarks=f"配置源·{source_name}",
+                        type_name="站點",
+                        sources=[PlaySource(
+                            url=api_url,
+                            source_name=source_name,
+                            quality=Quality.UNKNOWN,
+                        )],
+                    ))
 
-    if not isinstance(raw_list, list):
-        logger.warning(f"[{source_name}] 無法從 JSON 中找到影片列表，keys: {list(data.keys())[:5]}")
-        return items
+        # 也檢查 lives
+        lives = safe_get(data, "lives")
+        if isinstance(lives, list):
+            logger.info(f"[{source_name}] 檢測到直播配置 (lives), 提取 {len(lives)} 個頻道")
+            for live in lives:
+                if isinstance(live, dict):
+                    group = live.get("group", "")
+                    name = live.get("name", "未知頻道")
+                    urls = live.get("urls", [])
+                    items.append(VideoItem(
+                        vod_id=f"live_{source_name}_{hash(name)}",
+                        vod_name=f"[直播] {name}",
+                        vod_remarks=f"{group}·{source_name}",
+                        type_name=group or "直播",
+                        sources=[PlaySource(
+                            url=urls[0] if urls else "",
+                            source_name=source_name,
+                            quality=Quality.K1080,
+                        )] if urls else [],
+                    ))
 
-    # 解析每個影片項目
-    for raw_item in raw_list:
-        if not isinstance(raw_item, dict):
-            continue
+        # 如果 sites 和 lives 都沒有，才報 warning
+        if not items:
+            logger.warning(f"[{source_name}] 無法從 JSON 中找到影片列表，keys: {list(data.keys())[:5]}")
 
-        try:
-            item = _parse_single_video(raw_item, source_name)
-            if item:
-                items.append(item)
-        except Exception as e:
-            logger.debug(f"[{source_name}] 解析單個影片失敗: {e}")
-            continue
+    # ---- 處理標準內容格式 (list / data / ...) ----
+    if raw_list is not None:
+        # 如果 data 本身是列表
+        if raw_list is None and isinstance(data, list):
+            raw_list = data
+
+        if isinstance(raw_list, list):
+            # 解析每個影片項目
+            for raw_item in raw_list:
+                if not isinstance(raw_item, dict):
+                    continue
+
+                try:
+                    item = _parse_single_video(raw_item, source_name)
+                    if item:
+                        items.append(item)
+                except Exception as e:
+                    logger.debug(f"[{source_name}] 解析單個影片失敗: {e}")
+                    continue
 
     logger.debug(f"[{source_name}] 解析出 {len(items)} 個影片")
     return items
