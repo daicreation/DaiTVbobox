@@ -8,22 +8,6 @@
       "searchable": 1,
       "quickSearch": 1,
       "filterable": 1
-    },
-    {
-      "key": "bfzy",
-      "name": "🔥 暴風",
-      "type": 1,
-      "api": "https://bfzyapi.com/api.php/provide/vod",
-      "searchable": 1,
-      "quickSearch": 1
-    },
-    {
-      "key": "haiwaikan",
-      "name": "🌏 海外看",
-      "type": 1,
-      "api": "https://haiwaikan.com/api.php/provide/vod",
-      "searchable": 1,
-      "quickSearch": 1
     }
   ],
   "flags": [
@@ -35,5 +19,5 @@
     "騰訊",
     "芒果"
   ],
-  "update_time": "2026-06-24 17:08:41"
+  "update_time": "2026-06-24 17:16:20"
 }
