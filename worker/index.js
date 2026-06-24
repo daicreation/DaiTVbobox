@@ -10,26 +10,26 @@ export default {
     const path = url.pathname;
     const DOMAIN = 'https://daitvbobox.chungshare.workers.dev';
 
-    // 主 config（多倉 storeHouse）
+    // 主 config（urls 多倉格式）
     if (path === '/' || path === '/api') {
       return json({
-        storeHouse: [
-          { sourceName: "🔥 暴風",        sourceUrl: DOMAIN + "/bfzy" },
-          { sourceName: "🌏 海外看",      sourceUrl: DOMAIN + "/hwk" },
-          { sourceName: "⚡ 非凡",        sourceUrl: DOMAIN + "/ff" },
-          { sourceName: "🎯 索尼",        sourceUrl: DOMAIN + "/sn" },
-          { sourceName: "🍚 飯太硬",     sourceUrl: DOMAIN + "/fantaiying" },
-          { sourceName: "💨 瀟灑",       sourceUrl: DOMAIN + "/xiaosa" },
-          { sourceName: "📦 liu673cn",    sourceUrl: DOMAIN + "/liu" },
-          { sourceName: "🐟 摸魚兒",     sourceUrl: DOMAIN + "/moyuer" },
-          { sourceName: "🐱 肥貓",       sourceUrl: DOMAIN + "/feimao" },
-          { sourceName: "👌 OK",          sourceUrl: DOMAIN + "/ok" },
-          { sourceName: "👦 王二小",     sourceUrl: DOMAIN + "/wangerxiao" },
-          { sourceName: "📺 小盒子4K",   sourceUrl: DOMAIN + "/xiaohezi" },
-          { sourceName: "🎬 荐片",       sourceUrl: DOMAIN + "/jianpian" },
-          { sourceName: "🐴 fmys",       sourceUrl: DOMAIN + "/fmys" },
-          { sourceName: "👨 俊哥",       sourceUrl: DOMAIN + "/jundie" },
-          { sourceName: "🍎 小蘋果",     sourceUrl: DOMAIN + "/xiaopingguo" },
+        urls: [
+          { url: DOMAIN + "/bfzy",        name: "🔥 暴風" },
+          { url: DOMAIN + "/hwk",         name: "🌏 海外看" },
+          { url: DOMAIN + "/ff",          name: "⚡ 非凡" },
+          { url: DOMAIN + "/sn",          name: "🎯 索尼" },
+          { url: DOMAIN + "/fantaiying",  name: "🍚 飯太硬" },
+          { url: DOMAIN + "/xiaosa",      name: "💨 瀟灑" },
+          { url: DOMAIN + "/liu",         name: "📦 liu673cn" },
+          { url: DOMAIN + "/moyuer",      name: "🐟 摸魚兒" },
+          { url: DOMAIN + "/feimao",      name: "🐱 肥貓" },
+          { url: DOMAIN + "/ok",          name: "👌 OK" },
+          { url: DOMAIN + "/wangerxiao",  name: "👦 王二小" },
+          { url: DOMAIN + "/xiaohezi",    name: "📺 小盒子4K" },
+          { url: DOMAIN + "/jianpian",    name: "🎬 荐片" },
+          { url: DOMAIN + "/fmys",        name: "🐴 fmys" },
+          { url: DOMAIN + "/jundie",      name: "👨 俊哥" },
+          { url: DOMAIN + "/xiaopingguo", name: "🍎 小蘋果" },
         ],
         flags: ["4K", "1080P", "720P", "優酷", "愛奇藝", "騰訊", "芒果"],
       });
