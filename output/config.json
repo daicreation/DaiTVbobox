@@ -4,7 +4,7 @@
       "key": "Chill_AI_TV",
       "name": "🧊 Chill-AI-TV｜聚合搜尋",
       "type": 1,
-      "api": "https://daitvbobox.chungshare.workers.dev/search",
+      "api": "https://daitvbobox.chungshare.workers.dev/api.php/provide/vod",
       "searchable": 1,
       "quickSearch": 1,
       "filterable": 1
@@ -35,5 +35,5 @@
     "騰訊",
     "芒果"
   ],
-  "update_time": "2026-06-24 16:57:05"
+  "update_time": "2026-06-24 17:08:41"
 }
