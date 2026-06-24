@@ -61,13 +61,13 @@ export default {
 // ============================================================
 async function handleAggregatedSearch(request) {
   const url = new URL(request.url);
-  // TVBox 各版本可能用不同參數名：wd / keyword / q / search / t
+  // 支援所有可能的搜尋參數名
   const wd = url.searchParams.get('wd')
           || url.searchParams.get('keyword')
           || url.searchParams.get('q')
           || url.searchParams.get('search')
+          || url.searchParams.get('t')
           || '';
-  if (!wd) return json({ code: 1, msg: 'Chill-AI-TV｜請輸入關鍵字搜尋', list: [] });
 
   const sources = [
     { name: '暴風',   api: 'https://bfzyapi.com/api.php/provide/vod' },
@@ -75,52 +75,63 @@ async function handleAggregatedSearch(request) {
     { name: '非凡',   api: 'http://cj.ffzyapi.com/api.php/provide/vod' },
   ];
 
-  const promises = sources.map(async (src) => {
-    try {
-      // 嘗試多種搜尋參數格式
-      const formats = [
-        `?ac=detail&wd=${encodeURIComponent(wd)}`,
-        `?ac=videolist&wd=${encodeURIComponent(wd)}`,
-        `?wd=${encodeURIComponent(wd)}`,
-      ];
-      for (const fmt of formats) {
-        const r = await fetch(src.api + fmt, {
-          headers: { 'User-Agent': 'ChillAITV/1.0' },
-          signal: AbortSignal.timeout(5000),
-        });
-        if (r.ok) {
-          const data = await r.json();
-          const items = data.list || [];
-          if (items.length > 0) {
-            return items.map(it => ({ ...it, _source: src.name }));
+  // 有搜尋關鍵字 → 聚合搜尋
+  if (wd && wd.length > 0) {
+    const promises = sources.map(async (src) => {
+      try {
+        const formats = [`?wd=${encodeURIComponent(wd)}`, `?ac=detail&wd=${encodeURIComponent(wd)}`, `?ac=videolist&wd=${encodeURIComponent(wd)}`];
+        for (const fmt of formats) {
+          const r = await fetch(src.api + fmt, {
+            headers: { 'User-Agent': 'ChillAITV/1.0' },
+            signal: AbortSignal.timeout(5000),
+          });
+          if (r.ok) {
+            const data = await r.json();
+            if ((data.list || []).length > 0) {
+              return data.list.map(it => ({ ...it, _source: src.name, vod_remarks: src.name + '·' + (it.vod_remarks || '') }));
+            }
           }
         }
-      }
-      return [];
-    } catch {
-      return [];
+        return [];
+      } catch { return []; }
+    });
+
+    const all = (await Promise.all(promises)).flat();
+    const seen = new Set();
+    const merged = all.filter(it => {
+      const k = (it.vod_name || '').replace(/\s+/g, '').toLowerCase().slice(0, 20);
+      if (seen.has(k) || !k) return false;
+      seen.add(k);
+      return true;
+    });
+
+    return json({
+      code: 1, msg: `「${wd}」- ${merged.length} 結果`,
+      page: 1, pagecount: Math.max(1, Math.ceil(merged.length / 20)),
+      limit: 20, total: merged.length, list: merged.slice(0, 100),
+    });
+  }
+
+  // 無關鍵字 → 回傳暴風預設推薦 + class 分類
+  try {
+    const r = await fetch('https://bfzyapi.com/api.php/provide/vod?ac=detail', {
+      headers: { 'User-Agent': 'ChillAITV/1.0' },
+      signal: AbortSignal.timeout(5000),
+    });
+    if (r.ok) {
+      const data = await r.json();
+      return json({
+        code: 1, msg: 'Chill-AI-TV 推薦',
+        page: 1, pagecount: Math.ceil((data.list || []).length / 20),
+        limit: 20, total: (data.list || []).length,
+        list: (data.list || []).slice(0, 100),
+        class: data.class || [],
+      });
     }
-  });
+  } catch {}
 
-  const all = (await Promise.all(promises)).flat();
-  const seen = new Set();
-  const merged = all.filter(it => {
-    const k = (it.vod_name || '').replace(/\s+/g, '').toLowerCase().slice(0, 20);
-    if (seen.has(k) || !k) return false;
-    seen.add(k);
-    it.vod_remarks = it._source + '·' + (it.vod_remarks || '');
-    return true;
-  });
-
-  return json({
-    code: 1,
-    msg: `「${wd}」- ${merged.length} 結果`,
-    page: 1,
-    pagecount: Math.max(1, Math.ceil(merged.length / 20)),
-    limit: 20,
-    total: merged.length,
-    list: merged.slice(0, 100),
-  });
+  // 最終 fallback
+  return json({ code: 1, msg: 'Chill-AI-TV', list: [], class: [] });
 }
 
 function json(data, status = 200) {
