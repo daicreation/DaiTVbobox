@@ -78,7 +78,6 @@ async function handleSearch(wd) {
     { key: "jy",   name: "🦅 金鷹", api: "https://jyzyapi.com/provide/vod/" },
   ];
 
-  const sourceMap = {}; // vod_id → api_url
   const results = await Promise.all(sources.map(async (src) => {
     try {
       const r = await fetch(`${src.api}?ac=detail&wd=${encodeURIComponent(wd)}`, {
@@ -87,16 +86,11 @@ async function handleSearch(wd) {
       });
       if (!r.ok) return [];
       const d = await r.json();
-      return (d.list || []).map(it => {
-        const taggedId = src.key + "_" + it.vod_id;
-        sourceMap[taggedId] = src.api; // 記錄來源
-        return {
-          ...it,
-          vod_id: taggedId,
-          _source: src.name,
-          vod_remarks: src.name + "·" + (it.vod_remarks || ''),
-        };
-      });
+      return (d.list || []).map(it => ({
+        ...it,
+        _source: src.name,
+        vod_remarks: src.name + "·" + (it.vod_remarks || ''),
+      }));
     } catch { return []; }
   }));
 
