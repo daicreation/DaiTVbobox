@@ -43,9 +43,10 @@ export default {
       });
     }
 
-    // 從 GitHub 獲取內容
+    // 從 GitHub 獲取內容 (加 cache-busting 避免 CDN 快取舊版)
     try {
-      const response = await fetch(targetUrl, {
+      const fetchUrl = targetUrl + '?t=' + Date.now();
+      const response = await fetch(fetchUrl, {
         headers: { 'User-Agent': 'DaiTVbobox/1.0' },
       });
 
