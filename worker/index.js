@@ -60,14 +60,26 @@ async function handleAggregatedSearch(request) {
 
   const promises = sources.map(async (src) => {
     try {
-      const u = `${src.api}?ac=detail&wd=${encodeURIComponent(wd)}`;
-      const r = await fetch(u, {
-        headers: { 'User-Agent': 'ChillAITV/1.0' },
-        signal: AbortSignal.timeout(8000),
-      });
-      if (!r.ok) return [];
-      const data = await r.json();
-      return (data.list || []).map(it => ({ ...it, _source: src.name }));
+      // 嘗試多種搜尋參數格式
+      const formats = [
+        `?ac=detail&wd=${encodeURIComponent(wd)}`,
+        `?ac=videolist&wd=${encodeURIComponent(wd)}`,
+        `?wd=${encodeURIComponent(wd)}`,
+      ];
+      for (const fmt of formats) {
+        const r = await fetch(src.api + fmt, {
+          headers: { 'User-Agent': 'ChillAITV/1.0' },
+          signal: AbortSignal.timeout(5000),
+        });
+        if (r.ok) {
+          const data = await r.json();
+          const items = data.list || [];
+          if (items.length > 0) {
+            return items.map(it => ({ ...it, _source: src.name }));
+          }
+        }
+      }
+      return [];
     } catch {
       return [];
     }
