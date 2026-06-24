@@ -1,28 +1,100 @@
 /**
- * Chill-AI-TV — Cloudflare Worker
- * 只發 config，16 站點直連（確定能用的版本）
+ * Chill-AI-TV — Worker (聚合引擎)
+ * /api.php/provide/vod → 瀏覽=暴風, 搜尋=聚合多源
  */
 export default {
   async fetch(request, env, ctx) {
-    const DOMAIN = 'https://daitvbobox.chungshare.workers.dev';
-    return new Response(JSON.stringify({
-      sites: [
-        { key: "bfzy",       name: "🔥 暴風",     type: 1, api: "https://bfzyapi.com/api.php/provide/vod", searchable: 1, quickSearch: 1 },
-        { key: "ff",         name: "⚡ 非凡",     type: 1, api: "http://cj.ffzyapi.com/api.php/provide/vod", searchable: 1, quickSearch: 1 },
-        { key: "sn",         name: "🎯 索尼",     type: 1, api: "https://suoniapi.com/api.php/provide/vod", searchable: 1, quickSearch: 1 },
-        { key: "xiaosa",     name: "💨 瀟灑(121)", type: 1, api: "https://qist.wyfc.qzz.io/xiaosa/api.json", searchable: 1, quickSearch: 1 },
-        { key: "xiaopingguo",name: "🍎 小蘋果(136)",type: 1, api: "https://bitbucket.org/xduo/duoapi/raw/master/xpg.json", searchable: 1, quickSearch: 1 },
-        { key: "moyuer",     name: "🐟 摸魚兒(87)",type: 1, api: "https://6800.kstore.vip/fish.json", searchable: 1, quickSearch: 1 },
-        { key: "wangerxiao", name: "👦 王二小(85)",type: 1, api: "https://9280.kstore.vip/newwex.json", searchable: 1, quickSearch: 1 },
-        { key: "fmys",       name: "🐴 fmys(82)", type: 1, api: "http://fmys.top/fmys.json", searchable: 1, quickSearch: 1 },
-        { key: "fantaiying", name: "🍚 飯太硬(48)",type: 1, api: "https://qist.wyfc.qzz.io/fty.json", searchable: 1, quickSearch: 1 },
-        { key: "ok",         name: "👌 OK(45)",    type: 1, api: "https://gist.githubusercontent.com/ph7368/20ee6c7b64d77d82f8f4162cdd04ad61/raw/gistfile1.txt", searchable: 1, quickSearch: 1 },
-        { key: "jianpian",   name: "🎬 荐片(28)",  type: 1, api: "https://tv.203511.xyz/0821.json", searchable: 1, quickSearch: 1 },
-      ],
-      flags: ["4K", "1080P", "720P", "優酷", "愛奇藝", "騰訊", "芒果"],
-    }), {
-      status: 200,
-      headers: { 'Content-Type': 'application/json; charset=utf-8', 'Access-Control-Allow-Origin': '*', 'Cache-Control': 'public, max-age=1800' },
-    });
+    const url = new URL(request.url);
+    const path = url.pathname;
+    const wd = url.searchParams.get('wd') || '';
+
+    if (path === '/health') return new Response('OK', { status: 200 });
+
+    // 首頁 config
+    if (path === '/' || path === '/api') {
+      return json({
+        sites: [{
+          key: "Chill_AI_TV",
+          name: "🧊 Chill-AI-TV",
+          type: 1,
+          api: "https://daitvbobox.chungshare.workers.dev/api.php/provide/vod",
+          searchable: 1, quickSearch: 1, filterable: 1,
+        }],
+        flags: ["4K", "1080P", "720P", "優酷", "愛奇藝", "騰訊", "芒果"],
+      });
+    }
+
+    // API 端點
+    if (path === '/api.php/provide/vod') {
+      if (wd) return handleSearch(wd);
+      return proxyBrowse();
+    }
+
+    return json({ error: 'Not Found' }, 404);
   },
 };
+
+// ========== 瀏覽：代理暴風（快速）==========
+async function proxyBrowse() {
+  try {
+    const r = await fetch('https://bfzyapi.com/api.php/provide/vod', {
+      headers: { 'User-Agent': 'ChillAITV/1.0' },
+      signal: AbortSignal.timeout(8000),
+    });
+    const data = await r.json();
+    const blocked = [29, 73];
+    if (data.list) data.list = data.list.filter(it => !blocked.includes(it.type_id));
+    if (data.class) data.class = data.class.filter(it => !blocked.includes(it.type_id));
+    return json(data);
+  } catch { return json({ code: 0, list: [], class: [] }); }
+}
+
+// ========== 聚合搜尋 ==========
+async function handleSearch(wd) {
+  const sources = [
+    { name: "🔥 暴風",   api: "https://bfzyapi.com/api.php/provide/vod" },
+    { name: "⚡ 非凡",   api: "http://cj.ffzyapi.com/api.php/provide/vod" },
+    { name: "🎯 索尼",   api: "https://suoniapi.com/api.php/provide/vod" },
+    { name: "🔮 量子",   api: "https://cj.lziapi.com/api.php/provide/vod/" },
+    { name: "💠 360",    api: "https://360zyzz.com/api.php/provide/vod/" },
+    { name: "⚡ 極速",   api: "https://jszyapi.com/api.php/provide/vod/" },
+    { name: "🦅 金鷹",   api: "https://jyzyapi.com/provide/vod/" },
+  ];
+
+  const results = await Promise.all(sources.map(async (src) => {
+    try {
+      const r = await fetch(`${src.api}?ac=detail&wd=${encodeURIComponent(wd)}`, {
+        headers: { 'User-Agent': 'ChillAITV/1.0' },
+        signal: AbortSignal.timeout(6000),
+      });
+      if (!r.ok) return [];
+      const d = await r.json();
+      return (d.list || []).map(it => ({
+        ...it, _source: src.name,
+        vod_remarks: src.name + "·" + (it.vod_remarks || ''),
+      }));
+    } catch { return []; }
+  }));
+
+  const all = results.flat();
+  const seen = new Set();
+  const list = all.filter(it => {
+    const k = (it.vod_name || '').replace(/\s+/g, '').toLowerCase().slice(0, 20);
+    if (seen.has(k) || !k) return false;
+    seen.add(k);
+    return true;
+  });
+
+  return json({
+    code: 1, msg: "Chill-AI-TV",
+    page: 1, pagecount: Math.max(1, Math.ceil(list.length / 20)),
+    limit: 20, total: list.length, list: list.slice(0, 100), class: [],
+  });
+}
+
+function json(data, status = 200) {
+  return new Response(JSON.stringify(data), {
+    status,
+    headers: { 'Content-Type': 'application/json; charset=utf-8', 'Access-Control-Allow-Origin': '*', 'Cache-Control': 'public, max-age=300' },
+  });
+}
