@@ -1,23 +1,71 @@
 /**
- * Chill-AI-TV — Cloudflare Worker
- * 只發 config，TVBox 直連
+ * Chill-AI-TV — Worker (多倉模式)
+ * /       → 主 config（storeHouse 多倉）
+ * /bfzy   → 暴風子倉
+ * /misc   → 其他子倉
  */
 export default {
   async fetch(request, env, ctx) {
-    try {
-      const apiUrl = 'https://api.github.com/repos/daicreation/DaiTVbobox/contents/output/config.json';
-      const resp = await fetch(apiUrl, {
-        headers: { 'User-Agent': 'ChillAITV/1.0', 'Accept': 'application/vnd.github.v3+json' },
+    const url = new URL(request.url);
+    const path = url.pathname;
+    const DOMAIN = 'https://daitvbobox.chungshare.workers.dev';
+
+    // 主 config（多倉 storeHouse）
+    if (path === '/' || path === '/api') {
+      return json({
+        storeHouse: [
+          { sourceName: "🔥 暴風",        sourceUrl: DOMAIN + "/bfzy" },
+          { sourceName: "🌏 海外看",      sourceUrl: DOMAIN + "/hwk" },
+          { sourceName: "⚡ 非凡",        sourceUrl: DOMAIN + "/ff" },
+          { sourceName: "🎯 索尼",        sourceUrl: DOMAIN + "/sn" },
+          { sourceName: "🍚 飯太硬",     sourceUrl: DOMAIN + "/fantaiying" },
+          { sourceName: "💨 瀟灑",       sourceUrl: DOMAIN + "/xiaosa" },
+          { sourceName: "📦 liu673cn",    sourceUrl: DOMAIN + "/liu" },
+          { sourceName: "🐟 摸魚兒",     sourceUrl: DOMAIN + "/moyuer" },
+          { sourceName: "🐱 肥貓",       sourceUrl: DOMAIN + "/feimao" },
+          { sourceName: "👌 OK",          sourceUrl: DOMAIN + "/ok" },
+          { sourceName: "👦 王二小",     sourceUrl: DOMAIN + "/wangerxiao" },
+          { sourceName: "📺 小盒子4K",   sourceUrl: DOMAIN + "/xiaohezi" },
+          { sourceName: "🎬 荐片",       sourceUrl: DOMAIN + "/jianpian" },
+          { sourceName: "🐴 fmys",       sourceUrl: DOMAIN + "/fmys" },
+          { sourceName: "👨 俊哥",       sourceUrl: DOMAIN + "/jundie" },
+          { sourceName: "🍎 小蘋果",     sourceUrl: DOMAIN + "/xiaopingguo" },
+        ],
+        flags: ["4K", "1080P", "720P", "優酷", "愛奇藝", "騰訊", "芒果"],
       });
-      const data = await resp.json();
-      const binary = atob(data.content.replace(/\s/g, ''));
-      const bytes = new Uint8Array(binary.length);
-      for (let i = 0; i < binary.length; i++) bytes[i] = binary.charCodeAt(i);
-      return new Response(new TextDecoder('utf-8').decode(bytes), {
-        headers: { 'Content-Type': 'application/json; charset=utf-8', 'Access-Control-Allow-Origin': '*', 'Cache-Control': 'public, max-age=1800' },
-      });
-    } catch (e) {
-      return new Response(JSON.stringify({ error: e.message }), { status: 503 });
     }
+
+    // 各子倉 → 回傳 sites
+    const subConfigs = {
+      '/bfzy':        [{ key: "bfzy", name: "🔥 暴風",     type: 1, api: "https://bfzyapi.com/api.php/provide/vod", searchable: 1, quickSearch: 1 }],
+      '/hwk':         [{ key: "hwk",  name: "🌏 海外看",   type: 1, api: "https://haiwaikan.com/api.php/provide/vod", searchable: 1, quickSearch: 1 }],
+      '/ff':          [{ key: "ff",   name: "⚡ 非凡",     type: 1, api: "http://cj.ffzyapi.com/api.php/provide/vod", searchable: 1, quickSearch: 1 }],
+      '/sn':          [{ key: "sn",   name: "🎯 索尼",     type: 1, api: "https://suoniapi.com/api.php/provide/vod", searchable: 1, quickSearch: 1 }],
+      '/fantaiying':  [{ key: "fantaiying", name: "🍚 飯太硬", type: 1, api: "https://qist.wyfc.qzz.io/fty.json", searchable: 1, quickSearch: 1 }],
+      '/xiaosa':      [{ key: "xiaosa", name: "💨 瀟灑",   type: 1, api: "https://qist.wyfc.qzz.io/xiaosa/api.json", searchable: 1, quickSearch: 1 }],
+      '/liu':         [{ key: "liu",  name: "📦 liu673cn", type: 1, api: "https://cdn.jsdelivr.net/gh/liu673cn/box@main/m.json", searchable: 1, quickSearch: 1 }],
+      '/moyuer':      [{ key: "moyuer", name: "🐟 摸魚兒", type: 1, api: "https://6800.kstore.vip/fish.json", searchable: 1, quickSearch: 1 }],
+      '/feimao':      [{ key: "feimao", name: "🐱 肥貓",   type: 1, api: "http://feimao.pro", searchable: 1, quickSearch: 1 }],
+      '/ok':          [{ key: "ok",   name: "👌 OK",       type: 1, api: "https://gist.githubusercontent.com/ph7368/20ee6c7b64d77d82f8f4162cdd04ad61/raw/gistfile1.txt", searchable: 1, quickSearch: 1 }],
+      '/wangerxiao':  [{ key: "wangerxiao", name: "👦 王二小",   type: 1, api: "https://9280.kstore.vip/newwex.json", searchable: 1, quickSearch: 1 }],
+      '/xiaohezi':    [{ key: "xiaohezi", name: "📺 小盒子4K",   type: 1, api: "http://xhztv.top/4k.json", searchable: 1, quickSearch: 1 }],
+      '/jianpian':    [{ key: "jianpian", name: "🎬 荐片",       type: 1, api: "https://tv.203511.xyz/0821.json", searchable: 1, quickSearch: 1 }],
+      '/fmys':        [{ key: "fmys", name: "🐴 fmys",     type: 1, api: "http://fmys.top/fmys.json", searchable: 1, quickSearch: 1 }],
+      '/jundie':      [{ key: "jundie", name: "👨 俊哥",   type: 1, api: "http://home.jundie.top:81/top98.json", searchable: 1, quickSearch: 1 }],
+      '/xiaopingguo': [{ key: "xiaopingguo", name: "🍎 小蘋果", type: 1, api: "https://bitbucket.org/xduo/duoapi/raw/master/xpg.json", searchable: 1, quickSearch: 1 }],
+    };
+
+    if (subConfigs[path]) {
+      return json({ sites: subConfigs[path] });
+    }
+
+    return json({ error: 'Not Found' }, 404);
   },
 };
+
+function json(data, status = 200) {
+  return new Response(JSON.stringify(data), {
+    status,
+    headers: { 'Content-Type': 'application/json; charset=utf-8', 'Access-Control-Allow-Origin': '*', 'Cache-Control': 'public, max-age=1800' },
+  });
+}
