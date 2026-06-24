@@ -67,7 +67,8 @@ async function handleSearch(wd) {
   const all = results.flat();
   const seen = new Set();
   const list = all.filter(it => {
-    const k = (it.vod_name||'').replace(/\s+/g,'').toLowerCase().slice(0,20);
+    // 去重條件：名稱前30字 + 年份（更精準，保留同名不同年/不同季）
+    const k = ((it.vod_name||'') + '_' + (it.vod_year||'')).replace(/\s+/g,'').toLowerCase().slice(0,40);
     if (seen.has(k)||!k) return false;
     seen.add(k); return true;
   });
