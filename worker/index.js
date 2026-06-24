@@ -55,8 +55,13 @@ export default {
       }
 
       const data = await resp.json();
-      // GitHub API 返回 base64 編碼的內容
-      const content = atob(data.content.replace(/\s/g, ''));
+      // GitHub API 返回 base64，需正確解碼 UTF-8
+      const binary = atob(data.content.replace(/\s/g, ''));
+      const bytes = new Uint8Array(binary.length);
+      for (let i = 0; i < binary.length; i++) {
+        bytes[i] = binary.charCodeAt(i);
+      }
+      const content = new TextDecoder('utf-8').decode(bytes);
       const ct = path.endsWith('.jar') ? 'application/java-archive' : 'application/json; charset=utf-8';
 
       return new Response(content, {
