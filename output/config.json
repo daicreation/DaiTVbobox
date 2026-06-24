@@ -28,26 +28,18 @@
       "filterable": 1
     },
     {
-      "key": "小蘋果_T4直播转点播",
-      "name": "── 🎬 影視 ── (10站)",
+      "key": "小蘋果_每天看看",
+      "name": "── 🎬 影視 ── (11站)",
       "type": 1,
-      "api": "https://daitvbobox.chungshare.workers.dev/proxy?url=http://120.53.102.254/live?url=aHR0cDovL2hvbWUuanVuZGllLnRvcDo4MS9yYXkvdHZsaXZlLnR4dA",
+      "api": "https://daitvbobox.chungshare.workers.dev/proxy?url=http%3A%2F%2F47.113.126.237%3A1234%2Fapi.php%2Fprovide%2Fvod%2F",
       "searchable": 0,
-      "quickSearch": 1
-    },
-    {
-      "key": "小蘋果_T4直播转点播",
-      "name": "📺︎电视点播",
-      "type": 1,
-      "api": "https://daitvbobox.chungshare.workers.dev/proxy?url=http://120.53.102.254/live?url=aHR0cDovL2hvbWUuanVuZGllLnRvcDo4MS9yYXkvdHZsaXZlLnR4dA",
-      "searchable": 1,
       "quickSearch": 1
     },
     {
       "key": "小蘋果_每天看看",
       "name": "🍌每天看看(优)",
       "type": 1,
-      "api": "https://daitvbobox.chungshare.workers.dev/proxy?url=http://47.113.126.237:1234/api.php/provide/vod/",
+      "api": "https://daitvbobox.chungshare.workers.dev/proxy?url=http%3A%2F%2F47.113.126.237%3A1234%2Fapi.php%2Fprovide%2Fvod%2F",
       "searchable": 1,
       "quickSearch": 1
     },
@@ -55,15 +47,7 @@
       "key": "小蘋果_诺讯资源",
       "name": "🍑诺讯资源(官)",
       "type": 1,
-      "api": "https://daitvbobox.chungshare.workers.dev/proxy?url=http://caiji.nxflv.com/api.php/provide/vod/",
-      "searchable": 1,
-      "quickSearch": 1
-    },
-    {
-      "key": "小蘋果_盘看影视",
-      "name": "🥑盘看影视(聚)",
-      "type": 1,
-      "api": "https://daitvbobox.chungshare.workers.dev/proxy?url=http://tvcaiji.pankk.cn/api.php/provide/vod/",
+      "api": "https://daitvbobox.chungshare.workers.dev/proxy?url=http%3A%2F%2Fcaiji.nxflv.com%2Fapi.php%2Fprovide%2Fvod%2F",
       "searchable": 1,
       "quickSearch": 1
     },
@@ -71,7 +55,7 @@
       "key": "蜂蜜_haiwaikan",
       "name": "海外看",
       "type": 1,
-      "api": "https://daitvbobox.chungshare.workers.dev/proxy?url=https://haiwaikan.com/api.php/provide/vod",
+      "api": "https://daitvbobox.chungshare.workers.dev/proxy?url=https%3A%2F%2Fhaiwaikan.com%2Fapi.php%2Fprovide%2Fvod",
       "searchable": 1,
       "quickSearch": 1
     },
@@ -79,7 +63,7 @@
       "key": "蜂蜜_暴風",
       "name": "暴風",
       "type": 1,
-      "api": "https://daitvbobox.chungshare.workers.dev/proxy?url=https://bfzyapi.com/api.php/provide/vod",
+      "api": "https://daitvbobox.chungshare.workers.dev/proxy?url=https%3A%2F%2Fbfzyapi.com%2Fapi.php%2Fprovide%2Fvod",
       "searchable": 1,
       "quickSearch": 1
     },
@@ -87,7 +71,7 @@
       "key": "蜂蜜_索尼",
       "name": "索尼 ",
       "type": 1,
-      "api": "https://daitvbobox.chungshare.workers.dev/proxy?url=https://suoniapi.com/api.php/provide/vod",
+      "api": "https://daitvbobox.chungshare.workers.dev/proxy?url=https%3A%2F%2Fsuoniapi.com%2Fapi.php%2Fprovide%2Fvod",
       "searchable": 1,
       "quickSearch": 1
     },
@@ -95,7 +79,15 @@
       "key": "小蘋果_土狗 360",
       "name": "🥒土狗 360(官)",
       "type": 1,
-      "api": "https://daitvbobox.chungshare.workers.dev/proxy?url=http://360.tgzy.cc/api.php/provide/vod/",
+      "api": "https://daitvbobox.chungshare.workers.dev/proxy?url=http%3A%2F%2F360.tgzy.cc%2Fapi.php%2Fprovide%2Fvod%2F",
+      "searchable": 1,
+      "quickSearch": 1
+    },
+    {
+      "key": "小蘋果_盘看影视",
+      "name": "🥑盘看影视(聚)",
+      "type": 1,
+      "api": "https://daitvbobox.chungshare.workers.dev/proxy?url=http%3A%2F%2Ftvcaiji.pankk.cn%2Fapi.php%2Fprovide%2Fvod%2F",
       "searchable": 1,
       "quickSearch": 1
     },
@@ -103,7 +95,15 @@
       "key": "蜂蜜_非凡",
       "name": "非凡",
       "type": 1,
-      "api": "https://daitvbobox.chungshare.workers.dev/proxy?url=http://cj.ffzyapi.com/api.php/provide/vod",
+      "api": "https://daitvbobox.chungshare.workers.dev/proxy?url=http%3A%2F%2Fcj.ffzyapi.com%2Fapi.php%2Fprovide%2Fvod",
+      "searchable": 1,
+      "quickSearch": 1
+    },
+    {
+      "key": "小蘋果_T4直播转点播",
+      "name": "📺︎电视点播",
+      "type": 1,
+      "api": "https://daitvbobox.chungshare.workers.dev/proxy?url=http%3A%2F%2F120.53.102.254%2Flive%3Furl%3DaHR0cDovL2hvbWUuanVuZGllLnRvcDo4MS9yYXkvdHZsaXZlLnR4dA",
       "searchable": 1,
       "quickSearch": 1
     },
@@ -111,7 +111,15 @@
       "key": "小蘋果_天堂资源",
       "name": "🌶天堂资源(官)",
       "type": 1,
-      "api": "https://daitvbobox.chungshare.workers.dev/proxy?url=http://vipmv.cc/api.php/provide/vod/",
+      "api": "https://daitvbobox.chungshare.workers.dev/proxy?url=http%3A%2F%2Fvipmv.cc%2Fapi.php%2Fprovide%2Fvod%2F",
+      "searchable": 1,
+      "quickSearch": 1
+    },
+    {
+      "key": "小蘋果_雨哥影视",
+      "name": "🍟雨哥影视(聚)",
+      "type": 1,
+      "api": "https://daitvbobox.chungshare.workers.dev/proxy?url=http%3A%2F%2Fcj.baozi66.top%3A66%2Fapi.php%2Fprovide%2Fvod%2F",
       "searchable": 1,
       "quickSearch": 1
     },
@@ -119,7 +127,7 @@
       "key": "小蘋果_小鸟动漫",
       "name": "── 🎭 動漫 ── (1站)",
       "type": 1,
-      "api": "https://daitvbobox.chungshare.workers.dev/proxy?url=http://xydm.baicai.buzz/api.php/provide/vod/",
+      "api": "https://daitvbobox.chungshare.workers.dev/proxy?url=http%3A%2F%2Fxydm.baicai.buzz%2Fapi.php%2Fprovide%2Fvod%2F",
       "searchable": 0,
       "quickSearch": 1
     },
@@ -127,7 +135,7 @@
       "key": "小蘋果_小鸟动漫",
       "name": "🍚小鸟动漫(聚)",
       "type": 1,
-      "api": "https://daitvbobox.chungshare.workers.dev/proxy?url=http://xydm.baicai.buzz/api.php/provide/vod/",
+      "api": "https://daitvbobox.chungshare.workers.dev/proxy?url=http%3A%2F%2Fxydm.baicai.buzz%2Fapi.php%2Fprovide%2Fvod%2F",
       "searchable": 1,
       "quickSearch": 1
     }
@@ -142,5 +150,5 @@
     "騰訊",
     "芒果"
   ],
-  "update_time": "2026-06-24 15:39:12"
+  "update_time": "2026-06-24 15:44:50"
 }
