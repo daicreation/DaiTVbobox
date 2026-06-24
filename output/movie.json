@@ -123,29 +123,10 @@
       }
     ]
   },
-  "list": [
-    {
-      "vod_id": "movie_002",
-      "vod_name": "測試電影A",
-      "vod_pic": "https://img.example.com/a2.jpg",
-      "vod_remarks": "4K·飯太硬·肥貓·2源",
-      "type_name": "動作",
-      "vod_year": "2025",
-      "vod_area": "美國",
-      "vod_actor": "",
-      "vod_director": "",
-      "vod_content": "",
-      "vod_score": "",
-      "vod_play_from": "飯太硬·4K$$$肥貓·1080P",
-      "vod_play_url": "第1集$https://example.com/play/movie_a_4k#第1集$https://example.com/play/movie_a_1080",
-      "vod_quality": "4K",
-      "source_count": 2,
-      "source_rank": 87
-    }
-  ],
-  "total": 1,
+  "list": [],
+  "total": 0,
   "page": 1,
   "pagecount": 1,
   "limit": 50,
-  "update_time": "2026-06-24 21:36:57"
+  "update_time": "2026-06-24 14:15:00"
 }

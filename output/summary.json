@@ -1,0 +1,26 @@
+{
+  "build_time": "2026-06-24 14:15:01",
+  "build_iso": "2026-06-24T14:15:01.252231+00:00",
+  "total_items": 0,
+  "total_sources": 0,
+  "availability_rate": "N/A",
+  "categories": {
+    "live": {
+      "total": 0,
+      "sources": 0
+    },
+    "tv": {
+      "total": 0,
+      "sources": 0
+    },
+    "movie": {
+      "total": 0,
+      "sources": 0
+    },
+    "variety": {
+      "total": 0,
+      "sources": 0
+    }
+  },
+  "builder_version": "1.0.0"
+}

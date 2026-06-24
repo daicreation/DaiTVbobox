@@ -2,19 +2,19 @@
   "storeHouse": [
     {
       "sourceName": "🎬 電影",
-      "sourceUrl": "https://tv.xxx.com/movie"
+      "sourceUrl": "https://daitvbobox.chungshare.workers.dev/movie"
     },
     {
       "sourceName": "📺 電視劇",
-      "sourceUrl": "https://tv.xxx.com/tv"
+      "sourceUrl": "https://daitvbobox.chungshare.workers.dev/tv"
     },
     {
       "sourceName": "🎪 綜藝",
-      "sourceUrl": "https://tv.xxx.com/variety"
+      "sourceUrl": "https://daitvbobox.chungshare.workers.dev/variety"
     },
     {
       "sourceName": "📡 直播",
-      "sourceUrl": "https://tv.xxx.com/live"
+      "sourceUrl": "https://daitvbobox.chungshare.workers.dev/live"
     }
   ],
   "sites": [
@@ -22,11 +22,11 @@
       "key": "聚合搜尋",
       "name": "🎯 聚合搜尋|4K 1080P 720P",
       "type": 3,
-      "api": "https://tv.xxx.com/api",
+      "api": "https://daitvbobox.chungshare.workers.dev/api",
       "searchable": 1,
       "quickSearch": 1,
       "filterable": 1,
-      "jar": "https://tv.xxx.com/spider.jar"
+      "jar": "https://daitvbobox.chungshare.workers.dev/spider.jar"
     }
   ],
   "lives": [
@@ -34,7 +34,7 @@
       "group": "央視",
       "name": "CCTV-1 綜合",
       "urls": [
-        "https://tv.xxx.com/live"
+        "https://daitvbobox.chungshare.workers.dev/live"
       ]
     }
   ],
@@ -47,8 +47,8 @@
     "騰訊",
     "芒果"
   ],
-  "wallpaper": "https://tv.xxx.com/wallpaper.jpg",
-  "logo": "https://tv.xxx.com/logo.png",
-  "spider": "https://tv.xxx.com/spider.jar",
-  "update_time": "2026-06-24 21:36:57"
+  "wallpaper": "https://daitvbobox.chungshare.workers.dev/wallpaper.jpg",
+  "logo": "https://daitvbobox.chungshare.workers.dev/logo.png",
+  "spider": "https://daitvbobox.chungshare.workers.dev/spider.jar",
+  "update_time": "2026-06-24 14:15:00"
 }
