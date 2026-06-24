@@ -2,13 +2,20 @@
  * Chill-AI-TV — Worker (聚合引擎)
  * /api.php/provide/vod → 瀏覽=暴風, 搜尋=聚合多源
  */
+// 請求記錄（debug）
+let lastRequests = [];
+
 export default {
   async fetch(request, env, ctx) {
     const url = new URL(request.url);
     const path = url.pathname;
     const wd = url.searchParams.get('wd') || '';
 
+    // 請求記錄（debug）
     if (path === '/health') return new Response('OK', { status: 200 });
+    if (path === '/log') return new Response(JSON.stringify(lastRequests, null, 2), {
+      headers: { 'Content-Type': 'application/json; charset=utf-8' },
+    });
 
     // 首頁 config
     if (path === '/' || path === '/api') {
@@ -29,10 +36,15 @@ export default {
 
     // API 端點
     if (path === '/api.php/provide/vod') {
-      if (wd) return handleSearch(wd);           // 搜尋 → 聚合
+      // 記錄非搜尋/瀏覽請求（debug）
       const ac = url.searchParams.get('ac') || '';
-      if (!ac || ac === 'detail') return proxyBrowse(); // 瀏覽 → 暴風
-      return proxyAny(url.search);               // 詳情 → 嘗試各源
+      if (!wd && ac && ac !== 'detail') {
+        lastRequests.unshift({ time: new Date().toISOString(), params: Object.fromEntries(url.searchParams) });
+        if (lastRequests.length > 10) lastRequests = lastRequests.slice(0, 10);
+      }
+      if (wd) return handleSearch(wd);
+      if (!ac || ac === 'detail') return proxyBrowse();
+      return proxyAny(url.search);
     }
 
     return json({ error: 'Not Found' }, 404);
