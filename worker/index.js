@@ -86,8 +86,9 @@ async function handleProxy(request) {
     });
   }
 
-  // 建立目標 URL（保留 TVBox 傳來的所有參數）
-  const targetUrl = new URL(target);
+  // 解碼目標 URL 並保留 TVBox 傳來的其他參數
+  const decodedTarget = decodeURIComponent(target);
+  const targetUrl = new URL(decodedTarget);
   for (const [key, value] of url.searchParams) {
     if (key !== 'url') targetUrl.searchParams.set(key, value);
   }

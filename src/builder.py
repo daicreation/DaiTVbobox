@@ -25,6 +25,7 @@
 from datetime import datetime
 from pathlib import Path
 from typing import Optional
+from urllib.parse import quote
 
 from .constants import (
     OUTPUT_DIR,
@@ -500,8 +501,8 @@ def _build_config_json(
                             cat = "音樂"
                         elif any(kw in name_lower for kw in ["儿童", "学习", "教程", "美食"]):
                             cat = "其他"
-                        # 通過 Worker 代理 API（HK + 大陸都能通）
-                        proxy_api = f"{domain}/proxy?url={src.url}"
+                        # 通過 Worker 代理 API（URL 編碼避免解析失敗）
+                        proxy_api = f"{domain}/proxy?url={quote(src.url, safe='')}"
                         all_sites.append({
                             "key": site_key[:30],
                             "name": f"{site_name}",
