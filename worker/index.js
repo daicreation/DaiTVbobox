@@ -1,23 +1,23 @@
 /**
- * DaiTVbobox — Cloudflare Worker
+ * DaiTVbobox — Cloudflare Worker (GitHub API 版，無 CDN 快取問題)
  */
 export default {
   async fetch(request, env, ctx) {
     const url = new URL(request.url);
     const path = url.pathname;
 
-    // GitHub Raw 基礎 URL
-    const BASE = 'https://raw.githubusercontent.com/daicreation/DaiTVbobox/main';
+    // GitHub API 基礎 URL（無 CDN 快取）
+    const API = 'https://api.github.com/repos/daicreation/DaiTVbobox/contents';
 
-    // 路由表
+    // 路由表：路徑 → GitHub 檔案路徑
     const routes = {
-      '/':            BASE + '/output/config.json',
-      '/api':         BASE + '/output/config.json',
-      '/movie':       BASE + '/output/movie.json',
-      '/tv':          BASE + '/output/tv.json',
-      '/variety':     BASE + '/output/variety.json',
-      '/live':        BASE + '/output/live.json',
-      '/spider.jar':  BASE + '/spider/spider.jar',
+      '/':            '/output/config.json',
+      '/api':         '/output/config.json',
+      '/movie':       '/output/movie.json',
+      '/tv':          '/output/tv.json',
+      '/variety':     '/output/variety.json',
+      '/live':        '/output/live.json',
+      '/spider.jar':  '/spider/spider.jar',
     };
 
     // 健康檢查
@@ -29,64 +29,48 @@ export default {
     }
 
     // 路由處理
-    const targetUrl = routes[path];
-    if (!targetUrl) {
-      return new Response(JSON.stringify({
-        error: 'Not Found',
-        paths: Object.keys(routes),
-      }), {
+    const filePath = routes[path];
+    if (!filePath) {
+      return new Response(JSON.stringify({ error: 'Not Found', paths: Object.keys(routes) }), {
         status: 404,
-        headers: {
-          'Content-Type': 'application/json; charset=utf-8',
-          'Access-Control-Allow-Origin': '*',
-        },
+        headers: { 'Content-Type': 'application/json; charset=utf-8', 'Access-Control-Allow-Origin': '*' },
       });
     }
 
-    // 從 GitHub 獲取內容 (加 cache-busting 避免 CDN 快取舊版)
+    // 從 GitHub API 獲取內容
     try {
-      const fetchUrl = targetUrl + '?t=' + Date.now();
-      const response = await fetch(fetchUrl, {
-        headers: { 'User-Agent': 'DaiTVbobox/1.0' },
+      const apiUrl = API + filePath;
+      const resp = await fetch(apiUrl, {
+        headers: {
+          'User-Agent': 'DaiTVbobox/1.0',
+          'Accept': 'application/vnd.github.v3+json',
+        },
       });
 
-      if (!response.ok) {
-        return new Response(JSON.stringify({
-          error: 'Upstream error',
-          status: response.status,
-        }), {
+      if (!resp.ok) {
+        return new Response(JSON.stringify({ error: 'Upstream', status: resp.status }), {
           status: 502,
-          headers: {
-            'Content-Type': 'application/json; charset=utf-8',
-            'Access-Control-Allow-Origin': '*',
-          },
+          headers: { 'Content-Type': 'application/json; charset=utf-8', 'Access-Control-Allow-Origin': '*' },
         });
       }
 
-      const ct = path.endsWith('.jar')
-        ? 'application/java-archive'
-        : 'application/json; charset=utf-8';
+      const data = await resp.json();
+      // GitHub API 返回 base64 編碼的內容
+      const content = atob(data.content.replace(/\s/g, ''));
+      const ct = path.endsWith('.jar') ? 'application/java-archive' : 'application/json; charset=utf-8';
 
-      return new Response(response.body, {
+      return new Response(content, {
         status: 200,
         headers: {
           'Content-Type': ct,
           'Access-Control-Allow-Origin': '*',
-          'Cache-Control': path.endsWith('.jar')
-            ? 'public, max-age=86400'
-            : 'public, max-age=3600',
+          'Cache-Control': 'public, max-age=1800',
         },
       });
     } catch (err) {
-      return new Response(JSON.stringify({
-        error: 'Fetch failed',
-        message: err.message,
-      }), {
+      return new Response(JSON.stringify({ error: 'Fetch failed', message: err.message }), {
         status: 503,
-        headers: {
-          'Content-Type': 'application/json; charset=utf-8',
-          'Access-Control-Allow-Origin': '*',
-        },
+        headers: { 'Content-Type': 'application/json; charset=utf-8', 'Access-Control-Allow-Origin': '*' },
       });
     }
   },
