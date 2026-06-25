@@ -2,9 +2,9 @@
   "sites": [
     {
       "key": "bfzy",
-      "name": "🧊 Chill-AI-TV",
+      "name": "🧊 Chill-TV",
       "type": 1,
-      "api": "https://bfzyapi.com/api.php/provide/vod",
+      "api": "https://daitvbobox.chungshare.workers.dev/api",
       "searchable": 1,
       "quickSearch": 1
     },
@@ -121,6 +121,14 @@
       "quickSearch": 1
     },
     {
+      "key": "auto_🦔暴風┃采集",
+      "name": "🦔暴風┃采集",
+      "type": 1,
+      "api": "https://bfzyapi.com/api.php/provide/vod",
+      "searchable": 1,
+      "quickSearch": 1
+    },
+    {
       "key": "auto_🍌每天看看(优)",
       "name": "🍌每天看看(优)",
       "type": 1,
@@ -161,10 +169,10 @@
       "quickSearch": 1
     },
     {
-      "key": "auto_🍭非凡┃采集",
-      "name": "🍭非凡┃采集",
+      "key": "auto_📺︎电视点播",
+      "name": "📺︎电视点播",
       "type": 1,
-      "api": "http://cj.ffzyapi.com/api.php/provide/vod/at/xml/",
+      "api": "http://120.53.102.254/live?url=aHR0cDovL2hvbWUuanVuZGllLnRvcDo4MS9yYXkvdHZsaXZlLnR4dA",
       "searchable": 1,
       "quickSearch": 1
     },
@@ -193,6 +201,14 @@
       "quickSearch": 1
     },
     {
+      "key": "auto_🍭非凡┃采集",
+      "name": "🍭非凡┃采集",
+      "type": 1,
+      "api": "http://cj.ffzyapi.com/api.php/provide/vod/at/xml/",
+      "searchable": 1,
+      "quickSearch": 1
+    },
+    {
       "key": "auto_星牙┃短剧",
       "name": "星牙┃短剧",
       "type": 1,
@@ -201,26 +217,10 @@
       "quickSearch": 1
     },
     {
-      "key": "auto_📺︎电视点播",
-      "name": "📺︎电视点播",
-      "type": 1,
-      "api": "http://120.53.102.254/live?url=aHR0cDovL2hvbWUuanVuZGllLnRvcDo4MS9yYXkvdHZsaXZlLnR4dA",
-      "searchable": 1,
-      "quickSearch": 1
-    },
-    {
       "key": "auto_🦚360┃采集",
       "name": "🦚360┃采集",
       "type": 1,
       "api": "https://360zy.com/api.php/provide/vod?",
-      "searchable": 1,
-      "quickSearch": 1
-    },
-    {
-      "key": "auto_🌶天堂资源(官)",
-      "name": "🌶天堂资源(官)",
-      "type": 1,
-      "api": "http://vipmv.cc/api.php/provide/vod/",
       "searchable": 1,
       "quickSearch": 1
     },
@@ -242,5 +242,5 @@
     "騰訊",
     "芒果"
   ],
-  "update_time": "2026-06-25 06:34:36"
+  "update_time": "2026-06-25 06:45:57"
 }
