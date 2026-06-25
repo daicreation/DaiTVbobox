@@ -121,10 +121,34 @@
       "quickSearch": 1
     },
     {
+      "key": "auto_泥泥┃视频",
+      "name": "泥泥┃视频",
+      "type": 1,
+      "api": "http://rihou.cc:88/js/drpy2.min.js",
+      "searchable": 1,
+      "quickSearch": 1
+    },
+    {
+      "key": "auto_星牙┃短剧",
+      "name": "星牙┃短剧",
+      "type": 1,
+      "api": "https://git.yylx.win/raw.githubusercontent.com/PizazzGY/NewTVBox/main/movie/py/XYDJ.py",
+      "searchable": 1,
+      "quickSearch": 1
+    },
+    {
       "key": "auto_🦔暴風┃采集",
       "name": "🦔暴風┃采集",
       "type": 1,
       "api": "https://bfzyapi.com/api.php/provide/vod",
+      "searchable": 1,
+      "quickSearch": 1
+    },
+    {
+      "key": "auto_📺︎电视点播",
+      "name": "📺︎电视点播",
+      "type": 1,
+      "api": "http://120.53.102.254/live?url=aHR0cDovL2hvbWUuanVuZGllLnRvcDo4MS9yYXkvdHZsaXZlLnR4dA",
       "searchable": 1,
       "quickSearch": 1
     },
@@ -153,6 +177,14 @@
       "quickSearch": 1
     },
     {
+      "key": "auto_🥑盘看影视(聚)",
+      "name": "🥑盘看影视(聚)",
+      "type": 1,
+      "api": "http://tvcaiji.pankk.cn/api.php/provide/vod/",
+      "searchable": 1,
+      "quickSearch": 1
+    },
+    {
       "key": "auto_🍚小鸟动漫(聚)",
       "name": "🍚小鸟动漫(聚)",
       "type": 1,
@@ -169,34 +201,10 @@
       "quickSearch": 1
     },
     {
-      "key": "auto_📺︎电视点播",
-      "name": "📺︎电视点播",
-      "type": 1,
-      "api": "http://120.53.102.254/live?url=aHR0cDovL2hvbWUuanVuZGllLnRvcDo4MS9yYXkvdHZsaXZlLnR4dA",
-      "searchable": 1,
-      "quickSearch": 1
-    },
-    {
-      "key": "auto_🥑盘看影视(聚)",
-      "name": "🥑盘看影视(聚)",
-      "type": 1,
-      "api": "http://tvcaiji.pankk.cn/api.php/provide/vod/",
-      "searchable": 1,
-      "quickSearch": 1
-    },
-    {
       "key": "auto_低端影视(DRP",
       "name": "低端影视(DRPY)",
       "type": 1,
       "api": "http://home.jundie.top:666/JS/dr_py/libs/drpy.min.js",
-      "searchable": 1,
-      "quickSearch": 1
-    },
-    {
-      "key": "auto_泥泥┃视频",
-      "name": "泥泥┃视频",
-      "type": 1,
-      "api": "http://rihou.cc:88/js/drpy2.min.js",
       "searchable": 1,
       "quickSearch": 1
     },
@@ -209,18 +217,18 @@
       "quickSearch": 1
     },
     {
-      "key": "auto_星牙┃短剧",
-      "name": "星牙┃短剧",
-      "type": 1,
-      "api": "https://git.yylx.win/raw.githubusercontent.com/PizazzGY/NewTVBox/main/movie/py/XYDJ.py",
-      "searchable": 1,
-      "quickSearch": 1
-    },
-    {
       "key": "auto_🦚360┃采集",
       "name": "🦚360┃采集",
       "type": 1,
       "api": "https://360zy.com/api.php/provide/vod?",
+      "searchable": 1,
+      "quickSearch": 1
+    },
+    {
+      "key": "auto_🌶天堂资源(官)",
+      "name": "🌶天堂资源(官)",
+      "type": 1,
+      "api": "http://vipmv.cc/api.php/provide/vod/",
       "searchable": 1,
       "quickSearch": 1
     },
@@ -242,5 +250,5 @@
     "騰訊",
     "芒果"
   ],
-  "update_time": "2026-06-25 06:45:57"
+  "update_time": "2026-06-25 06:58:45"
 }
