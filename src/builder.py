@@ -79,7 +79,8 @@ VARIETY_KEYWORDS = (
     "音乐会",
 )
 LIVE_KEYWORDS = ("直播", "卫视", "衛視", "央視", "央视", "体育", "體育")
-CORE_SITE_ORDER = ["chill", "bfzy", "ff", "sn", "lz", "360", "js", "jy", "yh", "md", "ik", "wj"]
+SPIDER_URL = "https://qist.wyfc.qzz.io/xiaosa/spider.jar;md5;8ba0bc8fbba337a1e03042548a6054e2"
+CORE_SITE_ORDER = ["douban_home", "chill", "bfzy", "ff", "sn", "lz", "360", "js", "jy", "yh", "md", "ik", "wj"]
 
 
 DEFAULT_FILTERS = {
@@ -144,6 +145,15 @@ DEFAULT_FILTERS = {
 def _core_sites(domain: str) -> list[dict]:
     base = (domain or WORKER_DOMAIN).rstrip("/")
     core_sites = [
+        {
+            "key": "douban_home",
+            "name": "📈 豆瓣｜首頁",
+            "type": 3,
+            "api": "csp_Douban",
+            "searchable": 0,
+            "quickSearch": 0,
+            "changeable": 0,
+        },
         {
             "key": "chill",
             "name": "🧊 Chill-TV",
@@ -335,6 +345,7 @@ def _build_config(all_items: dict[str, list[VideoItem]], domain: str, update_tim
             seen_apis.add(site["api"])
             sites.append(site)
     return {
+        "spider": SPIDER_URL,
         "sites": sites,
         "flags": ["4K", "1080P", "720P", "優酷", "愛奇藝", "騰訊", "芒果"],
         "update_time": update_time,

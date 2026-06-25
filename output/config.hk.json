@@ -1,5 +1,15 @@
 {
+  "spider": "https://qist.wyfc.qzz.io/xiaosa/spider.jar;md5;8ba0bc8fbba337a1e03042548a6054e2",
   "sites": [
+    {
+      "key": "douban_home",
+      "name": "📈 豆瓣｜首頁",
+      "type": 3,
+      "api": "csp_Douban",
+      "searchable": 0,
+      "quickSearch": 0,
+      "changeable": 0
+    },
     {
       "key": "chill",
       "name": "🧊 Chill-TV",
@@ -107,6 +117,6 @@
     "騰訊",
     "芒果"
   ],
-  "update_time": "2026-06-25 20:58:53",
+  "update_time": "2026-06-26 00:20:24",
   "region": "shared"
 }

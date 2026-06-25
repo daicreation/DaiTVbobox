@@ -7,11 +7,14 @@
 const DOMAIN = 'https://daitvbobox.chungshare.workers.dev';
 const SITE_NAME_BLOCKLIST = ['采集', '理論', '理论', '福利', '成人', '直播', '短剧', '短劇', '云盘', '雲盤', '网盘', '網盤', 'alist', '配置'];
 const SITE_URL_BLOCKLIST = ['.js', '.py', 'drpy', 'spider', 'get.js', '/lib/', 'live?url=', 'csp_', '/vod/json', 'json?url='];
+const SPIDER_URL = 'https://qist.wyfc.qzz.io/xiaosa/spider.jar;md5;8ba0bc8fbba337a1e03042548a6054e2';
 
 function buildFallback() {
   const base = DOMAIN;
   return {
+    spider: SPIDER_URL,
     sites: [
+      { key: 'douban_home', name: '📈 豆瓣｜首頁', type: 3, api: 'csp_Douban', searchable: 0, quickSearch: 0, changeable: 0 },
       { key: 'chill', name: '🧊 Chill-TV', type: 1, api: `${base}/api`, searchable: 1, quickSearch: 1, filterable: 1 },
       { key: 'bfzy', name: '🔥 暴風', type: 1, api: `${base}/p/bfzy`, searchable: 1, quickSearch: 1 },
       { key: 'ff', name: '⚡ 非凡', type: 1, api: `${base}/p/ff`, searchable: 1, quickSearch: 1 },
@@ -150,6 +153,9 @@ function json(data, status = 200, cacheControl = 'public, max-age=300') {
 function isAllowedSite(site) {
   const name = (site?.name || '').toLowerCase();
   const api = (site?.api || '').toLowerCase();
+  if (site?.type === 3 && api === 'csp_douban') {
+    return true;
+  }
   if (!api.startsWith('http')) {
     return false;
   }
