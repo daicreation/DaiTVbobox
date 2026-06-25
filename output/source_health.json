@@ -1,0 +1,75 @@
+{
+  "checked_at": "2026-06-25T05:42:43.138951",
+  "sources": [
+    {
+      "key": "lz",
+      "name": "量子",
+      "health_score": 100.0,
+      "availability": 100,
+      "response_time_ms": 63.75622749328613,
+      "search_success": 100.0,
+      "detail_success": 100,
+      "play_success": 100
+    },
+    {
+      "key": "360",
+      "name": "360",
+      "health_score": 100.0,
+      "availability": 100,
+      "response_time_ms": 467.1895503997803,
+      "search_success": 100.0,
+      "detail_success": 100,
+      "play_success": 100
+    },
+    {
+      "key": "jy",
+      "name": "金鷹",
+      "health_score": 100.0,
+      "availability": 100,
+      "response_time_ms": 200.48761367797852,
+      "search_success": 100.0,
+      "detail_success": 100,
+      "play_success": 100
+    },
+    {
+      "key": "bfzy",
+      "name": "暴風",
+      "health_score": 95.5,
+      "availability": 100,
+      "response_time_ms": 1223.5288619995117,
+      "search_success": 100.0,
+      "detail_success": 100,
+      "play_success": 100
+    },
+    {
+      "key": "js",
+      "name": "極速",
+      "health_score": 80.5,
+      "availability": 100,
+      "response_time_ms": 1212.4900817871094,
+      "search_success": 100.0,
+      "detail_success": 100,
+      "play_success": 0.0
+    },
+    {
+      "key": "sn",
+      "name": "索尼",
+      "health_score": 40.0,
+      "availability": 100,
+      "response_time_ms": 345.31259536743164,
+      "search_success": 0.0,
+      "detail_success": 0,
+      "play_success": 0.0
+    },
+    {
+      "key": "ff",
+      "name": "非凡",
+      "health_score": 35.5,
+      "availability": 100,
+      "response_time_ms": 1126.8751621246338,
+      "search_success": 0.0,
+      "detail_success": 0,
+      "play_success": 0.0
+    }
+  ]
+}
