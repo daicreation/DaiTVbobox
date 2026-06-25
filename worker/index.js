@@ -32,8 +32,17 @@ export default {
     const url = new URL(request.url);
     const path = url.pathname;
 
-    // 品牌端點：純代理暴風（瀏覽 + 搜尋）
-    if (path === '/api') return proxyBF(url.search);
+    // 品牌端點：瀏覽=暴風，搜尋=聚合，詳情=fallback
+    if (path === '/api') {
+      const wd = url.searchParams.get('wd') || '';
+      const ac = url.searchParams.get('ac') || '';
+      // 詳情請求 → 多源 fallback
+      if (ac === 'videolist' || url.searchParams.get('ids')) return handleDetail(url);
+      // 搜尋 → 11 源聚合
+      if (wd) return aggregateSearch(wd);
+      // 瀏覽 → 暴風代理
+      return proxyBrowse();
+    }
 
     // 先讀 GitHub config
     try {
@@ -61,22 +70,86 @@ export default {
   },
 };
 
-async function proxyBF(search) {
+async function proxyBrowse() {
   try {
-    const r = await fetch('https://bfzyapi.com/api.php/provide/vod' + search, {
-      headers: { 'User-Agent':'ChillAITV/1.0' }, signal: AbortSignal.timeout(10000),
+    const r = await fetch('https://bfzyapi.com/api.php/provide/vod', {
+      headers: { 'User-Agent':'ChillAITV/1.0' }, signal: AbortSignal.timeout(8000),
     });
     if (!r.ok) return json({ code:0, list:[], class:[] });
     const data = await r.json();
     const bad = [29, 73];
     if (data.list) data.list = data.list.filter(it => !bad.includes(it.type_id));
     if (data.class) data.class = data.class.filter(it => !bad.includes(it.type_id));
-    // 標記真實來源（海報下方顯示）
-    if (data.list) data.list = data.list.map(it => ({
-      ...it, vod_remarks: '暴風·' + (it.vod_remarks || ''),
-    }));
     return json(data);
   } catch { return json({ code:0, list:[], class:[] }); }
+}
+
+// 聚合搜尋 — 11 源並行
+async function aggregateSearch(wd) {
+  const sources = [
+    { key:"bfzy", name:"暴風", api:"https://bfzyapi.com/api.php/provide/vod" },
+    { key:"ff",   name:"非凡", api:"http://cj.ffzyapi.com/api.php/provide/vod" },
+    { key:"sn",   name:"索尼", api:"https://suoniapi.com/api.php/provide/vod" },
+    { key:"lz",   name:"量子", api:"https://cj.lziapi.com/api.php/provide/vod/" },
+    { key:"360",  name:"360",  api:"https://360zyzz.com/api.php/provide/vod/" },
+    { key:"js",   name:"極速", api:"https://jszyapi.com/api.php/provide/vod/" },
+    { key:"jy",   name:"金鷹", api:"https://jyzyapi.com/provide/vod/" },
+    { key:"wj",   name:"無盡", api:"https://api.wujinapi.me/api.php/provide/vod" },
+    { key:"yh",   name:"櫻花", api:"https://m3u8.apiyhzy.com/api.php/provide/vod" },
+    { key:"md",   name:"魔都", api:"https://www.mdzyapi.com/api.php/provide/vod" },
+    { key:"ik",   name:"iKun", api:"https://ikunzyapi.com/api.php/provide/vod" },
+  ];
+  const results = await Promise.all(sources.map(async s => {
+    try {
+      const r = await fetch(`${s.api}?ac=detail&wd=${encodeURIComponent(wd)}`, {
+        headers:{ 'User-Agent':'ChillAITV/1.0' }, signal:AbortSignal.timeout(6000),
+      });
+      if (!r.ok) return [];
+      const d = await r.json();
+      return (d.list||[]).map(it => ({
+        ...it, vod_remarks: s.name+'·'+(it.vod_remarks||''),
+      }));
+    } catch { return []; }
+  }));
+  const all = results.flat();
+  const seen = new Set();
+  const list = all.filter(it => {
+    const k = ((it.vod_name||'')+'|'+(it.vod_year||'')+'|'+(it.type_name||'')).replace(/\s+/g,'').toLowerCase().slice(0,60);
+    if (seen.has(k)||!k) return false;
+    seen.add(k); return true;
+  });
+  return json({ code:1, msg:`「${wd}」- ${list.length}結果`, page:1, pagecount:Math.max(1,Math.ceil(list.length/20)), limit:20, total:list.length, list:list.slice(0,100) });
+}
+
+// PlaybackPlan — 多源播放 fallback
+async function handleDetail(url) {
+  const ids = url.searchParams.get('ids')||url.searchParams.get('id')||'';
+  if (!ids) return json({ code:0, msg:'Missing ids', list:[] });
+  const apis = [
+    'https://suoniapi.com/api.php/provide/vod',
+    'https://bfzyapi.com/api.php/provide/vod',
+    'https://cj.lziapi.com/api.php/provide/vod/',
+    'https://360zyzz.com/api.php/provide/vod/',
+    'https://jszyapi.com/api.php/provide/vod/',
+    'https://jyzyapi.com/provide/vod/',
+    'http://cj.ffzyapi.com/api.php/provide/vod',
+  ];
+  const results = await Promise.all(apis.map(async api => {
+    try {
+      const start = Date.now();
+      const r = await fetch(`${api}?ac=videolist&ids=${ids}`, { headers:{ 'User-Agent':'ChillAITV/1.0' }, signal:AbortSignal.timeout(5000) });
+      if (!r.ok) return null;
+      const d = await r.json();
+      const it = (d.list||[])[0];
+      if (!it?.vod_play_url) return null;
+      return { name:new URL(api).hostname.split('.')[0], speed:Date.now()-start, url:it.vod_play_url };
+    } catch { return null; }
+  }));
+  const valid = results.filter(r=>r!==null).sort((a,b)=>a.speed-b.speed);
+  if (!valid.length) return json({ code:0, msg:'No sources', list:[] });
+  const from = valid.map(r=>r.name+'·HD').join('$$$');
+  const urls = valid.map(r=>r.url).join('$$$');
+  return json({ code:1, msg:`${valid.length}源`, list:[{ vod_id:ids, vod_play_from:from, vod_play_url:urls, vod_remarks:`優:${valid[0].name}(${valid[0].speed}ms)+${valid.length-1}備` }] });
 }
 
 function json(data, status=200) {
