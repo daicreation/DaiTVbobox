@@ -140,3 +140,134 @@ class TestBuildTvboxJson:
         assert result["total"] == 1
         assert result["page"] == 1
         assert len(result["list"]) == 1
+
+
+class TestBuildAllOutputs:
+    """測試完整輸出與清洗規則"""
+
+    def test_filters_adult_and_script_sites(self):
+        """配置輸出應過濾采集/腳本型站點"""
+        good_site = VideoItem(
+            vod_id="site_good",
+            vod_name="[站點] 星河影院",
+            type_name="站點",
+            sources=[
+                PlaySource(
+                    url="https://good.example.com/api.php/provide/vod/",
+                    source_name="測試源",
+                    quality=Quality.K1080,
+                    score=80,
+                    is_available=True,
+                )
+            ],
+        )
+        bad_collect = VideoItem(
+            vod_id="site_bad_collect",
+            vod_name="[站點] 🦔暴風┃采集",
+            type_name="站點",
+            sources=[
+                PlaySource(
+                    url="https://bfzyapi.com/api.php/provide/vod",
+                    source_name="測試源",
+                    quality=Quality.K1080,
+                    score=80,
+                    is_available=True,
+                )
+            ],
+        )
+        bad_script = VideoItem(
+            vod_id="site_bad_script",
+            vod_name="[站點] 猫头鹰｜秒播",
+            type_name="站點",
+            sources=[
+                PlaySource(
+                    url="https://gitee.com/monosodium-glutamate/wjwj/raw/master/lib/get.js",
+                    source_name="測試源",
+                    quality=Quality.K1080,
+                    score=80,
+                    is_available=True,
+                )
+            ],
+        )
+
+        paths = build_all_outputs(
+            {"movie": [good_site, bad_collect, bad_script], "tv": [], "variety": [], "live": []},
+            {"output": {"max_sources_per_video": 10, "max_items_per_category": 100}},
+            "https://tv.example.com",
+        )
+
+        with open(paths["config"], "r", encoding="utf-8") as f:
+            config = json.load(f)
+
+        names = {site["name"] for site in config["sites"]}
+        assert "星河影院" in names
+        assert "🦔暴風┃采集" not in names
+        assert "猫头鹰｜秒播" not in names
+
+    def test_excludes_config_source_entries(self):
+        """多倉配置源本身不應直接出現在最終站點列表"""
+        paths = build_all_outputs(
+            {"movie": [], "tv": [], "variety": [], "live": []},
+            {"output": {"max_sources_per_video": 10, "max_items_per_category": 100}},
+            "https://tv.example.com",
+        )
+
+        with open(paths["config"], "r", encoding="utf-8") as f:
+            config = json.load(f)
+
+        names = {site["name"] for site in config["sites"]}
+        assert "💨 瀟灑" not in names
+        assert "🍎 小蘋果" not in names
+        assert "🐟 摸魚兒" not in names
+        assert "🍚 飯太硬" not in names
+
+    def test_recategorizes_tv_and_variety_outputs(self):
+        """錯分到 movie 的內容應在輸出時重新分類"""
+        tv_item = VideoItem(
+            vod_id="tv_001",
+            vod_name="測試劇集",
+            vod_remarks="更新至24集",
+            type_name="劇集",
+            category=Category.MOVIE,
+            sources=[
+                PlaySource(
+                    url="https://example.com/tv.m3u8",
+                    source_name="A",
+                    quality=Quality.K1080,
+                    score=88,
+                    is_available=True,
+                )
+            ],
+        )
+        variety_item = VideoItem(
+            vod_id="variety_001",
+            vod_name="快樂綜藝",
+            vod_remarks="2026",
+            type_name="綜藝",
+            category=Category.MOVIE,
+            sources=[
+                PlaySource(
+                    url="https://example.com/variety.m3u8",
+                    source_name="B",
+                    quality=Quality.K1080,
+                    score=82,
+                    is_available=True,
+                )
+            ],
+        )
+
+        paths = build_all_outputs(
+            {"movie": [tv_item, variety_item], "tv": [], "variety": [], "live": []},
+            {"output": {"max_sources_per_video": 10, "max_items_per_category": 100}},
+            "https://tv.example.com",
+        )
+
+        with open(paths["tv"], "r", encoding="utf-8") as f:
+            tv_data = json.load(f)
+        with open(paths["variety"], "r", encoding="utf-8") as f:
+            variety_data = json.load(f)
+
+        assert tv_data["total"] == 1
+        assert tv_data["list"][0]["vod_name"] == "測試劇集"
+        assert variety_data["total"] == 1
+        assert variety_data["list"][0]["vod_name"] == "快樂綜藝"
