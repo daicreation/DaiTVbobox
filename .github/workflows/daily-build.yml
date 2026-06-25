@@ -125,6 +125,96 @@ jobs:
         timeout-minutes: 20
 
       # ============================================================
+      # 步驟 5.5: Source Manager — 來源健康檢查
+      # ============================================================
+      - name: 🩺 Source Health Check
+        id: source_health
+        run: |
+          echo "===== 來源健康檢查 ====="
+          python -c "
+          import sys; sys.path.insert(0, '.')
+          from src.utils import setup_logging, load_yaml, save_json
+          setup_logging('INFO')
+          from src.source_manager.health_checker import check_all_sources
+          from src.constants import SOURCES_YAML_PATH, CACHE_DIR
+          from pathlib import Path
+
+          # 取得直接 API 來源列表
+          raw = load_yaml(SOURCES_YAML_PATH)
+          sources = []
+          for key, cfg in raw.get('sources', {}).items():
+              if cfg.get('enabled', True):
+                  api = cfg.get('url', '')
+                  # 只測試直接內容 API（api.php/provide/vod 格式）
+                  if 'api.php/provide/vod' in api:
+                      sources.append({
+                          'key': key, 'name': cfg.get('name', key), 'api': api, 'type': 'direct'
+                      })
+          # 加入已知優質源
+          known = [
+              {'key': 'bfzy', 'name': '暴風', 'api': 'https://bfzyapi.com/api.php/provide/vod', 'type': 'direct'},
+              {'key': 'ff',   'name': '非凡', 'api': 'http://cj.ffzyapi.com/api.php/provide/vod', 'type': 'direct'},
+              {'key': 'sn',   'name': '索尼', 'api': 'https://suoniapi.com/api.php/provide/vod', 'type': 'direct'},
+              {'key': 'lz',   'name': '量子', 'api': 'https://cj.lziapi.com/api.php/provide/vod/', 'type': 'direct'},
+              {'key': '360',  'name': '360',  'api': 'https://360zyzz.com/api.php/provide/vod/', 'type': 'direct'},
+              {'key': 'js',   'name': '極速', 'api': 'https://jszyapi.com/api.php/provide/vod/', 'type': 'direct'},
+              {'key': 'jy',   'name': '金鷹', 'api': 'https://jyzyapi.com/provide/vod/', 'type': 'direct'},
+          ]
+          seen = {s['api'] for s in sources}
+          for k in known:
+              if k['api'] not in seen:
+                  sources.append(k)
+
+          print(f'測試 {len(sources)} 個來源...')
+          results = check_all_sources(sources)
+
+          # 儲存結果供 ranker 使用
+          import pickle
+          Path('cache/health_scores.pkl').write_bytes(pickle.dumps(results))
+          # 也存 JSON 方便查閱
+          save_json({
+              'checked_at': __import__('datetime').datetime.now().isoformat(),
+              'sources': [{
+                  'key': r.source_key, 'name': r.source_name,
+                  'health_score': r.health_score,
+                  'availability': r.availability,
+                  'response_time_ms': r.response_time_ms,
+                  'search_success': r.search_success,
+                  'detail_success': r.detail_success,
+                  'play_success': r.play_success,
+              } for r in results],
+          }, Path('output/source_health.json'))
+          "
+        timeout-minutes: 15
+
+      # ============================================================
+      # 步驟 5.6: Source Manager — 來源評分排名
+      # ============================================================
+      - name: 📊 Source Ranking
+        id: source_rank
+        run: |
+          echo "===== 來源評分排名 ====="
+          python -c "
+          import sys; sys.path.insert(0, '.')
+          from src.utils import setup_logging
+          setup_logging('INFO')
+          from src.source_manager.ranker import rank_sources
+          from pathlib import Path
+          import pickle
+
+          cache_file = Path('cache/health_scores.pkl')
+          if cache_file.exists():
+              health_scores = pickle.loads(cache_file.read_bytes())
+              ranked = rank_sources(health_scores)
+              print(f'\\n=== 來源排名 ===')
+              for i, s in enumerate(ranked):
+                  print(f'  #{i+1} {s.source_name}: {s.score} ({s.trend})')
+          else:
+              print('ERROR: health_scores.pkl 不存在')
+          "
+        timeout-minutes: 5
+
+      # ============================================================
       # 步驟 6: 執行 health_checker (健康檢查)
       # ============================================================
       - name: ② 健康檢查 (health_checker)
