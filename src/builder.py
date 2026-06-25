@@ -79,7 +79,7 @@ VARIETY_KEYWORDS = (
     "音乐会",
 )
 LIVE_KEYWORDS = ("直播", "卫视", "衛視", "央視", "央视", "体育", "體育")
-CORE_SITE_ORDER = ["chill", "bfzy", "ff", "sn", "lz", "360", "js", "jy", "wj", "yh", "md", "ik"]
+CORE_SITE_ORDER = ["bfzy", "ff", "sn", "lz", "360", "js", "jy", "wj", "yh", "md", "ik"]
 
 
 DEFAULT_FILTERS = {
@@ -144,15 +144,6 @@ DEFAULT_FILTERS = {
 def _core_sites(domain: str) -> list[dict]:
     base = (domain or WORKER_DOMAIN).rstrip("/")
     core_sites = [
-        {
-            "key": "chill",
-            "name": "🧊 Chill-TV",
-            "type": 1,
-            "api": f"{base}/api",
-            "searchable": 1,
-            "quickSearch": 1,
-            "filterable": 1,
-        },
         {"key": "bfzy", "name": "🔥 暴風", "type": 1, "api": f"{base}/p/bfzy", "searchable": 1, "quickSearch": 1},
         {"key": "ff", "name": "⚡ 非凡", "type": 1, "api": f"{base}/p/ff", "searchable": 1, "quickSearch": 1},
         {"key": "sn", "name": "🎯 索尼", "type": 1, "api": f"{base}/p/sn", "searchable": 1, "quickSearch": 1},

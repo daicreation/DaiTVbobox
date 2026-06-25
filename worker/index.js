@@ -12,7 +12,6 @@ function buildFallback() {
   const base = DOMAIN;
   return {
     sites: [
-      { key: 'chill', name: 'Chill-TV', type: 1, api: `${base}/api`, searchable: 1, quickSearch: 1, filterable: 1 },
       { key: 'bfzy', name: 'Storm', type: 1, api: `${base}/p/bfzy`, searchable: 1, quickSearch: 1 },
       { key: 'ff', name: 'FF', type: 1, api: `${base}/p/ff`, searchable: 1, quickSearch: 1 },
       { key: 'sn', name: 'Sony', type: 1, api: `${base}/p/sn`, searchable: 1, quickSearch: 1 },

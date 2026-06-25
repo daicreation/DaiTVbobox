@@ -2,9 +2,9 @@
   "sites": [
     {
       "key": "bfzy",
-      "name": "🧊 Chill-TV",
+      "name": "🔥 暴風",
       "type": 1,
-      "api": "https://daitvbobox.chungshare.workers.dev/api",
+      "api": "https://daitvbobox.chungshare.workers.dev/p/bfzy",
       "searchable": 1,
       "quickSearch": 1
     },
@@ -12,7 +12,7 @@
       "key": "ff",
       "name": "⚡ 非凡",
       "type": 1,
-      "api": "http://cj.ffzyapi.com/api.php/provide/vod",
+      "api": "https://daitvbobox.chungshare.workers.dev/p/ff",
       "searchable": 1,
       "quickSearch": 1
     },
@@ -20,7 +20,7 @@
       "key": "sn",
       "name": "🎯 索尼",
       "type": 1,
-      "api": "https://suoniapi.com/api.php/provide/vod",
+      "api": "https://daitvbobox.chungshare.workers.dev/p/sn",
       "searchable": 1,
       "quickSearch": 1
     },
@@ -28,7 +28,7 @@
       "key": "lz",
       "name": "🔮 量子",
       "type": 1,
-      "api": "https://cj.lziapi.com/api.php/provide/vod/",
+      "api": "https://daitvbobox.chungshare.workers.dev/p/lz",
       "searchable": 1,
       "quickSearch": 1
     },
@@ -36,7 +36,7 @@
       "key": "360",
       "name": "💠 360",
       "type": 1,
-      "api": "https://360zyzz.com/api.php/provide/vod/",
+      "api": "https://daitvbobox.chungshare.workers.dev/p/360",
       "searchable": 1,
       "quickSearch": 1
     },
@@ -44,7 +44,7 @@
       "key": "js",
       "name": "⚡ 極速",
       "type": 1,
-      "api": "https://jszyapi.com/api.php/provide/vod/",
+      "api": "https://daitvbobox.chungshare.workers.dev/p/js",
       "searchable": 1,
       "quickSearch": 1
     },
@@ -52,191 +52,39 @@
       "key": "jy",
       "name": "🦅 金鷹",
       "type": 1,
-      "api": "https://jyzyapi.com/provide/vod/",
+      "api": "https://daitvbobox.chungshare.workers.dev/p/jy",
       "searchable": 1,
       "quickSearch": 1
     },
     {
-      "key": "xiaosa",
-      "name": "💨 瀟灑",
+      "key": "wj",
+      "name": "♾️ 無盡",
       "type": 1,
-      "api": "https://qist.wyfc.qzz.io/xiaosa/api.json",
+      "api": "https://daitvbobox.chungshare.workers.dev/p/wj",
       "searchable": 1,
       "quickSearch": 1
     },
     {
-      "key": "xiaopingguo",
-      "name": "🍎 小蘋果",
+      "key": "yh",
+      "name": "🌸 櫻花",
       "type": 1,
-      "api": "https://bitbucket.org/xduo/duoapi/raw/master/xpg.json",
+      "api": "https://daitvbobox.chungshare.workers.dev/p/yh",
       "searchable": 1,
       "quickSearch": 1
     },
     {
-      "key": "moyuer",
-      "name": "🐟 摸魚兒",
+      "key": "md",
+      "name": "🏙️ 魔都",
       "type": 1,
-      "api": "https://6800.kstore.vip/fish.json",
+      "api": "https://daitvbobox.chungshare.workers.dev/p/md",
       "searchable": 1,
       "quickSearch": 1
     },
     {
-      "key": "fantaiying",
-      "name": "🍚 飯太硬",
+      "key": "ik",
+      "name": "🎵 iKun",
       "type": 1,
-      "api": "https://qist.wyfc.qzz.io/fty.json",
-      "searchable": 1,
-      "quickSearch": 1
-    },
-    {
-      "key": "auto_🦔暴風┃采集",
-      "name": "🦔暴風┃采集",
-      "type": 1,
-      "api": "https://bfzyapi.com/api.php/provide/vod",
-      "searchable": 1,
-      "quickSearch": 1
-    },
-    {
-      "key": "auto_葫芦｜免扫4K",
-      "name": "葫芦｜免扫4K",
-      "type": 1,
-      "api": "https://gh-proxy.com/raw.githubusercontent.com/IY-CPU/IY/main/lib/get.js",
-      "searchable": 1,
-      "quickSearch": 1
-    },
-    {
-      "key": "auto_枫叶｜免扫4K",
-      "name": "枫叶｜免扫4K",
-      "type": 1,
-      "api": "https://gh-proxy.com/raw.githubusercontent.com/IY-CPU/IY/main/lib/fy.py",
-      "searchable": 1,
-      "quickSearch": 1
-    },
-    {
-      "key": "auto_小腾｜免扫4K",
-      "name": "小腾｜免扫4K",
-      "type": 1,
-      "api": "https://gh-proxy.com/raw.githubusercontent.com/IY-CPU/IY/main/lib/drpy2.min.js",
-      "searchable": 1,
-      "quickSearch": 1
-    },
-    {
-      "key": "auto_看剧｜2K",
-      "name": "看剧｜2K",
-      "type": 1,
-      "api": "https://gh-proxy.com/https://raw.githubusercontent.com/IY-CPU/IY/main/lib/AppToV5.py",
-      "searchable": 1,
-      "quickSearch": 1
-    },
-    {
-      "key": "auto_🌹┃欧乐┃影院",
-      "name": "🌹┃欧乐┃影院",
-      "type": 1,
-      "api": "https://py.doube.eu.org/spider?site=OleVod",
-      "searchable": 1,
-      "quickSearch": 1
-    },
-    {
-      "key": "auto_🍌每天看看(优)",
-      "name": "🍌每天看看(优)",
-      "type": 1,
-      "api": "http://47.113.126.237:1234/api.php/provide/vod/",
-      "searchable": 1,
-      "quickSearch": 1
-    },
-    {
-      "key": "auto_🥒土狗 360(",
-      "name": "🥒土狗 360(官)",
-      "type": 1,
-      "api": "http://360.tgzy.cc/api.php/provide/vod/",
-      "searchable": 1,
-      "quickSearch": 1
-    },
-    {
-      "key": "auto_🍑诺讯资源(官)",
-      "name": "🍑诺讯资源(官)",
-      "type": 1,
-      "api": "http://caiji.nxflv.com/api.php/provide/vod/",
-      "searchable": 1,
-      "quickSearch": 1
-    },
-    {
-      "key": "auto_🍚小鸟动漫(聚)",
-      "name": "🍚小鸟动漫(聚)",
-      "type": 1,
-      "api": "http://xydm.baicai.buzz/api.php/provide/vod/",
-      "searchable": 1,
-      "quickSearch": 1
-    },
-    {
-      "key": "auto_📺︎电视点播",
-      "name": "📺︎电视点播",
-      "type": 1,
-      "api": "http://120.53.102.254/live?url=aHR0cDovL2hvbWUuanVuZGllLnRvcDo4MS9yYXkvdHZsaXZlLnR4dA",
-      "searchable": 1,
-      "quickSearch": 1
-    },
-    {
-      "key": "auto_星牙┃短剧",
-      "name": "星牙┃短剧",
-      "type": 1,
-      "api": "https://git.yylx.win/raw.githubusercontent.com/PizazzGY/NewTVBox/main/movie/py/XYDJ.py",
-      "searchable": 1,
-      "quickSearch": 1
-    },
-    {
-      "key": "auto_🥑盘看影视(聚)",
-      "name": "🥑盘看影视(聚)",
-      "type": 1,
-      "api": "http://tvcaiji.pankk.cn/api.php/provide/vod/",
-      "searchable": 1,
-      "quickSearch": 1
-    },
-    {
-      "key": "auto_泥泥┃视频",
-      "name": "泥泥┃视频",
-      "type": 1,
-      "api": "http://rihou.cc:88/js/drpy2.min.js",
-      "searchable": 1,
-      "quickSearch": 1
-    },
-    {
-      "key": "auto_低端影视(DRP",
-      "name": "低端影视(DRPY)",
-      "type": 1,
-      "api": "http://home.jundie.top:666/JS/dr_py/libs/drpy.min.js",
-      "searchable": 1,
-      "quickSearch": 1
-    },
-    {
-      "key": "auto_🦚360┃采集",
-      "name": "🦚360┃采集",
-      "type": 1,
-      "api": "https://360zy.com/api.php/provide/vod?",
-      "searchable": 1,
-      "quickSearch": 1
-    },
-    {
-      "key": "auto_🌶天堂资源(官)",
-      "name": "🌶天堂资源(官)",
-      "type": 1,
-      "api": "http://vipmv.cc/api.php/provide/vod/",
-      "searchable": 1,
-      "quickSearch": 1
-    },
-    {
-      "key": "auto_🍭非凡┃采集",
-      "name": "🍭非凡┃采集",
-      "type": 1,
-      "api": "http://cj.ffzyapi.com/api.php/provide/vod/at/xml/",
-      "searchable": 1,
-      "quickSearch": 1
-    },
-    {
-      "key": "auto_猫头鹰｜秒播",
-      "name": "猫头鹰｜秒播",
-      "type": 1,
-      "api": "https://gitee.com/monosodium-glutamate/wjwj/raw/master/lib/get.js",
+      "api": "https://daitvbobox.chungshare.workers.dev/p/ik",
       "searchable": 1,
       "quickSearch": 1
     }
@@ -250,5 +98,6 @@
     "騰訊",
     "芒果"
   ],
-  "update_time": "2026-06-25 10:33:14"
+  "update_time": "2026-06-25 20:51:16",
+  "region": "shared"
 }

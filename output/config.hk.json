@@ -1,19 +1,10 @@
 {
   "sites": [
     {
-      "key": "chill",
-      "name": "🧊 Chill-TV",
-      "type": 1,
-      "api": "https://daitvbobox.chungshare.workers.dev/hk/api",
-      "searchable": 1,
-      "quickSearch": 1,
-      "filterable": 1
-    },
-    {
       "key": "bfzy",
       "name": "🔥 暴風",
       "type": 1,
-      "api": "https://daitvbobox.chungshare.workers.dev/hk/p/bfzy",
+      "api": "https://daitvbobox.chungshare.workers.dev/p/bfzy",
       "searchable": 1,
       "quickSearch": 1
     },
@@ -21,7 +12,7 @@
       "key": "ff",
       "name": "⚡ 非凡",
       "type": 1,
-      "api": "https://daitvbobox.chungshare.workers.dev/hk/p/ff",
+      "api": "https://daitvbobox.chungshare.workers.dev/p/ff",
       "searchable": 1,
       "quickSearch": 1
     },
@@ -29,7 +20,7 @@
       "key": "sn",
       "name": "🎯 索尼",
       "type": 1,
-      "api": "https://daitvbobox.chungshare.workers.dev/hk/p/sn",
+      "api": "https://daitvbobox.chungshare.workers.dev/p/sn",
       "searchable": 1,
       "quickSearch": 1
     },
@@ -37,7 +28,7 @@
       "key": "lz",
       "name": "🔮 量子",
       "type": 1,
-      "api": "https://daitvbobox.chungshare.workers.dev/hk/p/lz",
+      "api": "https://daitvbobox.chungshare.workers.dev/p/lz",
       "searchable": 1,
       "quickSearch": 1
     },
@@ -45,7 +36,7 @@
       "key": "360",
       "name": "💠 360",
       "type": 1,
-      "api": "https://daitvbobox.chungshare.workers.dev/hk/p/360",
+      "api": "https://daitvbobox.chungshare.workers.dev/p/360",
       "searchable": 1,
       "quickSearch": 1
     },
@@ -53,7 +44,7 @@
       "key": "js",
       "name": "⚡ 極速",
       "type": 1,
-      "api": "https://daitvbobox.chungshare.workers.dev/hk/p/js",
+      "api": "https://daitvbobox.chungshare.workers.dev/p/js",
       "searchable": 1,
       "quickSearch": 1
     },
@@ -61,7 +52,7 @@
       "key": "jy",
       "name": "🦅 金鷹",
       "type": 1,
-      "api": "https://daitvbobox.chungshare.workers.dev/hk/p/jy",
+      "api": "https://daitvbobox.chungshare.workers.dev/p/jy",
       "searchable": 1,
       "quickSearch": 1
     },
@@ -69,7 +60,7 @@
       "key": "wj",
       "name": "♾️ 無盡",
       "type": 1,
-      "api": "https://daitvbobox.chungshare.workers.dev/hk/p/wj",
+      "api": "https://daitvbobox.chungshare.workers.dev/p/wj",
       "searchable": 1,
       "quickSearch": 1
     },
@@ -77,7 +68,7 @@
       "key": "yh",
       "name": "🌸 櫻花",
       "type": 1,
-      "api": "https://daitvbobox.chungshare.workers.dev/hk/p/yh",
+      "api": "https://daitvbobox.chungshare.workers.dev/p/yh",
       "searchable": 1,
       "quickSearch": 1
     },
@@ -85,7 +76,7 @@
       "key": "md",
       "name": "🏙️ 魔都",
       "type": 1,
-      "api": "https://daitvbobox.chungshare.workers.dev/hk/p/md",
+      "api": "https://daitvbobox.chungshare.workers.dev/p/md",
       "searchable": 1,
       "quickSearch": 1
     },
@@ -93,7 +84,7 @@
       "key": "ik",
       "name": "🎵 iKun",
       "type": 1,
-      "api": "https://daitvbobox.chungshare.workers.dev/hk/p/ik",
+      "api": "https://daitvbobox.chungshare.workers.dev/p/ik",
       "searchable": 1,
       "quickSearch": 1
     }
@@ -107,6 +98,6 @@
     "騰訊",
     "芒果"
   ],
-  "update_time": "2026-06-25 19:10:50",
-  "region": "hk"
+  "update_time": "2026-06-25 20:51:16",
+  "region": "shared"
 }

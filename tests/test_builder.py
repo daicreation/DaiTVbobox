@@ -292,9 +292,9 @@ class TestBuildAllOutputs:
         with open(paths["config_cn"], "r", encoding="utf-8") as f:
             config_cn = json.load(f)
 
-        assert config_root["sites"][0]["api"] == "https://tv.example.com/api"
-        assert config_hk["sites"][0]["api"] == "https://tv.example.com/api"
-        assert config_cn["sites"][0]["api"] == "https://tv.example.com/api"
+        assert config_root["sites"][0]["api"] == "https://tv.example.com/p/bfzy"
+        assert config_hk["sites"][0]["api"] == "https://tv.example.com/p/bfzy"
+        assert config_cn["sites"][0]["api"] == "https://tv.example.com/p/bfzy"
         assert config_root["sites"] == config_hk["sites"] == config_cn["sites"]
 
     def test_regional_configs_use_shared_proxy_paths(self):
@@ -317,3 +317,16 @@ class TestBuildAllOutputs:
         assert cn_sites["bfzy"] == "https://tv.example.com/p/bfzy"
         assert hk_sites["360"] == "https://tv.example.com/p/360"
         assert cn_sites["360"] == "https://tv.example.com/p/360"
+
+    def test_shared_config_keeps_only_direct_core_sites(self):
+        paths = build_all_outputs(
+            {"movie": [], "tv": [], "variety": [], "live": []},
+            {"output": {"max_sources_per_video": 10, "max_items_per_category": 100}},
+            "https://tv.example.com",
+        )
+
+        with open(paths["config"], "r", encoding="utf-8") as f:
+            config_root = json.load(f)
+
+        site_keys = [site["key"] for site in config_root["sites"]]
+        assert site_keys == ["bfzy", "ff", "sn", "lz", "360", "js", "jy", "wj", "yh", "md", "ik"]
