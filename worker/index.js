@@ -69,6 +69,7 @@ async function aggregateSearch(wd) {
 
   const results = await Promise.all(sources.map(async (s) => {
     try {
+      const start = Date.now();
       const r = await fetch(`${s.api}?ac=detail&wd=${encodeURIComponent(wd)}`, {
         headers: { 'User-Agent': 'ChillAITV/1.0' }, signal: AbortSignal.timeout(6000),
       });
@@ -76,22 +77,63 @@ async function aggregateSearch(wd) {
       const d = await r.json();
       return (d.list || []).map(it => ({
         ...it,
-        vod_remarks: `${s.name}·${it.vod_remarks || ''}`,
-        _source: s.name,
         _key: s.key,
+        _speed: Date.now() - start,
+        vod_remarks: `${s.name}·${it.vod_remarks || ''}`,
       }));
     } catch { return []; }
   }));
 
+  // Phase 4: SearchMap — 多源映射 + 去重
   const all = results.flat();
-  const seen = new Set();
-  const list = all.filter(it => {
-    // 精準去重：片名 + 年份 + 類型（避免同名不同類誤合）
+  const merged = {}; // key → { item, sources: {src_key: {vod_id, play_url, speed}} }
+
+  for (const it of all) {
     const k = ((it.vod_name||'') + '|' + (it.vod_year||'') + '|' + (it.type_name||'')).replace(/\s+/g,'').toLowerCase().slice(0,60);
-    if (seen.has(k) || !k) return false;
-    seen.add(k);
-    return true;
+    if (!k) continue;
+
+    if (!merged[k]) {
+      // 第一筆：以最快的來源為基底
+      merged[k] = {
+        ...it,
+        _sources: {},
+        _best_speed: it._speed || 9999,
+      };
+    }
+    // 加入來源映射
+    const srcKey = it._key || '?';
+    merged[k]._sources[srcKey] = {
+      vod_id: it.vod_id,
+      play_url: it.vod_play_url,
+      speed: it._speed || 9999,
+    };
+    // 更新最快來源
+    if ((it._speed || 9999) < merged[k]._best_speed) {
+      merged[k]._best_speed = it._speed || 9999;
+      // 用最快的 play_url 作為預設
+      merged[k].vod_play_url = it.vod_play_url;
+      merged[k].vod_play_from = it.vod_play_from;
+      merged[k].vod_remarks = it.vod_remarks;
+    }
+  }
+
+  // 合併多源 play_url（$$$ 格式，快→慢）
+  const list = Object.values(merged).map(it => {
+    const entries = Object.entries(it._sources).sort((a, b) => a[1].speed - b[1].speed);
+    if (entries.length > 1) {
+      const froms = entries.map(([k, v]) => `${k}·HD`).join('$$$');
+      const urls = entries.map(([k, v]) => v.play_url).join('$$$');
+      it.vod_play_from = froms;
+      it.vod_play_url = urls;
+      const srcNames = entries.map(([k]) => k).join('+');
+      it.vod_remarks = `${srcNames}·${it.vod_remarks || ''}`;
+    }
+    delete it._sources;
+    delete it._best_speed;
+    return it;
   });
+
+  list.sort((a, b) => (b._source_count || 1) - (a._source_count || 1));
 
   return json({
     code: 1, msg: `「${wd}」- ${list.length}結果`,
