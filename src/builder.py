@@ -79,7 +79,7 @@ VARIETY_KEYWORDS = (
     "音乐会",
 )
 LIVE_KEYWORDS = ("直播", "卫视", "衛視", "央視", "央视", "体育", "體育")
-CORE_SITE_ORDER = ["bfzy", "ff", "sn", "lz", "360", "js", "jy", "wj", "yh", "md", "ik"]
+CORE_SITE_ORDER = ["chill", "bfzy", "ff", "sn", "lz", "360", "js", "jy", "yh", "md", "ik", "wj"]
 
 
 DEFAULT_FILTERS = {
@@ -144,6 +144,15 @@ DEFAULT_FILTERS = {
 def _core_sites(domain: str) -> list[dict]:
     base = (domain or WORKER_DOMAIN).rstrip("/")
     core_sites = [
+        {
+            "key": "chill",
+            "name": "🧊 Chill-TV",
+            "type": 1,
+            "api": f"{base}/api",
+            "searchable": 1,
+            "quickSearch": 1,
+            "filterable": 1,
+        },
         {"key": "bfzy", "name": "🔥 暴風", "type": 1, "api": f"{base}/p/bfzy", "searchable": 1, "quickSearch": 1},
         {"key": "ff", "name": "⚡ 非凡", "type": 1, "api": f"{base}/p/ff", "searchable": 1, "quickSearch": 1},
         {"key": "sn", "name": "🎯 索尼", "type": 1, "api": f"{base}/p/sn", "searchable": 1, "quickSearch": 1},
@@ -151,10 +160,10 @@ def _core_sites(domain: str) -> list[dict]:
         {"key": "360", "name": "💠 360", "type": 1, "api": f"{base}/p/360", "searchable": 1, "quickSearch": 1},
         {"key": "js", "name": "⚡ 極速", "type": 1, "api": f"{base}/p/js", "searchable": 1, "quickSearch": 1},
         {"key": "jy", "name": "🦅 金鷹", "type": 1, "api": f"{base}/p/jy", "searchable": 1, "quickSearch": 1},
-        {"key": "wj", "name": "♾️ 無盡", "type": 1, "api": f"{base}/p/wj", "searchable": 1, "quickSearch": 1},
         {"key": "yh", "name": "🌸 櫻花", "type": 1, "api": f"{base}/p/yh", "searchable": 1, "quickSearch": 1},
         {"key": "md", "name": "🏙️ 魔都", "type": 1, "api": f"{base}/p/md", "searchable": 1, "quickSearch": 1},
         {"key": "ik", "name": "🎵 iKun", "type": 1, "api": f"{base}/p/ik", "searchable": 1, "quickSearch": 1},
+        {"key": "wj", "name": "♾️ 無盡", "type": 1, "api": f"{base}/p/wj", "searchable": 1, "quickSearch": 1},
     ]
     order = {key: index for index, key in enumerate(CORE_SITE_ORDER)}
     return sorted(core_sites, key=lambda site: order.get(site["key"], 999))

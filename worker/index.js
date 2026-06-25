@@ -12,19 +12,20 @@ function buildFallback() {
   const base = DOMAIN;
   return {
     sites: [
-      { key: 'bfzy', name: 'Storm', type: 1, api: `${base}/p/bfzy`, searchable: 1, quickSearch: 1 },
-      { key: 'ff', name: 'FF', type: 1, api: `${base}/p/ff`, searchable: 1, quickSearch: 1 },
-      { key: 'sn', name: 'Sony', type: 1, api: `${base}/p/sn`, searchable: 1, quickSearch: 1 },
-      { key: 'lz', name: 'LZ', type: 1, api: `${base}/p/lz`, searchable: 1, quickSearch: 1 },
-      { key: '360', name: '360', type: 1, api: `${base}/p/360`, searchable: 1, quickSearch: 1 },
-      { key: 'js', name: 'JS', type: 1, api: `${base}/p/js`, searchable: 1, quickSearch: 1 },
-      { key: 'jy', name: 'JY', type: 1, api: `${base}/p/jy`, searchable: 1, quickSearch: 1 },
-      { key: 'wj', name: 'WJ', type: 1, api: `${base}/p/wj`, searchable: 1, quickSearch: 1 },
-      { key: 'yh', name: 'YH', type: 1, api: `${base}/p/yh`, searchable: 1, quickSearch: 1 },
-      { key: 'md', name: 'MD', type: 1, api: `${base}/p/md`, searchable: 1, quickSearch: 1 },
+      { key: 'chill', name: '🧊 Chill-TV', type: 1, api: `${base}/api`, searchable: 1, quickSearch: 1, filterable: 1 },
+      { key: 'bfzy', name: '🔥 暴風', type: 1, api: `${base}/p/bfzy`, searchable: 1, quickSearch: 1 },
+      { key: 'ff', name: '⚡ 非凡', type: 1, api: `${base}/p/ff`, searchable: 1, quickSearch: 1 },
+      { key: 'sn', name: '🎯 索尼', type: 1, api: `${base}/p/sn`, searchable: 1, quickSearch: 1 },
+      { key: 'lz', name: '🔮 量子', type: 1, api: `${base}/p/lz`, searchable: 1, quickSearch: 1 },
+      { key: '360', name: '💠 360', type: 1, api: `${base}/p/360`, searchable: 1, quickSearch: 1 },
+      { key: 'js', name: '⚡ 極速', type: 1, api: `${base}/p/js`, searchable: 1, quickSearch: 1 },
+      { key: 'jy', name: '🦅 金鷹', type: 1, api: `${base}/p/jy`, searchable: 1, quickSearch: 1 },
+      { key: 'yh', name: '🌸 櫻花', type: 1, api: `${base}/p/yh`, searchable: 1, quickSearch: 1 },
+      { key: 'md', name: '🏙️ 魔都', type: 1, api: `${base}/p/md`, searchable: 1, quickSearch: 1 },
       { key: 'ik', name: 'iKun', type: 1, api: `${base}/p/ik`, searchable: 1, quickSearch: 1 },
+      { key: 'wj', name: '♾️ 無盡', type: 1, api: `${base}/p/wj`, searchable: 1, quickSearch: 1 },
     ],
-    flags: ['4K', '1080P', '720P', 'YOUKU', 'iQIYI', 'Tencent', 'Mango'],
+    flags: ['4K', '1080P', '720P', '優酷', '愛奇藝', '騰訊', '芒果'],
     region: 'shared',
   };
 }

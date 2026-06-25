@@ -1,6 +1,15 @@
 {
   "sites": [
     {
+      "key": "chill",
+      "name": "🧊 Chill-TV",
+      "type": 1,
+      "api": "https://daitvbobox.chungshare.workers.dev/api",
+      "searchable": 1,
+      "quickSearch": 1,
+      "filterable": 1
+    },
+    {
       "key": "bfzy",
       "name": "🔥 暴風",
       "type": 1,
@@ -57,14 +66,6 @@
       "quickSearch": 1
     },
     {
-      "key": "wj",
-      "name": "♾️ 無盡",
-      "type": 1,
-      "api": "https://daitvbobox.chungshare.workers.dev/p/wj",
-      "searchable": 1,
-      "quickSearch": 1
-    },
-    {
       "key": "yh",
       "name": "🌸 櫻花",
       "type": 1,
@@ -87,6 +88,14 @@
       "api": "https://daitvbobox.chungshare.workers.dev/p/ik",
       "searchable": 1,
       "quickSearch": 1
+    },
+    {
+      "key": "wj",
+      "name": "♾️ 無盡",
+      "type": 1,
+      "api": "https://daitvbobox.chungshare.workers.dev/p/wj",
+      "searchable": 1,
+      "quickSearch": 1
     }
   ],
   "flags": [
@@ -98,6 +107,6 @@
     "騰訊",
     "芒果"
   ],
-  "update_time": "2026-06-25 20:51:16",
+  "update_time": "2026-06-25 20:58:53",
   "region": "shared"
 }
