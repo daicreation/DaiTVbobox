@@ -1,11 +1,19 @@
 {
-  "build_time": "2026-06-25 10:33:14",
-  "build_iso": "2026-06-25T10:33:14.294541+00:00",
-  "total_items": 624,
-  "total_sources": 23,
+  "build_time": "2026-06-25 20:52:30",
+  "build_iso": "2026-06-25T20:52:30.172650+00:00",
+  "total_items": 28,
+  "total_sources": 0,
   "availability_rate": "N/A",
   "categories": {
     "live": {
+      "total": 28,
+      "sources": 0
+    },
+    "config.cn": {
+      "total": 0,
+      "sources": 0
+    },
+    "config.hk": {
       "total": 0,
       "sources": 0
     },
@@ -18,8 +26,8 @@
       "sources": 0
     },
     "movie": {
-      "total": 624,
-      "sources": 23
+      "total": 0,
+      "sources": 0
     },
     "variety": {
       "total": 0,
