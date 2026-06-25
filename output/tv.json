@@ -97,29 +97,10 @@
       }
     ]
   },
-  "list": [
-    {
-      "vod_id": "tv_001",
-      "vod_name": "Example TV Show",
-      "vod_pic": "",
-      "vod_remarks": "Updated to episode 8",
-      "type_name": "TV",
-      "vod_year": "",
-      "vod_area": "",
-      "vod_actor": "",
-      "vod_director": "",
-      "vod_content": "",
-      "vod_score": "",
-      "vod_play_from": "A·1080P",
-      "vod_play_url": "第1集$https://example.com/tv-001.m3u8",
-      "vod_quality": "1080P",
-      "source_count": 1,
-      "source_rank": 88
-    }
-  ],
-  "total": 1,
+  "list": [],
+  "total": 0,
   "page": 1,
   "pagecount": 1,
   "limit": 50,
-  "update_time": "2026-06-26 04:40:07"
+  "update_time": "2026-06-25 21:09:31"
 }
