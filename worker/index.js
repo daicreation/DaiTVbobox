@@ -1,10 +1,13 @@
 /**
  * Chill-AI-TV Worker
  * - /, /hk, /cn: shared config
- * - /api, /hk/api, /cn/api: aggregated browse/search proxy
- * - /p/{key}, /hk/p/{key}, /cn/p/{key}: direct source proxy with adult categories filtered out
+ * - /api, /hk/api, /cn/api: homepage/detail proxy split
+ * - /p/{key}, /hk/p/{key}, /cn/p/{key}: direct source proxy
  */
 const DOMAIN = 'https://daitvbobox.chungshare.workers.dev';
+const GITHUB_OUTPUT_API_BASE = 'https://api.github.com/repos/daicreation/DaiTVbobox/contents/output';
+const GITHUB_FETCH_TIMEOUT_MS = 3000;
+const HOT_TV_CLASS = { type_id: 'hot_tv', type_name: 'Hot TV' };
 const SITE_NAME_BLOCKLIST = ['采集', '理論', '理论', '福利', '成人', '直播', '短剧', '短劇', '云盘', '雲盤', '网盘', '網盤', 'alist', '配置'];
 const SITE_URL_BLOCKLIST = ['.js', '.py', 'drpy', 'spider', 'get.js', '/lib/', 'live?url=', 'csp_', '/vod/json', 'json?url='];
 
@@ -36,6 +39,20 @@ export default {
     const route = parseRoute(url.pathname);
 
     if (route.kind === 'api') {
+      if (isHotTvDetail(url)) {
+        const detailResponse = await serveHotTvDetail(url);
+        if (detailResponse) {
+          return detailResponse;
+        }
+      }
+
+      if (isHomepageLike(url)) {
+        const homepageResponse = await serveHotTvHomepage();
+        if (homepageResponse) {
+          return homepageResponse;
+        }
+      }
+
       return proxyBrowse(url.search);
     }
 
@@ -43,30 +60,11 @@ export default {
       return proxyFiltered(route.proxyKey, url.search);
     }
 
-    try {
-      const apiUrl = 'https://api.github.com/repos/daicreation/DaiTVbobox/contents/output/config.json';
-      const resp = await fetch(apiUrl, {
-        headers: {
-          'User-Agent': 'ChillAITV/1.0',
-          Accept: 'application/vnd.github.v3+json',
-        },
-      });
-
-      if (resp.ok) {
-        const data = await resp.json();
-        const binary = atob(data.content.replace(/\s/g, ''));
-        const bytes = new Uint8Array(binary.length);
-        for (let i = 0; i < binary.length; i += 1) {
-          bytes[i] = binary.charCodeAt(i);
-        }
-
-        const config = JSON.parse(new TextDecoder('utf-8').decode(bytes));
-        if (config.sites?.length > 0) {
-          config.sites = config.sites.filter(isAllowedSite);
-          return json(config, 200, 'no-cache');
-        }
-      }
-    } catch {}
+    const config = await fetchRepoOutputJson('config.json');
+    if (config?.sites?.length > 0) {
+      config.sites = config.sites.filter(isAllowedSite);
+      return json(config, 200, 'no-cache');
+    }
 
     return json(buildFallback(), 200, 'no-cache');
   },
@@ -111,6 +109,127 @@ async function proxyFiltered(key, search) {
   return proxyBrowse(search, target);
 }
 
+function isHomepageLike(url) {
+  const params = url.searchParams;
+  const ac = (params.get('ac') || '').toLowerCase();
+  if (ac === 'list') {
+    return isHomepageListRequest(params);
+  }
+  if (ac) {
+    return false;
+  }
+
+  const keys = [...params.keys()];
+  if (keys.length === 0) {
+    return true;
+  }
+  if (params.has('wd') || params.has('ids')) {
+    return false;
+  }
+
+  return keys.every((key) => key === 'pg' || key === 'page' || key === 'limit');
+}
+
+function isHomepageListRequest(params) {
+  const keys = [...params.keys()];
+  if (params.has('wd') || params.has('ids')) {
+    return false;
+  }
+  return keys.every((key) => key === 'ac' || key === 'pg' || key === 'page' || key === 'limit');
+}
+
+function isHotTvDetail(url) {
+  return (url.searchParams.get('ac') || '').toLowerCase() === 'detail' && Boolean(getRequestedVodId(url));
+}
+
+function getRequestedVodId(url) {
+  return (url.searchParams.get('ids') || '')
+    .split(',')
+    .map((value) => value.trim())
+    .filter(Boolean)[0] || '';
+}
+
+async function serveHotTvHomepage() {
+  const hotTv = await fetchRepoOutputJson('hot_tv.json');
+  if (!hotTv || !Array.isArray(hotTv.list)) {
+    return null;
+  }
+
+  return json({
+    code: 1,
+    msg: '',
+    page: 1,
+    pagecount: 1,
+    limit: hotTv.list.length,
+    total: hotTv.list.length,
+    class: [HOT_TV_CLASS],
+    list: hotTv.list,
+    update_time: hotTv.update_time || '',
+  }, 200, 'no-cache');
+}
+
+async function serveHotTvDetail(url) {
+  const hotTv = await fetchRepoOutputJson('hot_tv.json');
+  const vodId = getRequestedVodId(url);
+  const detail = hotTv?.details?.[vodId];
+  if (!detail) {
+    return null;
+  }
+
+  return json({
+    code: 1,
+    msg: '',
+    list: [detail],
+    update_time: hotTv.update_time || '',
+  }, 200, 'no-cache');
+}
+
+async function fetchRepoOutputJson(filename) {
+  const timeout = createTimeoutSignal(GITHUB_FETCH_TIMEOUT_MS);
+  try {
+    const response = await fetch(`${GITHUB_OUTPUT_API_BASE}/${filename}`, {
+      headers: {
+        'User-Agent': 'ChillAITV/1.0',
+        Accept: 'application/vnd.github.v3+json',
+      },
+      signal: timeout.signal,
+    });
+    if (!response.ok) {
+      return null;
+    }
+
+    const payload = await response.json();
+    const binary = atob((payload.content || '').replace(/\s/g, ''));
+    const bytes = new Uint8Array(binary.length);
+    for (let i = 0; i < binary.length; i += 1) {
+      bytes[i] = binary.charCodeAt(i);
+    }
+    return JSON.parse(new TextDecoder('utf-8').decode(bytes));
+  } catch {
+    return null;
+  } finally {
+    timeout.cleanup();
+  }
+}
+
+function createTimeoutSignal(timeoutMs) {
+  if (typeof AbortSignal !== 'undefined' && typeof AbortSignal.timeout === 'function') {
+    return {
+      signal: AbortSignal.timeout(timeoutMs),
+      cleanup() {},
+    };
+  }
+
+  const controller = new AbortController();
+  const timeoutId = setTimeout(() => controller.abort(), timeoutMs);
+  return {
+    signal: controller.signal,
+    cleanup() {
+      clearTimeout(timeoutId);
+    },
+  };
+}
+
 async function proxyBrowse(search = '', target) {
   const api = target || 'https://bfzyapi.com/api.php/provide/vod';
   try {
@@ -148,8 +267,8 @@ function json(data, status = 200, cacheControl = 'public, max-age=300') {
 }
 
 function isAllowedSite(site) {
-  const name = (site?.name || '').toLowerCase();
-  const api = (site?.api || '').toLowerCase();
+  const name = String(site?.name || '').toLowerCase();
+  const api = String(site?.api || '').toLowerCase();
   if (!api.startsWith('http')) {
     return false;
   }

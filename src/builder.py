@@ -10,9 +10,11 @@ from .constants import (
     OUTPUT_DIR,
     OUTPUT_CONFIG_CN_JSON,
     OUTPUT_CONFIG_HK_JSON,
+    OUTPUT_HOT_TV_JSON,
     TVBOX_CLASSES,
     WORKER_DOMAIN,
 )
+from .hot_tv import build_direct_hot_tv_dataset, build_hot_tv_dataset, fetch_hot_tv_feed
 from .models import Category, VideoItem
 from .utils import detect_platform, levenshtein_ratio, normalize_title, now_display, save_json
 
@@ -369,13 +371,29 @@ def build_all_outputs(all_items=None, rules_config=None, domain=""):
                 typed_items[category].append(item)
 
     paths = {}
+    ranked_items_by_category: dict[str, list[VideoItem]] = {}
     for category, meta in CATEGORIES.items():
         items = _dedup_and_merge(typed_items[category], similarity_threshold, max_sources_per_video)
         items = _sort_items(items)[:max_items]
+        ranked_items_by_category[category] = items
         data = _build_tvbox_json(items, category, update_time, max_sources_per_video)
         output_path = meta["output_file"]
         save_json(data, output_path)
         paths[category] = output_path
+
+    hot_tv_feed_items = fetch_hot_tv_feed()
+    hot_tv_dataset = build_hot_tv_dataset(
+        hot_tv_feed_items,
+        ranked_items_by_category.get("tv", []),
+        similarity_threshold,
+    )
+    if hot_tv_feed_items and not hot_tv_dataset.get("list"):
+        hot_tv_dataset = build_direct_hot_tv_dataset(
+            hot_tv_feed_items,
+            similarity_threshold,
+        )
+    save_json(hot_tv_dataset, OUTPUT_HOT_TV_JSON)
+    paths["hot_tv"] = OUTPUT_HOT_TV_JSON
 
     config_path = OUTPUT_DIR / "config.json"
     shared_config = _build_config(all_items or typed_items, domain, update_time, "shared")

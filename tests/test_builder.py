@@ -6,6 +6,8 @@ import sys
 import json
 from pathlib import Path
 
+import pytest
+
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 
 from src.builder import (
@@ -15,6 +17,7 @@ from src.builder import (
     _tag_platform,
     _build_tvbox_json,
 )
+from src.constants import OUTPUT_HOT_TV_JSON
 from src.models import (
     VideoItem,
     PlaySource,
@@ -330,3 +333,197 @@ class TestBuildAllOutputs:
 
         site_keys = [site["key"] for site in config_root["sites"]]
         assert site_keys == ["chill", "bfzy", "ff", "sn", "lz", "360", "js", "jy", "yh", "md", "ik", "wj"]
+
+    def test_config_still_keeps_chill_tv_first(self):
+        paths = build_all_outputs(
+            {"movie": [], "tv": [], "variety": [], "live": []},
+            {"output": {"max_sources_per_video": 10, "max_items_per_category": 100}},
+            "https://tv.example.com",
+        )
+
+        with open(paths["config"], "r", encoding="utf-8") as f:
+            config_root = json.load(f)
+
+        assert config_root["sites"][0]["key"] == "chill"
+        assert "Chill-TV" in config_root["sites"][0]["name"]
+
+    def test_generates_hot_tv_output_with_real_empty_feed_shape(self, monkeypatch: pytest.MonkeyPatch):
+        def fake_fetch_hot_tv_feed():
+            return []
+
+        monkeypatch.setattr("src.builder.fetch_hot_tv_feed", fake_fetch_hot_tv_feed)
+
+        tv_item = VideoItem(
+            vod_id="tv_001",
+            vod_name="Example TV Show",
+            type_name="TV",
+            category=Category.TV,
+            vod_remarks="Updated to episode 8",
+            episode_updated=8,
+            sources=[
+                PlaySource(
+                    url="https://example.com/tv-001.m3u8",
+                    source_name="A",
+                    quality=Quality.K1080,
+                    score=88,
+                    is_available=True,
+                )
+            ],
+        )
+
+        paths = build_all_outputs(
+            {"movie": [], "tv": [tv_item], "variety": [], "live": []},
+            {
+                "output": {"max_sources_per_video": 10, "max_items_per_category": 100},
+                "dedup": {"title_similarity_threshold": 0.8},
+            },
+            "https://tv.example.com",
+        )
+
+        assert paths["hot_tv"] == OUTPUT_HOT_TV_JSON
+        assert paths["hot_tv"].name == "hot_tv.json"
+
+        with open(paths["hot_tv"], "r", encoding="utf-8") as f:
+            hot_tv_data = json.load(f)
+
+        assert set(hot_tv_data) == {"list", "details", "update_time"}
+        assert hot_tv_data["list"] == []
+        assert hot_tv_data["details"] == {}
+        assert isinstance(hot_tv_data["update_time"], str)
+        assert hot_tv_data["update_time"]
+
+    def test_passes_ranked_tv_items_into_hot_tv_builder(self, monkeypatch: pytest.MonkeyPatch):
+        captured = {}
+
+        def fake_fetch_hot_tv_feed():
+            return []
+
+        def fake_build_hot_tv_dataset(feed_items, ranked_tv_items, similarity_threshold):
+            captured["feed_items"] = feed_items
+            captured["ranked_tv_items"] = ranked_tv_items
+            captured["similarity_threshold"] = similarity_threshold
+            return {
+                "list": [],
+                "details": {},
+                "update_time": "2026-06-26 00:00:00",
+            }
+
+        monkeypatch.setattr("src.builder.fetch_hot_tv_feed", fake_fetch_hot_tv_feed)
+        monkeypatch.setattr("src.builder.build_hot_tv_dataset", fake_build_hot_tv_dataset)
+
+        tv_item = VideoItem(
+            vod_id="tv_001",
+            vod_name="Example TV Show",
+            type_name="TV",
+            category=Category.TV,
+            vod_remarks="Updated to episode 8",
+            episode_updated=8,
+            sources=[
+                PlaySource(
+                    url="https://example.com/tv-001.m3u8",
+                    source_name="A",
+                    quality=Quality.K1080,
+                    score=88,
+                    is_available=True,
+                )
+            ],
+        )
+
+        paths = build_all_outputs(
+            {"movie": [], "tv": [tv_item], "variety": [], "live": []},
+            {
+                "output": {"max_sources_per_video": 10, "max_items_per_category": 100},
+                "dedup": {"title_similarity_threshold": 0.8},
+            },
+            "https://tv.example.com",
+        )
+
+        assert paths["hot_tv"] == OUTPUT_HOT_TV_JSON
+        assert paths["hot_tv"].name == "hot_tv.json"
+        assert [item.vod_id for item in captured["ranked_tv_items"]] == ["tv_001"]
+        assert captured["feed_items"] == []
+        assert captured["similarity_threshold"] == 0.8
+
+        with open(paths["hot_tv"], "r", encoding="utf-8") as f:
+            hot_tv_data = json.load(f)
+
+        assert hot_tv_data == {
+            "list": [],
+            "details": {},
+            "update_time": "2026-06-26 00:00:00",
+        }
+
+    def test_uses_direct_hot_tv_fallback_when_ranked_path_is_empty(self, monkeypatch: pytest.MonkeyPatch):
+        captured = {}
+
+        def fake_fetch_hot_tv_feed():
+            return [{"title": "Hot Show A", "cover": "https://img.example.com/hot.jpg"}]
+
+        def fake_build_hot_tv_dataset(feed_items, ranked_tv_items, similarity_threshold):
+            captured["primary_feed_items"] = feed_items
+            captured["primary_ranked_tv_items"] = ranked_tv_items
+            captured["primary_similarity_threshold"] = similarity_threshold
+            return {
+                "list": [],
+                "details": {},
+                "update_time": "2026-06-26 00:00:00",
+            }
+
+        def fake_build_direct_hot_tv_dataset(feed_items, similarity_threshold):
+            captured["fallback_feed_items"] = feed_items
+            captured["fallback_similarity_threshold"] = similarity_threshold
+            return {
+                "list": [{"vod_id": "bf-1", "vod_name": "Hot Show A", "source_count": 1}],
+                "details": {
+                    "bf-1": {
+                        "vod_id": "bf-1",
+                        "vod_name": "Hot Show A",
+                        "source_count": 1,
+                        "vod_play_from": "bfzy",
+                        "vod_play_url": "Episode 1$https://play.example.com/bf-1.m3u8",
+                    }
+                },
+                "update_time": "2026-06-26 01:00:00",
+            }
+
+        monkeypatch.setattr("src.builder.fetch_hot_tv_feed", fake_fetch_hot_tv_feed)
+        monkeypatch.setattr("src.builder.build_hot_tv_dataset", fake_build_hot_tv_dataset)
+        monkeypatch.setattr("src.builder.build_direct_hot_tv_dataset", fake_build_direct_hot_tv_dataset)
+
+        tv_item = VideoItem(
+            vod_id="tv_001",
+            vod_name="Example TV Show",
+            type_name="TV",
+            category=Category.TV,
+            vod_remarks="Updated to episode 8",
+            episode_updated=8,
+            sources=[
+                PlaySource(
+                    url="https://example.com/tv-001.m3u8",
+                    source_name="A",
+                    quality=Quality.K1080,
+                    score=88,
+                    is_available=True,
+                )
+            ],
+        )
+
+        paths = build_all_outputs(
+            {"movie": [], "tv": [tv_item], "variety": [], "live": []},
+            {
+                "output": {"max_sources_per_video": 10, "max_items_per_category": 100},
+                "dedup": {"title_similarity_threshold": 0.8},
+            },
+            "https://tv.example.com",
+        )
+
+        assert captured["primary_feed_items"] == [{"title": "Hot Show A", "cover": "https://img.example.com/hot.jpg"}]
+        assert [item.vod_id for item in captured["primary_ranked_tv_items"]] == ["tv_001"]
+        assert captured["fallback_feed_items"] == [{"title": "Hot Show A", "cover": "https://img.example.com/hot.jpg"}]
+        assert captured["fallback_similarity_threshold"] == 0.8
+
+        with open(paths["hot_tv"], "r", encoding="utf-8") as f:
+            hot_tv_data = json.load(f)
+
+        assert hot_tv_data["list"] == [{"vod_id": "bf-1", "vod_name": "Hot Show A", "source_count": 1}]
+        assert hot_tv_data["details"]["bf-1"]["vod_play_from"] == "bfzy"
