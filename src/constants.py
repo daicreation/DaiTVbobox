@@ -25,6 +25,8 @@ RULES_YAML_PATH = CONFIG_DIR / "rules.yaml"
 
 # ---- 輸出 JSON 路徑 (TVBox 讀取的檔案) ----
 OUTPUT_CONFIG_JSON = OUTPUT_DIR / "config.json"
+OUTPUT_CONFIG_HK_JSON = OUTPUT_DIR / "config.hk.json"
+OUTPUT_CONFIG_CN_JSON = OUTPUT_DIR / "config.cn.json"
 OUTPUT_MOVIE_JSON = OUTPUT_DIR / "movie.json"
 OUTPUT_TV_JSON = OUTPUT_DIR / "tv.json"
 OUTPUT_VARIETY_JSON = OUTPUT_DIR / "variety.json"

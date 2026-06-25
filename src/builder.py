@@ -8,6 +8,8 @@ from typing import Iterable
 from .constants import (
     CATEGORIES,
     OUTPUT_DIR,
+    OUTPUT_CONFIG_CN_JSON,
+    OUTPUT_CONFIG_HK_JSON,
     TVBOX_CLASSES,
     WORKER_DOMAIN,
 )
@@ -77,6 +79,10 @@ VARIETY_KEYWORDS = (
     "音乐会",
 )
 LIVE_KEYWORDS = ("直播", "卫视", "衛視", "央視", "央视", "体育", "體育")
+REGION_ORDER = {
+    "hk": ["chill", "bfzy", "ff", "sn", "lz", "360", "js", "jy", "wj", "yh", "md", "ik"],
+    "cn": ["chill", "bfzy", "lz", "360", "js", "jy", "sn", "ff", "wj", "md", "ik", "yh"],
+}
 
 
 DEFAULT_FILTERS = {
@@ -138,30 +144,33 @@ DEFAULT_FILTERS = {
 }
 
 
-def _core_sites(domain: str) -> list[dict]:
+def _core_sites(domain: str, region: str) -> list[dict]:
     base = (domain or WORKER_DOMAIN).rstrip("/")
-    return [
+    route_prefix = f"{base}/{region}"
+    core_sites = [
         {
             "key": "chill",
             "name": "🧊 Chill-TV",
             "type": 1,
-            "api": f"{base}/api",
+            "api": f"{route_prefix}/api",
             "searchable": 1,
             "quickSearch": 1,
             "filterable": 1,
         },
-        {"key": "bfzy", "name": "🔥 暴風", "type": 1, "api": f"{base}/p/bfzy", "searchable": 1, "quickSearch": 1},
-        {"key": "ff", "name": "⚡ 非凡", "type": 1, "api": f"{base}/p/ff", "searchable": 1, "quickSearch": 1},
-        {"key": "sn", "name": "🎯 索尼", "type": 1, "api": f"{base}/p/sn", "searchable": 1, "quickSearch": 1},
-        {"key": "lz", "name": "🔮 量子", "type": 1, "api": f"{base}/p/lz", "searchable": 1, "quickSearch": 1},
-        {"key": "360", "name": "💠 360", "type": 1, "api": f"{base}/p/360", "searchable": 1, "quickSearch": 1},
-        {"key": "js", "name": "⚡ 極速", "type": 1, "api": f"{base}/p/js", "searchable": 1, "quickSearch": 1},
-        {"key": "jy", "name": "🦅 金鷹", "type": 1, "api": f"{base}/p/jy", "searchable": 1, "quickSearch": 1},
-        {"key": "wj", "name": "♾️ 無盡", "type": 1, "api": f"{base}/p/wj", "searchable": 1, "quickSearch": 1},
-        {"key": "yh", "name": "🌸 櫻花", "type": 1, "api": f"{base}/p/yh", "searchable": 1, "quickSearch": 1},
-        {"key": "md", "name": "🏙️ 魔都", "type": 1, "api": f"{base}/p/md", "searchable": 1, "quickSearch": 1},
-        {"key": "ik", "name": "🎵 iKun", "type": 1, "api": f"{base}/p/ik", "searchable": 1, "quickSearch": 1},
+        {"key": "bfzy", "name": "🔥 暴風", "type": 1, "api": f"{route_prefix}/p/bfzy", "searchable": 1, "quickSearch": 1},
+        {"key": "ff", "name": "⚡ 非凡", "type": 1, "api": f"{route_prefix}/p/ff", "searchable": 1, "quickSearch": 1},
+        {"key": "sn", "name": "🎯 索尼", "type": 1, "api": f"{route_prefix}/p/sn", "searchable": 1, "quickSearch": 1},
+        {"key": "lz", "name": "🔮 量子", "type": 1, "api": f"{route_prefix}/p/lz", "searchable": 1, "quickSearch": 1},
+        {"key": "360", "name": "💠 360", "type": 1, "api": f"{route_prefix}/p/360", "searchable": 1, "quickSearch": 1},
+        {"key": "js", "name": "⚡ 極速", "type": 1, "api": f"{route_prefix}/p/js", "searchable": 1, "quickSearch": 1},
+        {"key": "jy", "name": "🦅 金鷹", "type": 1, "api": f"{route_prefix}/p/jy", "searchable": 1, "quickSearch": 1},
+        {"key": "wj", "name": "♾️ 無盡", "type": 1, "api": f"{route_prefix}/p/wj", "searchable": 1, "quickSearch": 1},
+        {"key": "yh", "name": "🌸 櫻花", "type": 1, "api": f"{route_prefix}/p/yh", "searchable": 1, "quickSearch": 1},
+        {"key": "md", "name": "🏙️ 魔都", "type": 1, "api": f"{route_prefix}/p/md", "searchable": 1, "quickSearch": 1},
+        {"key": "ik", "name": "🎵 iKun", "type": 1, "api": f"{route_prefix}/p/ik", "searchable": 1, "quickSearch": 1},
     ]
+    order = {key: index for index, key in enumerate(REGION_ORDER.get(region, REGION_ORDER["hk"]))}
+    return sorted(core_sites, key=lambda site: order.get(site["key"], 999))
 
 
 def _limit_sources(sources, max_sources_per_video: int):
@@ -320,8 +329,8 @@ def _discover_sites(all_items: dict[str, list[VideoItem]]) -> list[dict]:
     return sites
 
 
-def _build_config(all_items: dict[str, list[VideoItem]], domain: str, update_time: str) -> dict:
-    core_sites = _core_sites(domain)
+def _build_config(all_items: dict[str, list[VideoItem]], domain: str, update_time: str, region: str) -> dict:
+    core_sites = _core_sites(domain, region)
     discovered = _discover_sites(all_items)
     seen_apis = {site["api"] for site in core_sites}
     sites = list(core_sites)
@@ -333,6 +342,7 @@ def _build_config(all_items: dict[str, list[VideoItem]], domain: str, update_tim
         "sites": sites,
         "flags": ["4K", "1080P", "720P", "優酷", "愛奇藝", "騰訊", "芒果"],
         "update_time": update_time,
+        "region": region,
     }
 
 
@@ -371,9 +381,14 @@ def build_all_outputs(all_items=None, rules_config=None, domain=""):
         save_json(data, output_path)
         paths[category] = output_path
 
-    config = _build_config(all_items or typed_items, domain, update_time)
+    config_hk = _build_config(all_items or typed_items, domain, update_time, "hk")
+    config_cn = _build_config(all_items or typed_items, domain, update_time, "cn")
     config_path = OUTPUT_DIR / "config.json"
-    save_json(config, config_path)
+    save_json(config_hk, config_path)
+    save_json(config_hk, OUTPUT_CONFIG_HK_JSON)
+    save_json(config_cn, OUTPUT_CONFIG_CN_JSON)
     paths["config"] = config_path
+    paths["config_hk"] = OUTPUT_CONFIG_HK_JSON
+    paths["config_cn"] = OUTPUT_CONFIG_CN_JSON
 
     return paths

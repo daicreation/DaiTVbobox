@@ -271,3 +271,47 @@ class TestBuildAllOutputs:
         assert tv_data["list"][0]["vod_name"] == "測試劇集"
         assert variety_data["total"] == 1
         assert variety_data["list"][0]["vod_name"] == "快樂綜藝"
+
+    def test_generates_hk_and_cn_configs(self):
+        """應同時輸出香港版與內地版配置"""
+        paths = build_all_outputs(
+            {"movie": [], "tv": [], "variety": [], "live": []},
+            {"output": {"max_sources_per_video": 10, "max_items_per_category": 100}},
+            "https://tv.example.com",
+        )
+
+        assert "config_hk" in paths
+        assert "config_cn" in paths
+        assert paths["config_hk"].name == "config.hk.json"
+        assert paths["config_cn"].name == "config.cn.json"
+
+        with open(paths["config_hk"], "r", encoding="utf-8") as f:
+            config_hk = json.load(f)
+        with open(paths["config_cn"], "r", encoding="utf-8") as f:
+            config_cn = json.load(f)
+
+        assert config_hk["sites"][0]["api"] == "https://tv.example.com/hk/api"
+        assert config_cn["sites"][0]["api"] == "https://tv.example.com/cn/api"
+        assert config_hk["region"] == "hk"
+        assert config_cn["region"] == "cn"
+
+    def test_regional_configs_use_region_specific_proxy_paths(self):
+        """核心直連站點應寫入對應地區路徑"""
+        paths = build_all_outputs(
+            {"movie": [], "tv": [], "variety": [], "live": []},
+            {"output": {"max_sources_per_video": 10, "max_items_per_category": 100}},
+            "https://tv.example.com",
+        )
+
+        with open(paths["config_hk"], "r", encoding="utf-8") as f:
+            config_hk = json.load(f)
+        with open(paths["config_cn"], "r", encoding="utf-8") as f:
+            config_cn = json.load(f)
+
+        hk_sites = {site["key"]: site["api"] for site in config_hk["sites"]}
+        cn_sites = {site["key"]: site["api"] for site in config_cn["sites"]}
+
+        assert hk_sites["bfzy"] == "https://tv.example.com/hk/p/bfzy"
+        assert cn_sites["bfzy"] == "https://tv.example.com/cn/p/bfzy"
+        assert hk_sites["360"] == "https://tv.example.com/hk/p/360"
+        assert cn_sites["360"] == "https://tv.example.com/cn/p/360"
