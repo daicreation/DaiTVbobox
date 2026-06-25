@@ -4,7 +4,7 @@ from .utils import save_json, now_display
 
 # 精選核心站點（品牌 + 已驗證可用，永遠在最前面）
 CORE_SITES = [
-    {"key": "bfzy",       "name": "🧊 Chill-AI-TV", "type": 1, "api": "https://bfzyapi.com/api.php/provide/vod", "searchable": 1, "quickSearch": 1},
+    {"key": "bfzy", "name": "🧊 Chill-TV", "type": 1, "api": "https://daitvbobox.chungshare.workers.dev/api", "searchable": 1, "quickSearch": 1},
     {"key": "ff",         "name": "⚡ 非凡",        "type": 1, "api": "http://cj.ffzyapi.com/api.php/provide/vod", "searchable": 1, "quickSearch": 1},
     {"key": "sn",         "name": "🎯 索尼",        "type": 1, "api": "https://suoniapi.com/api.php/provide/vod", "searchable": 1, "quickSearch": 1},
     {"key": "lz",         "name": "🔮 量子",        "type": 1, "api": "https://cj.lziapi.com/api.php/provide/vod/", "searchable": 1, "quickSearch": 1},

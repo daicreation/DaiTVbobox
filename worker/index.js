@@ -5,7 +5,7 @@
 // 內建備份（GitHub Actions 停擺時使用）
 const FALLBACK = {
   sites: [
-    { key: "Chill",      name: "🧊 Chill-TV", type: 1, api: "https://daitvbobox.chungshare.workers.dev/search", searchable: 1, quickSearch: 1, filterable: 1 },
+    { key: "Chill",      name: "🧊 Chill-TV", type: 1, api: "https://daitvbobox.chungshare.workers.dev/api", searchable: 1, quickSearch: 1, filterable: 1 },
     { key: "bfzy",       name: "🔥 暴風",     type: 1, api: "https://bfzyapi.com/api.php/provide/vod", searchable: 1, quickSearch: 1 },
     { key: "ff",         name: "⚡ 非凡",        type: 1, api: "http://cj.ffzyapi.com/api.php/provide/vod", searchable: 1, quickSearch: 1 },
     { key: "sn",         name: "🎯 索尼",        type: 1, api: "https://suoniapi.com/api.php/provide/vod", searchable: 1, quickSearch: 1 },
@@ -21,10 +21,41 @@ const FALLBACK = {
   flags: ["4K","1080P","720P","優酷","愛奇藝","騰訊","芒果"],
 };
 
-// Phase 3: 聚合搜尋
-async function handleSearch(url) {
+// 品牌統一端點：瀏覽=暴風代理, 搜尋=聚合, 詳情=多源fallback
+async function handleAll(url) {
   const wd = url.searchParams.get('wd') || '';
-  if (!wd) return json({ code: 1, msg: '🧊 Chill-TV', list: [], class: [] });
+  const ac = url.searchParams.get('ac') || '';
+
+  // 瀏覽模式 → 代理暴風（含分類+推薦）
+  if (!wd && !ac) {
+    try {
+      const r = await fetch('https://bfzyapi.com/api.php/provide/vod', {
+        headers: { 'User-Agent': 'ChillAITV/1.0' }, signal: AbortSignal.timeout(8000),
+      });
+      if (r.ok) {
+        const data = await r.json();
+        const bad = [29, 73];
+        if (data.list) data.list = data.list.filter(it => !bad.includes(it.type_id));
+        if (data.class) data.class = data.class.filter(it => !bad.includes(it.type_id));
+        return json(data);
+      }
+    } catch {}
+    return json({ code: 0, list: [], class: [] });
+  }
+
+  // 詳情模式 → 多源 fallback
+  if (ac === 'videolist' || url.searchParams.get('ids')) {
+    return handleDetail(url);
+  }
+
+  // 搜尋模式 → 聚合多源
+  if (wd) return aggregateSearch(wd);
+
+  return json({ code: 0, list: [], class: [] });
+}
+
+// 聚合搜尋：7 源並行查詢，去重合併
+async function aggregateSearch(wd) {
 
   const sources = [
     { key: 'bfzy', name: '暴風', api: 'https://bfzyapi.com/api.php/provide/vod' },
@@ -138,11 +169,8 @@ export default {
     const url = new URL(request.url);
     const path = url.pathname;
 
-    // Phase 3: 聚合搜尋
-    if (path === '/search') return handleSearch(url);
-
-    // Phase 2: /detail 端點
-    if (path === '/detail') return handleDetail(url);
+    // 品牌通用端點：瀏覽/搜尋/詳情
+    if (path === '/api' || path === '/search') return handleAll(url);
 
     // 嘗試讀取 GitHub Actions 生成的最新 config
     try {
