@@ -86,7 +86,8 @@ async function aggregateSearch(wd) {
   const all = results.flat();
   const seen = new Set();
   const list = all.filter(it => {
-    const k = ((it.vod_name || '') + '_' + (it.vod_year || '')).replace(/\s+/g, '').toLowerCase().slice(0, 40);
+    // 精準去重：片名 + 年份 + 類型（避免同名不同類誤合）
+    const k = ((it.vod_name||'') + '|' + (it.vod_year||'') + '|' + (it.type_name||'')).replace(/\s+/g,'').toLowerCase().slice(0,60);
     if (seen.has(k) || !k) return false;
     seen.add(k);
     return true;
