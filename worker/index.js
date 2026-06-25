@@ -1,14 +1,15 @@
 /**
  * Chill-AI-TV Worker
- * - /, /hk: Hong Kong config
- * - /cn: Mainland config
- * - /{region}/api: aggregated browse/search proxy
- * - /{region}/p/{key}: direct source proxy with adult categories filtered out
+ * - /, /hk, /cn: shared config
+ * - /api, /hk/api, /cn/api: aggregated browse/search proxy
+ * - /p/{key}, /hk/p/{key}, /cn/p/{key}: direct source proxy with adult categories filtered out
  */
 const DOMAIN = 'https://daitvbobox.chungshare.workers.dev';
+const SITE_NAME_BLOCKLIST = ['采集', '理論', '理论', '福利', '成人', '直播', '短剧', '短劇', '云盘', '雲盤', '网盘', '網盤', 'alist', '配置'];
+const SITE_URL_BLOCKLIST = ['.js', '.py', 'drpy', 'spider', 'get.js', '/lib/', 'live?url=', 'csp_', '/vod/json', 'json?url='];
 
-function buildFallback(region = 'hk') {
-  const base = `${DOMAIN}/${region}`;
+function buildFallback() {
+  const base = DOMAIN;
   return {
     sites: [
       { key: 'chill', name: 'Chill-TV', type: 1, api: `${base}/api`, searchable: 1, quickSearch: 1, filterable: 1 },
@@ -25,7 +26,7 @@ function buildFallback(region = 'hk') {
       { key: 'ik', name: 'iKun', type: 1, api: `${base}/p/ik`, searchable: 1, quickSearch: 1 },
     ],
     flags: ['4K', '1080P', '720P', 'YOUKU', 'iQIYI', 'Tencent', 'Mango'],
-    region,
+    region: 'shared',
   };
 }
 
@@ -43,8 +44,7 @@ export default {
     }
 
     try {
-      const configFile = route.region === 'cn' ? 'config.cn.json' : 'config.hk.json';
-      const apiUrl = `https://api.github.com/repos/daicreation/DaiTVbobox/contents/output/${configFile}`;
+      const apiUrl = 'https://api.github.com/repos/daicreation/DaiTVbobox/contents/output/config.json';
       const resp = await fetch(apiUrl, {
         headers: {
           'User-Agent': 'ChillAITV/1.0',
@@ -62,32 +62,31 @@ export default {
 
         const config = JSON.parse(new TextDecoder('utf-8').decode(bytes));
         if (config.sites?.length > 0) {
-          config.sites = config.sites.filter((site) => !(site.name || '').includes('采集'));
+          config.sites = config.sites.filter(isAllowedSite);
           return json(config, 200, 'no-cache');
         }
       }
     } catch {}
 
-    return json(buildFallback(route.region), 200, 'no-cache');
+    return json(buildFallback(), 200, 'no-cache');
   },
 };
 
 function parseRoute(pathname) {
   const parts = pathname.split('/').filter(Boolean);
   const first = parts[0] || '';
-  const region = first === 'cn' ? 'cn' : 'hk';
   const offset = first === 'hk' || first === 'cn' ? 1 : 0;
   const next = parts[offset] || '';
 
   if (next === 'api') {
-    return { region, kind: 'api', proxyKey: '' };
+    return { kind: 'api', proxyKey: '' };
   }
 
   if (next === 'p' && parts[offset + 1]) {
-    return { region, kind: 'proxy', proxyKey: parts[offset + 1] };
+    return { kind: 'proxy', proxyKey: parts[offset + 1] };
   }
 
-  return { region, kind: 'config', proxyKey: '' };
+  return { kind: 'config', proxyKey: '' };
 }
 
 const PROXY_MAP = {
@@ -146,4 +145,19 @@ function json(data, status = 200, cacheControl = 'public, max-age=300') {
       'Cache-Control': cacheControl,
     },
   });
+}
+
+function isAllowedSite(site) {
+  const name = (site?.name || '').toLowerCase();
+  const api = (site?.api || '').toLowerCase();
+  if (!api.startsWith('http')) {
+    return false;
+  }
+  if (SITE_NAME_BLOCKLIST.some((keyword) => name.includes(keyword.toLowerCase()))) {
+    return false;
+  }
+  if (SITE_URL_BLOCKLIST.some((keyword) => api.includes(keyword))) {
+    return false;
+  }
+  return true;
 }
