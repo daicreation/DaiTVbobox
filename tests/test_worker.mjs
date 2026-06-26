@@ -7,6 +7,8 @@ const workerModulePromise = loadWorkerModule();
 const GITHUB_HOT_TV_URL = 'https://api.github.com/repos/daicreation/DaiTVbobox/contents/output/hot_tv.json';
 const GITHUB_CONFIG_URL = 'https://api.github.com/repos/daicreation/DaiTVbobox/contents/output/config.json';
 const DEFAULT_PROXY_URL = 'https://bfzyapi.com/api.php/provide/vod';
+const CURRENT_WORKER_DOMAIN = 'https://chilltv.chungchung.online';
+const STALE_PROXY_POSTER = 'https://tv.example.com/img?url=https%3A%2F%2Fimg.example.com%2Fhot-show.jpg';
 const HOT_TV_CLASS = { type_id: 'hot_tv', type_name: '電視劇' };
 
 const HOT_TV_FIXTURE = {
@@ -15,7 +17,7 @@ const HOT_TV_FIXTURE = {
     {
       vod_id: 'tv_hot_1',
       vod_name: 'Hot Show',
-      vod_pic: 'https://img.example.com/hot-show.jpg',
+      vod_pic: STALE_PROXY_POSTER,
       vod_remarks: 'Updated to episode 8',
       source_count: 1,
     },
@@ -24,7 +26,7 @@ const HOT_TV_FIXTURE = {
     tv_hot_1: {
       vod_id: 'tv_hot_1',
       vod_name: 'Hot Show',
-      vod_pic: 'https://img.example.com/hot-show.jpg',
+      vod_pic: STALE_PROXY_POSTER,
       vod_remarks: 'Updated to episode 8',
       type_name: 'TV',
       source_count: 1,
@@ -92,8 +94,8 @@ test('homepage-like api routes read hot_tv.json before proxying', async () => {
     const response = await worker.fetch(new Request('https://worker.example/hk/api'));
     const payload = await response.json();
 
-    assert.deepEqual(payload.list, HOT_TV_FIXTURE.list);
-    assert.deepEqual(payload.class, [HOT_TV_CLASS]);
+    assert.equal(payload.list[0].vod_pic, `${CURRENT_WORKER_DOMAIN}/img?url=https%3A%2F%2Fimg.example.com%2Fhot-show.jpg`);
+    assert.deepEqual(payload.class, []);
     assert.equal(calls.filter((call) => call.url === GITHUB_HOT_TV_URL).length, 1);
     assert.equal(calls.some((call) => call.url.startsWith(DEFAULT_PROXY_URL)), false);
   });
@@ -114,7 +116,7 @@ test('hot_tv category requests read hot_tv.json before proxying', async () => {
     const response = await worker.fetch(new Request('https://worker.example/api?ac=list&t=hot_tv&pg=1'));
     const payload = await response.json();
 
-    assert.deepEqual(payload.list, HOT_TV_FIXTURE.list);
+    assert.equal(payload.list[0].vod_pic, `${CURRENT_WORKER_DOMAIN}/img?url=https%3A%2F%2Fimg.example.com%2Fhot-show.jpg`);
     assert.equal(calls.filter((call) => call.url === GITHUB_HOT_TV_URL).length, 1);
     assert.equal(calls.some((call) => call.url.startsWith(DEFAULT_PROXY_URL)), false);
   });
@@ -135,7 +137,7 @@ test('hot_tv category requests without ac=list still read hot_tv.json before pro
     const response = await worker.fetch(new Request('https://worker.example/api?t=hot_tv&pg=1'));
     const payload = await response.json();
 
-    assert.deepEqual(payload.list, HOT_TV_FIXTURE.list);
+    assert.equal(payload.list[0].vod_pic, `${CURRENT_WORKER_DOMAIN}/img?url=https%3A%2F%2Fimg.example.com%2Fhot-show.jpg`);
     assert.equal(calls.filter((call) => call.url === GITHUB_HOT_TV_URL).length, 1);
     assert.equal(calls.some((call) => call.url.startsWith(DEFAULT_PROXY_URL)), false);
   });
@@ -156,7 +158,7 @@ test('hot_tv category requests remain supported for videolist route', async () =
     const response = await worker.fetch(new Request('https://worker.example/api?ac=videolist&t=hot_tv&pg=1'));
     const payload = await response.json();
 
-    assert.deepEqual(payload.list, HOT_TV_FIXTURE.list);
+    assert.equal(payload.list[0].vod_pic, `${CURRENT_WORKER_DOMAIN}/img?url=https%3A%2F%2Fimg.example.com%2Fhot-show.jpg`);
     assert.equal(calls.filter((call) => call.url === GITHUB_HOT_TV_URL).length, 1);
     assert.equal(calls.some((call) => call.url.startsWith(DEFAULT_PROXY_URL)), false);
   });
@@ -177,9 +179,61 @@ test('detail api routes return prebuilt hot_tv detail when the vod_id is matched
     const response = await worker.fetch(new Request('https://worker.example/cn/api?ac=detail&ids=tv_hot_1'));
     const payload = await response.json();
 
-    assert.deepEqual(payload.list, [HOT_TV_FIXTURE.details.tv_hot_1]);
+    assert.equal(payload.list[0].vod_pic, `${CURRENT_WORKER_DOMAIN}/img?url=https%3A%2F%2Fimg.example.com%2Fhot-show.jpg`);
     assert.equal(calls.filter((call) => call.url === GITHUB_HOT_TV_URL).length, 1);
     assert.equal(calls.some((call) => call.url.startsWith(DEFAULT_PROXY_URL)), false);
+  });
+});
+
+test('detail api routes fall back to source lookup when hot_tv detail is missing', async () => {
+  const worker = (await workerModulePromise).default;
+  const hotTvWithoutDetail = {
+    ...HOT_TV_FIXTURE,
+    list: [
+      {
+        vod_id: 'tv_hot_missing_detail',
+        vod_name: 'Fallback Show',
+        vod_pic: STALE_PROXY_POSTER,
+        vod_remarks: 'Douban rank',
+        source_count: 0,
+      },
+    ],
+    details: {},
+  };
+
+  await runWithFetchStub((url) => {
+    if (url === GITHUB_HOT_TV_URL) {
+      return makeGitHubFileResponse(hotTvWithoutDetail);
+    }
+    if (url === `${DEFAULT_PROXY_URL}?wd=Fallback+Show`) {
+      return makeJsonResponse({
+        list: [
+          { vod_id: 'bfzy-1', vod_name: 'Fallback Show' },
+        ],
+      });
+    }
+    if (url === `${DEFAULT_PROXY_URL}?ac=detail&ids=bfzy-1`) {
+      return makeJsonResponse({
+        list: [
+          {
+            vod_id: 'bfzy-1',
+            vod_name: 'Fallback Show',
+            vod_pic: 'https://img.example.com/fallback-show.jpg',
+            vod_play_from: 'bfzy',
+            vod_play_url: 'Episode 1$https://play.example.com/fallback-show.m3u8',
+          },
+        ],
+      });
+    }
+    throw new Error(`Unexpected fetch: ${url}`);
+  }, async (calls) => {
+    const response = await worker.fetch(new Request('https://worker.example/api?ac=detail&ids=tv_hot_missing_detail'));
+    const payload = await response.json();
+
+    assert.equal(payload.list[0].vod_name, 'Fallback Show');
+    assert.equal(payload.list[0].vod_pic, `${CURRENT_WORKER_DOMAIN}/img?url=https%3A%2F%2Fimg.example.com%2Ffallback-show.jpg`);
+    assert.equal(calls.filter((call) => call.url === GITHUB_HOT_TV_URL).length, 1);
+    assert.equal(calls.filter((call) => call.url.startsWith(`${DEFAULT_PROXY_URL}?`)).length, 2);
   });
 });
 
@@ -281,7 +335,7 @@ test('config route falls back to built-in config when GitHub config fetch fails'
 
     assert.equal(Array.isArray(payload.sites), true);
     assert.equal(payload.sites[0].key, 'chill');
-    assert.equal(payload.sites[0].api, 'https://daitvbobox.chungshare.workers.dev/api');
+    assert.equal(payload.sites[0].api, 'https://chilltv.chungchung.online/api');
     assert.equal('flags' in payload, false);
     assert.equal(calls.filter((call) => call.url === GITHUB_CONFIG_URL).length, 1);
   });

@@ -4,7 +4,7 @@ from __future__ import annotations
 
 from copy import deepcopy
 from typing import Iterable
-from urllib.parse import quote
+from urllib.parse import parse_qs, quote, urlparse
 
 from .constants import (
     CATEGORIES,
@@ -278,10 +278,18 @@ def _sort_items(items: list[VideoItem]) -> list[VideoItem]:
 def _rewrite_hot_tv_images(dataset: dict, domain: str) -> dict:
     base = (domain or WORKER_DOMAIN).rstrip("/")
 
+    def unwrap_proxy_url(url: str) -> str:
+        parsed = urlparse(url)
+        if parsed.path != "/img":
+            return url
+        inner = parse_qs(parsed.query).get("url", [""])[0].strip()
+        return inner or url
+
     def proxify(url: str) -> str:
         value = str(url or "").strip()
         if not value.startswith(("http://", "https://")):
             return value
+        value = unwrap_proxy_url(value)
         return f"{base}/img?url={quote(value, safe='')}"
 
     for item in dataset.get("list", []) or []:

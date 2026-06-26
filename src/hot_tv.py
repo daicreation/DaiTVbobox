@@ -23,12 +23,23 @@ DOUBAN_HOT_VARIETY_API = (
 DOUBAN_HOT_VARIETY_REFERER = "https://m.douban.com/subject_collection/show_hot"
 DIRECT_HOT_TV_SOURCES = (
     ("bfzy", "https://bfzyapi.com/api.php/provide/vod/"),
+    ("ff", "http://cj.ffzyapi.com/api.php/provide/vod"),
+    ("sn", "https://suoniapi.com/api.php/provide/vod"),
     ("lz", "https://cj.lziapi.com/api.php/provide/vod/"),
     ("360", "https://360zyzz.com/api.php/provide/vod/"),
     ("js", "https://jszyapi.com/api.php/provide/vod/"),
+    ("jy", "https://jyzyapi.com/provide/vod/"),
+    ("yh", "https://m3u8.apiyhzy.com/api.php/provide/vod"),
     ("wj", "https://api.wujinapi.me/api.php/provide/vod/"),
     ("md", "https://www.mdzyapi.com/api.php/provide/vod/"),
     ("ik", "https://ikunzyapi.com/api.php/provide/vod/"),
+    ("tgzy", "http://360.tgzy.cc/api.php/provide/vod/"),
+    ("tvcaiji", "http://tvcaiji.pankk.cn/api.php/provide/vod/"),
+    ("xydm", "http://xydm.baicai.buzz/api.php/provide/vod/"),
+    ("nxflv", "http://caiji.nxflv.com/api.php/provide/vod/"),
+    ("hykjtv", "http://tv2.hykjtv.cn/api.php/provide/vod/"),
+    ("vipmv", "http://vipmv.cc/api.php/provide/vod/"),
+    ("v47", "http://47.113.126.237:1234/api.php/provide/vod/"),
 )
 
 
@@ -117,27 +128,102 @@ def build_hot_tv_dataset(
 ) -> dict:
     """Build homepage cards plus detail payloads for matched hot TV titles."""
     rows = match_hot_tv_items(feed_items, ranked_tv_items, similarity_threshold)
+    matched_titles = {
+        _build_feed_descriptor(row["feed"]).normalized_title
+        for row in rows
+    }
+    missing_feed_items = [
+        feed_item
+        for feed_item in feed_items
+        if _build_feed_descriptor(feed_item).normalized_title not in matched_titles
+    ]
+
+    # Large homepage feeds should stay deterministic and fast: keep unresolved
+    # titles as placeholders and let the Worker resolve them on demand.
+    should_prefetch_direct = bool(missing_feed_items) and len(feed_items) < 10
+    if should_prefetch_direct:
+        direct_dataset = build_direct_hot_tv_dataset(
+            missing_feed_items,
+            similarity_threshold,
+        )
+        rows.extend(
+            {
+                "feed": {
+                    "title": item["vod_name"],
+                    "cover": item.get("vod_pic", ""),
+                    "remarks": item.get("vod_remarks", ""),
+                    "alt_titles": [],
+                },
+                "item": None,
+                "detail": detail,
+            }
+            for item, detail in (
+                (card, direct_dataset["details"].get(card["vod_id"]))
+                for card in direct_dataset.get("list", [])
+            )
+            if detail
+        )
+
+    if len(feed_items) >= 10:
+        resolved_titles = {
+            _build_feed_descriptor(row["feed"]).normalized_title
+            for row in rows
+            if row.get("detail")
+        }
+        for feed_item in feed_items:
+            descriptor = _build_feed_descriptor(feed_item)
+            if descriptor.normalized_title and descriptor.normalized_title not in resolved_titles:
+                rows.append(
+                    {
+                        "feed": feed_item,
+                        "item": None,
+                        "detail": None,
+                    }
+                )
     homepage_list: list[dict] = []
     details: dict[str, dict] = {}
 
     for row in rows:
         feed = row["feed"]
-        item = row["item"]
-        detail = _build_detail_payload(item)
-        details[item.vod_id] = detail
+        item = row.get("item")
+        detail = row.get("detail") or (_build_detail_payload(item) if item else None)
+        if detail:
+            details[detail["vod_id"]] = detail
+            vod_id = detail["vod_id"]
+            vod_name = detail["vod_name"]
+            vod_pic = feed.get("cover") or detail["vod_pic"]
+            vod_remarks = feed.get("remarks") or detail["vod_remarks"]
+            vod_year = detail["vod_year"]
+            vod_area = detail["vod_area"]
+            vod_actor = detail["vod_actor"]
+            vod_content = detail["vod_content"]
+            vod_score = detail["vod_score"]
+            source_count = detail["source_count"]
+        else:
+            descriptor = _build_feed_descriptor(feed)
+            vod_id = _build_direct_hot_tv_id(descriptor)
+            vod_name = str(feed.get("title", "") or "").strip()
+            vod_pic = str(feed.get("cover", "") or "").strip()
+            vod_remarks = str(feed.get("remarks", "") or "").strip()
+            vod_year = str(feed.get("year", "") or "").strip()
+            vod_area = ""
+            vod_actor = ""
+            vod_content = ""
+            vod_score = ""
+            source_count = 0
 
         homepage_list.append(
             {
-                "vod_id": item.vod_id,
-                "vod_name": item.vod_name,
-                "vod_pic": feed.get("cover") or item.vod_pic,
-                "vod_remarks": feed.get("remarks") or item.vod_remarks,
-                "vod_year": item.vod_year,
-                "vod_area": item.vod_area,
-                "vod_actor": item.vod_actor,
-                "vod_content": item.vod_content,
-                "vod_score": item.vod_score,
-                "source_count": detail["source_count"],
+                "vod_id": vod_id,
+                "vod_name": vod_name,
+                "vod_pic": vod_pic,
+                "vod_remarks": vod_remarks,
+                "vod_year": vod_year,
+                "vod_area": vod_area,
+                "vod_actor": vod_actor,
+                "vod_content": vod_content,
+                "vod_score": vod_score,
+                "source_count": source_count,
             }
         )
 

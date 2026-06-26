@@ -106,6 +106,71 @@ def test_build_hot_tv_dataset_keeps_only_matched_titles():
     assert "https://play.example.com/tv-a.m3u8" in detail["vod_play_url"]
 
 
+def test_build_hot_tv_dataset_fills_missing_titles_from_direct_sources(monkeypatch):
+    hot_tv = _load_hot_tv_module()
+    feed_items = [
+        {
+            "title": "Matched Show",
+            "cover": "https://img.example.com/matched.jpg",
+            "remarks": "Popular now",
+        },
+        {
+            "title": "Missing Show",
+            "cover": "https://img.example.com/missing.jpg",
+            "remarks": "Popular now",
+        },
+    ]
+    ranked_items = [
+        VideoItem(
+            vod_id="tv_a",
+            vod_name="Matched Show",
+            category=Category.TV,
+            type_name="TV",
+            sources=[_build_source("https://play.example.com/tv-a.m3u8", "storm")],
+        )
+    ]
+
+    monkeypatch.setattr(
+        hot_tv,
+        "build_direct_hot_tv_dataset",
+        lambda feed_items, similarity_threshold, direct_sources=None: {
+            "update_time": "2026-06-26 00:00:00",
+            "list": [
+                {
+                    "vod_id": "direct_missing",
+                    "vod_name": "Missing Show",
+                    "vod_pic": "https://img.example.com/missing.jpg",
+                    "vod_remarks": "Popular now",
+                    "source_count": 1,
+                }
+            ],
+            "details": {
+                "direct_missing": {
+                    "vod_id": "direct_missing",
+                    "vod_name": "Missing Show",
+                    "vod_pic": "https://img.example.com/missing.jpg",
+                    "vod_remarks": "Popular now",
+                    "type_name": "TV",
+                    "vod_year": "",
+                    "vod_area": "",
+                    "vod_actor": "",
+                    "vod_director": "",
+                    "vod_content": "",
+                    "vod_score": "",
+                    "source_count": 1,
+                    "vod_play_from": "storm",
+                    "vod_play_url": "Episode 1$https://play.example.com/direct-missing.m3u8",
+                }
+            },
+        },
+    )
+
+    dataset = hot_tv.build_hot_tv_dataset(feed_items, ranked_items, similarity_threshold=0.8)
+
+    assert [item["vod_name"] for item in dataset["list"]] == ["Matched Show", "Missing Show"]
+    assert dataset["details"]["direct_missing"]["vod_play_url"] == "Episode 1$https://play.example.com/direct-missing.m3u8"
+
+
 def test_fetch_hot_tv_feed_parses_rexxar_json(monkeypatch):
     hot_tv = _load_hot_tv_module()
     client = _DummyClient(

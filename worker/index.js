@@ -4,7 +4,7 @@
  * - /api, /hk/api, /cn/api: homepage/detail proxy split
  * - /p/{key}, /hk/p/{key}, /cn/p/{key}: direct source proxy
  */
-const DOMAIN = 'https://daitvbobox.chungshare.workers.dev';
+const DOMAIN = 'https://chilltv.chungchung.online';
 const GITHUB_OUTPUT_API_BASE = 'https://api.github.com/repos/daicreation/DaiTVbobox/contents/output';
 const GITHUB_FETCH_TIMEOUT_MS = 3000;
 const HOT_TV_CLASS = { type_id: 'hot_tv', type_name: '電視劇' };
@@ -177,24 +177,35 @@ async function serveHotTvHomepage() {
   if (!hotTv || !Array.isArray(hotTv.list)) {
     return null;
   }
+  const normalized = normalizeHotTvPayload(hotTv);
 
   return json({
     code: 1,
     msg: '',
     page: 1,
     pagecount: 1,
-    limit: hotTv.list.length,
-    total: hotTv.list.length,
-    class: [HOT_TV_CLASS],
-    list: hotTv.list,
-    update_time: hotTv.update_time || '',
+    limit: normalized.list.length,
+    total: normalized.list.length,
+    class: [],
+    list: normalized.list,
+    update_time: normalized.update_time || '',
   }, 200, 'no-cache');
 }
 
 async function serveHotTvDetail(url) {
   const hotTv = await fetchRepoOutputJson('hot_tv.json');
+  const normalized = normalizeHotTvPayload(hotTv);
   const vodId = getRequestedVodId(url);
-  const detail = hotTv?.details?.[vodId];
+  let detail = normalized?.details?.[vodId];
+  if (!detail) {
+    const homepageItem = (normalized?.list || []).find((item) => item?.vod_id === vodId);
+    if (homepageItem?.vod_name) {
+      detail = await resolveHotTvDetailByTitle(homepageItem.vod_name, homepageItem.vod_remarks || '');
+      if (detail) {
+        detail = normalizeHotTvItem(detail);
+      }
+    }
+  }
   if (!detail) {
     return null;
   }
@@ -203,8 +214,146 @@ async function serveHotTvDetail(url) {
     code: 1,
     msg: '',
     list: [detail],
-    update_time: hotTv.update_time || '',
+    update_time: normalized.update_time || '',
   }, 200, 'no-cache');
+}
+
+async function resolveHotTvDetailByTitle(title, remarks = '') {
+  const query = String(title || '').trim();
+  if (!query) {
+    return null;
+  }
+
+  for (const [sourceKey, target] of Object.entries(PROXY_MAP)) {
+    const searchData = await fetchSourceJson(target, { wd: query });
+    const candidate = pickSourceListItem(searchData, query);
+    if (!candidate) {
+      continue;
+    }
+
+    const vodId = String(candidate.vod_id || candidate.id || '').trim();
+    if (!vodId) {
+      continue;
+    }
+
+    const detailData = await fetchSourceJson(target, { ac: 'detail', ids: vodId });
+    const detail = pickSourceDetailItem(detailData, vodId);
+    if (!detail) {
+      continue;
+    }
+
+    detail._source_name = sourceKey;
+    if (!detail.vod_name) {
+      detail.vod_name = query;
+    }
+    if (!detail.vod_remarks && remarks) {
+      detail.vod_remarks = remarks;
+    }
+    return detail;
+  }
+
+  return null;
+}
+
+async function fetchSourceJson(target, params) {
+  const api = target || 'https://bfzyapi.com/api.php/provide/vod';
+  try {
+    const query = new URLSearchParams(params || {}).toString();
+    const response = await fetch(query ? `${api}?${query}` : api, {
+      method: 'GET',
+      headers: { 'User-Agent': 'ChillAITV/1.0' },
+      signal: AbortSignal.timeout(8000),
+    });
+    if (!response.ok) {
+      return null;
+    }
+    return await response.json();
+  } catch {
+    return null;
+  }
+}
+
+function pickSourceListItem(payload, title) {
+  const items = Array.isArray(payload?.list) ? payload.list : [];
+  if (items.length === 0) {
+    return null;
+  }
+
+  const normalizedTitle = String(title || '').trim().toLowerCase();
+  for (const item of items) {
+    const itemTitle = String(item?.vod_name || item?.vod_en || '').trim().toLowerCase();
+    if (itemTitle && (itemTitle === normalizedTitle || itemTitle.includes(normalizedTitle) || normalizedTitle.includes(itemTitle))) {
+      return item;
+    }
+  }
+
+  return items[0] || null;
+}
+
+function pickSourceDetailItem(payload, vodId) {
+  const items = Array.isArray(payload?.list) ? payload.list : [];
+  if (items.length === 0) {
+    return null;
+  }
+
+  const normalizedVodId = String(vodId || '').trim();
+  for (const item of items) {
+    const itemVodId = String(item?.vod_id || item?.id || '').trim();
+    if (itemVodId && itemVodId === normalizedVodId) {
+      return item;
+    }
+    if (String(item?.vod_play_url || '').trim()) {
+      return item;
+    }
+  }
+
+  return null;
+}
+
+function normalizeHotTvPayload(hotTv) {
+  if (!hotTv || !Array.isArray(hotTv.list)) {
+    return hotTv;
+  }
+
+  const list = hotTv.list.map((item) => normalizeHotTvItem(item));
+  const details = Object.fromEntries(
+    Object.entries(hotTv.details || {}).map(([vodId, detail]) => [vodId, normalizeHotTvItem(detail)])
+  );
+
+  return {
+    ...hotTv,
+    list,
+    details,
+  };
+}
+
+function normalizeHotTvItem(item) {
+  if (!item || typeof item !== 'object') {
+    return item;
+  }
+
+  return {
+    ...item,
+    vod_pic: normalizePosterUrl(item.vod_pic),
+  };
+}
+
+function normalizePosterUrl(value) {
+  const raw = String(value || '').trim();
+  if (!/^https?:\/\//i.test(raw)) {
+    return raw;
+  }
+
+  try {
+    const parsed = new URL(raw);
+    let target = raw;
+    if (parsed.pathname === '/img') {
+      target = (parsed.searchParams.get('url') || '').trim() || raw;
+    }
+    return `${DOMAIN}/img?url=${encodeURIComponent(target)}`;
+  } catch {
+    return raw;
+  }
 }
 
 async function proxyImageAsset(url) {

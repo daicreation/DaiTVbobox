@@ -62,7 +62,7 @@ jobs:
       PYTHONUNBUFFERED: 1
       GITHUB_REPOSITORY: ${{ github.repository }}
       GITHUB_REPOSITORY_OWNER: ${{ github.repository_owner }}
-      WORKER_DOMAIN: ${{ secrets.WORKER_DOMAIN || 'https://tv.xxx.com' }}
+      WORKER_DOMAIN: ${{ secrets.WORKER_DOMAIN || 'https://chilltv.chungchung.online' }}
 
     steps:
       # ============================================================
@@ -310,7 +310,7 @@ jobs:
           from pathlib import Path
 
           rules = load_yaml(RULES_YAML_PATH)
-          domain = os.environ.get('WORKER_DOMAIN', 'https://tv.xxx.com')
+          domain = os.environ.get('WORKER_DOMAIN', 'https://chilltv.chungchung.online')
 
           # 讀取 ranker 的結果
           cache_file = Path('cache/ranked_items.pkl')

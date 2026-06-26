@@ -41,7 +41,7 @@ GITHUB_RAW_BASE = f"https://raw.githubusercontent.com/{GITHUB_REPO_NAME}/main"
 
 # ---- Cloudflare Worker 資訊 ----
 # 使用者看到的唯一入口
-WORKER_DOMAIN = os.environ.get("WORKER_DOMAIN", "https://tv.xxx.com")
+WORKER_DOMAIN = os.environ.get("WORKER_DOMAIN", "https://chilltv.chungchung.online")
 # 如果你有自訂域名，修改上面的環境變數或直接改這裡
 
 # ---- HTTP 請求設定 ----
