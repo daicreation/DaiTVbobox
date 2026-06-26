@@ -527,3 +527,48 @@ class TestBuildAllOutputs:
 
         assert hot_tv_data["list"] == [{"vod_id": "bf-1", "vod_name": "Hot Show A", "source_count": 1}]
         assert hot_tv_data["details"]["bf-1"]["vod_play_from"] == "bfzy"
+
+    def test_rewrites_hot_tv_covers_to_worker_image_proxy(self, monkeypatch: pytest.MonkeyPatch):
+        def fake_fetch_hot_tv_feed():
+            return [{"title": "Hot Show A", "cover": "https://img.example.com/poster.jpg"}]
+
+        def fake_build_hot_tv_dataset(feed_items, ranked_tv_items, similarity_threshold):
+            return {
+                "list": [
+                    {
+                        "vod_id": "tv_001",
+                        "vod_name": "Hot Show A",
+                        "vod_pic": "https://img.example.com/poster.jpg",
+                        "source_count": 1,
+                    }
+                ],
+                "details": {
+                    "tv_001": {
+                        "vod_id": "tv_001",
+                        "vod_name": "Hot Show A",
+                        "vod_pic": "https://img.example.com/poster.jpg",
+                        "source_count": 1,
+                        "vod_play_from": "bfzy",
+                        "vod_play_url": "Episode 1$https://play.example.com/tv-001.m3u8",
+                    }
+                },
+                "update_time": "2026-06-26 02:00:00",
+            }
+
+        monkeypatch.setattr("src.builder.fetch_hot_tv_feed", fake_fetch_hot_tv_feed)
+        monkeypatch.setattr("src.builder.build_hot_tv_dataset", fake_build_hot_tv_dataset)
+
+        paths = build_all_outputs(
+            {"movie": [], "tv": [], "variety": [], "live": []},
+            {
+                "output": {"max_sources_per_video": 10, "max_items_per_category": 100},
+                "dedup": {"title_similarity_threshold": 0.8},
+            },
+            "https://tv.example.com",
+        )
+
+        with open(paths["hot_tv"], "r", encoding="utf-8") as f:
+            hot_tv_data = json.load(f)
+
+        assert hot_tv_data["list"][0]["vod_pic"] == "https://tv.example.com/img?url=https%3A%2F%2Fimg.example.com%2Fposter.jpg"
+        assert hot_tv_data["details"]["tv_001"]["vod_pic"] == "https://tv.example.com/img?url=https%3A%2F%2Fimg.example.com%2Fposter.jpg"

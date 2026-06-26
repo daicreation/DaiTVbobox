@@ -4,6 +4,7 @@ from __future__ import annotations
 
 from copy import deepcopy
 from typing import Iterable
+from urllib.parse import quote
 
 from .constants import (
     CATEGORIES,
@@ -269,6 +270,26 @@ def _sort_items(items: list[VideoItem]) -> list[VideoItem]:
     return sorted(items, key=sort_key)
 
 
+def _rewrite_hot_tv_images(dataset: dict, domain: str) -> dict:
+    base = (domain or WORKER_DOMAIN).rstrip("/")
+
+    def proxify(url: str) -> str:
+        value = str(url or "").strip()
+        if not value.startswith(("http://", "https://")):
+            return value
+        return f"{base}/img?url={quote(value, safe='')}"
+
+    for item in dataset.get("list", []) or []:
+        if "vod_pic" in item:
+            item["vod_pic"] = proxify(item.get("vod_pic", ""))
+
+    for detail in (dataset.get("details", {}) or {}).values():
+        if "vod_pic" in detail:
+            detail["vod_pic"] = proxify(detail.get("vod_pic", ""))
+
+    return dataset
+
+
 def _build_tvbox_json(items: list[VideoItem], category: str, update_time: str, max_sources_per_video: int) -> dict:
     prepared = []
     for item in items:
@@ -392,6 +413,7 @@ def build_all_outputs(all_items=None, rules_config=None, domain=""):
             hot_tv_feed_items,
             similarity_threshold,
         )
+    hot_tv_dataset = _rewrite_hot_tv_images(hot_tv_dataset, domain)
     save_json(hot_tv_dataset, OUTPUT_HOT_TV_JSON)
     paths["hot_tv"] = OUTPUT_HOT_TV_JSON
 

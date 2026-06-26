@@ -97,6 +97,27 @@ test('homepage-like api routes read hot_tv.json before proxying', async () => {
   });
 });
 
+test('hot_tv category requests read hot_tv.json before proxying', async () => {
+  const worker = (await workerModulePromise).default;
+
+  await runWithFetchStub((url) => {
+    if (url === GITHUB_HOT_TV_URL) {
+      return makeGitHubFileResponse(HOT_TV_FIXTURE);
+    }
+    if (url.startsWith(DEFAULT_PROXY_URL)) {
+      return makeJsonResponse({ code: 1, list: [{ vod_id: 'proxy_only' }], class: [] });
+    }
+    throw new Error(`Unexpected fetch: ${url}`);
+  }, async (calls) => {
+    const response = await worker.fetch(new Request('https://worker.example/api?ac=list&t=hot_tv&pg=1'));
+    const payload = await response.json();
+
+    assert.deepEqual(payload.list, HOT_TV_FIXTURE.list);
+    assert.equal(calls.filter((call) => call.url === GITHUB_HOT_TV_URL).length, 1);
+    assert.equal(calls.some((call) => call.url.startsWith(DEFAULT_PROXY_URL)), false);
+  });
+});
+
 test('detail api routes return prebuilt hot_tv detail when the vod_id is matched', async () => {
   const worker = (await workerModulePromise).default;
 
@@ -236,5 +257,28 @@ test('/p/* routes remain direct proxies and do not read hot_tv.json', async () =
     assert.deepEqual(payload.list, [{ vod_id: 'direct_proxy' }]);
     assert.equal(calls.some((call) => call.url === GITHUB_HOT_TV_URL), false);
     assert.deepEqual(calls.map((call) => call.url), [`${DEFAULT_PROXY_URL}?wd=keyword`]);
+  });
+});
+
+test('/img route proxies remote poster assets', async () => {
+  const worker = (await workerModulePromise).default;
+  const target = 'https://img.example.com/hot-show.jpg';
+
+  await runWithFetchStub((url) => {
+    if (url === target) {
+      return new Response('image-bytes', {
+        status: 200,
+        headers: { 'Content-Type': 'image/jpeg' },
+      });
+    }
+    throw new Error(`Unexpected fetch: ${url}`);
+  }, async (calls) => {
+    const response = await worker.fetch(new Request(`https://worker.example/img?url=${encodeURIComponent(target)}`));
+    const body = await response.text();
+
+    assert.equal(response.status, 200);
+    assert.equal(response.headers.get('Content-Type'), 'image/jpeg');
+    assert.equal(body, 'image-bytes');
+    assert.deepEqual(calls.map((call) => call.url), [target]);
   });
 });

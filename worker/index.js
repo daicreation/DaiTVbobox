@@ -8,6 +8,7 @@ const DOMAIN = 'https://daitvbobox.chungshare.workers.dev';
 const GITHUB_OUTPUT_API_BASE = 'https://api.github.com/repos/daicreation/DaiTVbobox/contents/output';
 const GITHUB_FETCH_TIMEOUT_MS = 3000;
 const HOT_TV_CLASS = { type_id: 'hot_tv', type_name: 'Hot TV' };
+const DOUBAN_REFERER = 'https://m.douban.com/subject_collection/tv_domestic';
 const SITE_NAME_BLOCKLIST = ['采集', '理論', '理论', '福利', '成人', '直播', '短剧', '短劇', '云盘', '雲盤', '网盘', '網盤', 'alist', '配置'];
 const SITE_URL_BLOCKLIST = ['.js', '.py', 'drpy', 'spider', 'get.js', '/lib/', 'live?url=', 'csp_', '/vod/json', 'json?url='];
 
@@ -46,7 +47,7 @@ export default {
         }
       }
 
-      if (isHomepageLike(url)) {
+      if (isHomepageLike(url) || isHotTvCategory(url)) {
         const homepageResponse = await serveHotTvHomepage();
         if (homepageResponse) {
           return homepageResponse;
@@ -58,6 +59,10 @@ export default {
 
     if (route.kind === 'proxy') {
       return proxyFiltered(route.proxyKey, url.search);
+    }
+
+    if (route.kind === 'image') {
+      return proxyImageAsset(url);
     }
 
     const config = await fetchRepoOutputJson('config.json');
@@ -82,6 +87,10 @@ function parseRoute(pathname) {
 
   if (next === 'p' && parts[offset + 1]) {
     return { kind: 'proxy', proxyKey: parts[offset + 1] };
+  }
+
+  if (next === 'img') {
+    return { kind: 'image', proxyKey: '' };
   }
 
   return { kind: 'config', proxyKey: '' };
@@ -142,6 +151,11 @@ function isHotTvDetail(url) {
   return (url.searchParams.get('ac') || '').toLowerCase() === 'detail' && Boolean(getRequestedVodId(url));
 }
 
+function isHotTvCategory(url) {
+  const params = url.searchParams;
+  return (params.get('ac') || '').toLowerCase() === 'list' && (params.get('t') || '').trim().toLowerCase() === HOT_TV_CLASS.type_id;
+}
+
 function getRequestedVodId(url) {
   return (url.searchParams.get('ids') || '')
     .split(',')
@@ -182,6 +196,40 @@ async function serveHotTvDetail(url) {
     list: [detail],
     update_time: hotTv.update_time || '',
   }, 200, 'no-cache');
+}
+
+async function proxyImageAsset(url) {
+  const target = (url.searchParams.get('url') || '').trim();
+  if (!/^https?:\/\//i.test(target)) {
+    return new Response('Bad Request', { status: 400 });
+  }
+
+  try {
+    const response = await fetch(target, {
+      headers: {
+        'User-Agent': 'Mozilla/5.0',
+        Referer: target.includes('doubanio.com') ? DOUBAN_REFERER : DOMAIN,
+        Accept: 'image/avif,image/webp,image/apng,image/svg+xml,image/*,*/*;q=0.8',
+      },
+      signal: AbortSignal.timeout(8000),
+    });
+    if (!response.ok) {
+      return new Response('Upstream image fetch failed', { status: response.status || 502 });
+    }
+
+    const headers = new Headers();
+    const contentType = response.headers.get('Content-Type');
+    if (contentType) {
+      headers.set('Content-Type', contentType);
+    }
+    headers.set('Cache-Control', 'public, max-age=86400');
+    return new Response(response.body, {
+      status: response.status,
+      headers,
+    });
+  } catch {
+    return new Response('Upstream image fetch failed', { status: 502 });
+  }
 }
 
 async function fetchRepoOutputJson(filename) {
