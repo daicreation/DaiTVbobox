@@ -1,4 +1,4 @@
-"""Build a pre-matched hot TV dataset for the Chill-TV homepage."""
+"""Build pre-matched Douban recommendation datasets for the Chill-TV homepage."""
 
 from __future__ import annotations
 
@@ -13,9 +13,14 @@ from .utils import create_http_client, levenshtein_ratio, logger, normalize_titl
 
 DOUBAN_HOT_TV_API = (
     "https://m.douban.com/rexxar/api/v2/subject_collection/tv_domestic/items"
-    "?start=0&count=12"
+    "?start=0&count=15"
 )
 DOUBAN_HOT_TV_REFERER = "https://m.douban.com/subject_collection/tv_domestic"
+DOUBAN_HOT_VARIETY_API = (
+    "https://m.douban.com/rexxar/api/v2/subject_collection/show_hot/items"
+    "?start=0&count=15"
+)
+DOUBAN_HOT_VARIETY_REFERER = "https://m.douban.com/subject_collection/show_hot"
 DIRECT_HOT_TV_SOURCES = (
     ("bfzy", "https://bfzyapi.com/api.php/provide/vod/"),
     ("lz", "https://cj.lziapi.com/api.php/provide/vod/"),
@@ -29,19 +34,29 @@ DIRECT_HOT_TV_SOURCES = (
 
 def fetch_hot_tv_feed() -> list[dict]:
     """Fetch hot TV feed items from Douban's stable mobile JSON endpoint."""
-    client = create_http_client()
+    return _fetch_subject_collection_feed(DOUBAN_HOT_TV_API, DOUBAN_HOT_TV_REFERER)
+
+
+def fetch_hot_variety_feed() -> list[dict]:
+    """Fetch hot variety-show feed items from Douban's stable mobile JSON endpoint."""
+    return _fetch_subject_collection_feed(DOUBAN_HOT_VARIETY_API, DOUBAN_HOT_VARIETY_REFERER)
+
+
+def _fetch_subject_collection_feed(api_url: str, referer: str) -> list[dict]:
+    """Fetch a Douban subject_collection feed using the mobile JSON endpoint."""
+    client = create_http_client(timeout=20)
     try:
         response = client.get(
-            DOUBAN_HOT_TV_API,
+            api_url,
             headers={
                 "User-Agent": "Mozilla/5.0",
-                "Referer": DOUBAN_HOT_TV_REFERER,
+                "Referer": referer,
             },
         )
         response.raise_for_status()
         payload = response.json()
     except (httpx.HTTPError, ValueError, TypeError) as exc:
-        logger.warning(f"fetch_hot_tv_feed failed: {type(exc).__name__}: {exc}")
+        logger.warning(f"_fetch_subject_collection_feed failed: {type(exc).__name__}: {exc}")
         return []
     finally:
         client.close()
@@ -150,7 +165,7 @@ def build_direct_hot_tv_dataset(
             "details": details,
         }
 
-    client = create_http_client()
+    client = create_http_client(timeout=15)
     try:
         for feed_item in feed_items:
             detail = _build_direct_hot_tv_detail(

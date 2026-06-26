@@ -15,7 +15,12 @@ from .constants import (
     TVBOX_CLASSES,
     WORKER_DOMAIN,
 )
-from .hot_tv import build_direct_hot_tv_dataset, build_hot_tv_dataset, fetch_hot_tv_feed
+from .hot_tv import (
+    build_direct_hot_tv_dataset,
+    build_hot_tv_dataset,
+    fetch_hot_tv_feed,
+    fetch_hot_variety_feed,
+)
 from .models import Category, VideoItem
 from .utils import detect_platform, levenshtein_ratio, normalize_title, now_display, save_json
 
@@ -290,6 +295,27 @@ def _rewrite_hot_tv_images(dataset: dict, domain: str) -> dict:
     return dataset
 
 
+def _merge_homepage_datasets(*datasets: dict) -> dict:
+    merged_list = []
+    merged_details = {}
+
+    for dataset in datasets:
+        for item in dataset.get("list", []) or []:
+            vod_id = item.get("vod_id")
+            if not vod_id or vod_id in merged_details:
+                continue
+            merged_list.append(item)
+        for vod_id, detail in (dataset.get("details", {}) or {}).items():
+            if vod_id not in merged_details:
+                merged_details[vod_id] = detail
+
+    return {
+        "update_time": now_display(),
+        "list": merged_list,
+        "details": merged_details,
+    }
+
+
 def _build_tvbox_json(items: list[VideoItem], category: str, update_time: str, max_sources_per_video: int) -> dict:
     prepared = []
     for item in items:
@@ -402,16 +428,35 @@ def build_all_outputs(all_items=None, rules_config=None, domain=""):
         paths[category] = output_path
 
     hot_tv_feed_items = fetch_hot_tv_feed()
-    hot_tv_dataset = build_hot_tv_dataset(
-        hot_tv_feed_items,
-        ranked_items_by_category.get("tv", []),
-        similarity_threshold,
-    )
-    if hot_tv_feed_items and not hot_tv_dataset.get("list"):
-        hot_tv_dataset = build_direct_hot_tv_dataset(
+    hot_variety_feed_items = fetch_hot_variety_feed()
+
+    hot_tv_dataset = {"list": [], "details": {}, "update_time": update_time}
+    if hot_tv_feed_items:
+        hot_tv_dataset = build_hot_tv_dataset(
             hot_tv_feed_items,
+            ranked_items_by_category.get("tv", []),
             similarity_threshold,
         )
+        if not hot_tv_dataset.get("list"):
+            hot_tv_dataset = build_direct_hot_tv_dataset(
+                hot_tv_feed_items,
+                similarity_threshold,
+            )
+
+    hot_variety_dataset = {"list": [], "details": {}, "update_time": update_time}
+    if hot_variety_feed_items:
+        hot_variety_dataset = build_hot_tv_dataset(
+            hot_variety_feed_items,
+            ranked_items_by_category.get("variety", []),
+            similarity_threshold,
+        )
+        if not hot_variety_dataset.get("list"):
+            hot_variety_dataset = build_direct_hot_tv_dataset(
+                hot_variety_feed_items,
+                similarity_threshold,
+            )
+
+    hot_tv_dataset = _merge_homepage_datasets(hot_tv_dataset, hot_variety_dataset)
     hot_tv_dataset = _rewrite_hot_tv_images(hot_tv_dataset, domain)
     save_json(hot_tv_dataset, OUTPUT_HOT_TV_JSON)
     paths["hot_tv"] = OUTPUT_HOT_TV_JSON

@@ -26,6 +26,12 @@ from src.models import (
 )
 
 
+@pytest.fixture(autouse=True)
+def stub_douban_homepage_feeds(monkeypatch: pytest.MonkeyPatch):
+    monkeypatch.setattr("src.builder.fetch_hot_tv_feed", lambda: [])
+    monkeypatch.setattr("src.builder.fetch_hot_variety_feed", lambda: [])
+
+
 class TestDedupAndMerge:
     """測試去重合併"""
 
@@ -226,6 +232,7 @@ class TestBuildAllOutputs:
 
     def test_omits_legacy_flags_from_config(self, monkeypatch: pytest.MonkeyPatch):
         monkeypatch.setattr("src.builder.fetch_hot_tv_feed", lambda: [])
+        monkeypatch.setattr("src.builder.fetch_hot_variety_feed", lambda: [])
 
         paths = build_all_outputs(
             {"movie": [], "tv": [], "variety": [], "live": []},
@@ -366,6 +373,7 @@ class TestBuildAllOutputs:
             return []
 
         monkeypatch.setattr("src.builder.fetch_hot_tv_feed", fake_fetch_hot_tv_feed)
+        monkeypatch.setattr("src.builder.fetch_hot_variety_feed", lambda: [])
 
         tv_item = VideoItem(
             vod_id="tv_001",
@@ -410,7 +418,7 @@ class TestBuildAllOutputs:
         captured = {}
 
         def fake_fetch_hot_tv_feed():
-            return []
+            return [{"title": "Example TV Show", "cover": "https://img.example.com/tv.jpg"}]
 
         def fake_build_hot_tv_dataset(feed_items, ranked_tv_items, similarity_threshold):
             captured["feed_items"] = feed_items
@@ -423,6 +431,7 @@ class TestBuildAllOutputs:
             }
 
         monkeypatch.setattr("src.builder.fetch_hot_tv_feed", fake_fetch_hot_tv_feed)
+        monkeypatch.setattr("src.builder.fetch_hot_variety_feed", lambda: [])
         monkeypatch.setattr("src.builder.build_hot_tv_dataset", fake_build_hot_tv_dataset)
 
         tv_item = VideoItem(
@@ -455,17 +464,16 @@ class TestBuildAllOutputs:
         assert paths["hot_tv"] == OUTPUT_HOT_TV_JSON
         assert paths["hot_tv"].name == "hot_tv.json"
         assert [item.vod_id for item in captured["ranked_tv_items"]] == ["tv_001"]
-        assert captured["feed_items"] == []
+        assert captured["feed_items"] == [{"title": "Example TV Show", "cover": "https://img.example.com/tv.jpg"}]
         assert captured["similarity_threshold"] == 0.8
 
         with open(paths["hot_tv"], "r", encoding="utf-8") as f:
             hot_tv_data = json.load(f)
 
-        assert hot_tv_data == {
-            "list": [],
-            "details": {},
-            "update_time": "2026-06-26 00:00:00",
-        }
+        assert hot_tv_data["list"] == []
+        assert hot_tv_data["details"] == {}
+        assert isinstance(hot_tv_data["update_time"], str)
+        assert hot_tv_data["update_time"]
 
     def test_uses_direct_hot_tv_fallback_when_ranked_path_is_empty(self, monkeypatch: pytest.MonkeyPatch):
         captured = {}
@@ -501,6 +509,7 @@ class TestBuildAllOutputs:
             }
 
         monkeypatch.setattr("src.builder.fetch_hot_tv_feed", fake_fetch_hot_tv_feed)
+        monkeypatch.setattr("src.builder.fetch_hot_variety_feed", lambda: [])
         monkeypatch.setattr("src.builder.build_hot_tv_dataset", fake_build_hot_tv_dataset)
         monkeypatch.setattr("src.builder.build_direct_hot_tv_dataset", fake_build_direct_hot_tv_dataset)
 
@@ -570,6 +579,7 @@ class TestBuildAllOutputs:
             }
 
         monkeypatch.setattr("src.builder.fetch_hot_tv_feed", fake_fetch_hot_tv_feed)
+        monkeypatch.setattr("src.builder.fetch_hot_variety_feed", lambda: [])
         monkeypatch.setattr("src.builder.build_hot_tv_dataset", fake_build_hot_tv_dataset)
 
         paths = build_all_outputs(
@@ -586,3 +596,48 @@ class TestBuildAllOutputs:
 
         assert hot_tv_data["list"][0]["vod_pic"] == "https://tv.example.com/img?url=https%3A%2F%2Fimg.example.com%2Fposter.jpg"
         assert hot_tv_data["details"]["tv_001"]["vod_pic"] == "https://tv.example.com/img?url=https%3A%2F%2Fimg.example.com%2Fposter.jpg"
+
+    def test_merges_tv_and_variety_homepage_datasets(self, monkeypatch: pytest.MonkeyPatch):
+        monkeypatch.setattr(
+            "src.builder.fetch_hot_tv_feed",
+            lambda: [{"title": "Hot TV A", "cover": "https://img.example.com/tv.jpg"}],
+        )
+        monkeypatch.setattr(
+            "src.builder.fetch_hot_variety_feed",
+            lambda: [{"title": "Hot Variety A", "cover": "https://img.example.com/variety.jpg"}],
+        )
+
+        def fake_build_hot_tv_dataset(feed_items, ranked_items, similarity_threshold):
+            title = feed_items[0]["title"]
+            vod_id = "tv_001" if title == "Hot TV A" else "variety_001"
+            return {
+                "list": [{"vod_id": vod_id, "vod_name": title, "vod_pic": feed_items[0]["cover"], "source_count": 1}],
+                "details": {
+                    vod_id: {
+                        "vod_id": vod_id,
+                        "vod_name": title,
+                        "vod_pic": feed_items[0]["cover"],
+                        "source_count": 1,
+                        "vod_play_from": "bfzy",
+                        "vod_play_url": "Episode 1$https://play.example.com/item.m3u8",
+                    }
+                },
+                "update_time": "2026-06-26 03:00:00",
+            }
+
+        monkeypatch.setattr("src.builder.build_hot_tv_dataset", fake_build_hot_tv_dataset)
+
+        paths = build_all_outputs(
+            {"movie": [], "tv": [], "variety": [], "live": []},
+            {
+                "output": {"max_sources_per_video": 10, "max_items_per_category": 100},
+                "dedup": {"title_similarity_threshold": 0.8},
+            },
+            "https://tv.example.com",
+        )
+
+        with open(paths["hot_tv"], "r", encoding="utf-8") as f:
+            hot_tv_data = json.load(f)
+
+        assert [item["vod_name"] for item in hot_tv_data["list"]] == ["Hot TV A", "Hot Variety A"]
+        assert set(hot_tv_data["details"]) == {"tv_001", "variety_001"}
