@@ -224,6 +224,20 @@ class TestBuildAllOutputs:
         assert "🐟 摸魚兒" not in names
         assert "🍚 飯太硬" not in names
 
+    def test_omits_legacy_flags_from_config(self, monkeypatch: pytest.MonkeyPatch):
+        monkeypatch.setattr("src.builder.fetch_hot_tv_feed", lambda: [])
+
+        paths = build_all_outputs(
+            {"movie": [], "tv": [], "variety": [], "live": []},
+            {"output": {"max_sources_per_video": 10, "max_items_per_category": 100}},
+            "https://tv.example.com",
+        )
+
+        with open(paths["config"], "r", encoding="utf-8") as f:
+            config = json.load(f)
+
+        assert "flags" not in config
+
     def test_recategorizes_tv_and_variety_outputs(self):
         """錯分到 movie 的內容應在輸出時重新分類"""
         tv_item = VideoItem(

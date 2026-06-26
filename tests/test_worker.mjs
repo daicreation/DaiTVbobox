@@ -259,6 +259,7 @@ test('config route falls back to built-in config when GitHub config fetch fails'
     assert.equal(Array.isArray(payload.sites), true);
     assert.equal(payload.sites[0].key, 'chill');
     assert.equal(payload.sites[0].api, 'https://daitvbobox.chungshare.workers.dev/api');
+    assert.equal('flags' in payload, false);
     assert.equal(calls.filter((call) => call.url === GITHUB_CONFIG_URL).length, 1);
   });
 });

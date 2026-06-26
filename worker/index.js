@@ -29,7 +29,6 @@ function buildFallback() {
       { key: 'ik', name: 'iKun', type: 1, api: `${base}/p/ik`, searchable: 1, quickSearch: 1 },
       { key: 'wj', name: '♾️ 無盡', type: 1, api: `${base}/p/wj`, searchable: 1, quickSearch: 1 },
     ],
-    flags: ['4K', '1080P', '720P', '優酷', '愛奇藝', '騰訊', '芒果'],
     region: 'shared',
   };
 }

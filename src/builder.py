@@ -359,7 +359,6 @@ def _build_config(all_items: dict[str, list[VideoItem]], domain: str, update_tim
             sites.append(site)
     return {
         "sites": sites,
-        "flags": ["4K", "1080P", "720P", "優酷", "愛奇藝", "騰訊", "芒果"],
         "update_time": update_time,
         "region": region,
     }
