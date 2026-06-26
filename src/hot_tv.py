@@ -138,10 +138,7 @@ def build_hot_tv_dataset(
         if _build_feed_descriptor(feed_item).normalized_title not in matched_titles
     ]
 
-    # Large homepage feeds should stay deterministic and fast: keep unresolved
-    # titles as placeholders and let the Worker resolve them on demand.
-    should_prefetch_direct = bool(missing_feed_items) and len(feed_items) < 10
-    if should_prefetch_direct:
+    if missing_feed_items:
         direct_dataset = build_direct_hot_tv_dataset(
             missing_feed_items,
             similarity_threshold,
@@ -163,23 +160,6 @@ def build_hot_tv_dataset(
             )
             if detail
         )
-
-    if len(feed_items) >= 10:
-        resolved_titles = {
-            _build_feed_descriptor(row["feed"]).normalized_title
-            for row in rows
-            if row.get("detail")
-        }
-        for feed_item in feed_items:
-            descriptor = _build_feed_descriptor(feed_item)
-            if descriptor.normalized_title and descriptor.normalized_title not in resolved_titles:
-                rows.append(
-                    {
-                        "feed": feed_item,
-                        "item": None,
-                        "detail": None,
-                    }
-                )
     homepage_list: list[dict] = []
     details: dict[str, dict] = {}
 
