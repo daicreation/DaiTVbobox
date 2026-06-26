@@ -225,6 +225,26 @@ test('detail api routes fall back to source lookup when hot_tv detail is missing
         ],
       });
     }
+    if (url === 'http://cj.ffzyapi.com/api.php/provide/vod?wd=Fallback+Show') {
+      return makeJsonResponse({
+        list: [
+          { vod_id: 'ff-1', vod_name: 'Fallback Show' },
+        ],
+      });
+    }
+    if (url === 'http://cj.ffzyapi.com/api.php/provide/vod?ac=detail&ids=ff-1') {
+      return makeJsonResponse({
+        list: [
+          {
+            vod_id: 'ff-1',
+            vod_name: 'Fallback Show',
+            vod_pic: 'https://img.example.com/fallback-show-ff.jpg',
+            vod_play_from: 'ff',
+            vod_play_url: 'Episode 1$https://play.example.com/fallback-show-ff.m3u8',
+          },
+        ],
+      });
+    }
     throw new Error(`Unexpected fetch: ${url}`);
   }, async (calls) => {
     const response = await worker.fetch(new Request('https://worker.example/api?ac=detail&ids=tv_hot_missing_detail'));
@@ -232,8 +252,14 @@ test('detail api routes fall back to source lookup when hot_tv detail is missing
 
     assert.equal(payload.list[0].vod_name, 'Fallback Show');
     assert.equal(payload.list[0].vod_pic, `${CURRENT_WORKER_DOMAIN}/img?url=https%3A%2F%2Fimg.example.com%2Ffallback-show.jpg`);
+    assert.equal(payload.list[0].vod_play_from, 'bfzy$$$ff');
+    assert.equal(
+      payload.list[0].vod_play_url,
+      'Episode 1$https://play.example.com/fallback-show.m3u8$$$Episode 1$https://play.example.com/fallback-show-ff.m3u8',
+    );
+    assert.equal(payload.list[0].source_count, 2);
     assert.equal(calls.filter((call) => call.url === GITHUB_HOT_TV_URL).length, 1);
-    assert.equal(calls.filter((call) => call.url.startsWith(`${DEFAULT_PROXY_URL}?`)).length, 2);
+    assert.equal(calls.filter((call) => call.url.includes('Fallback+Show')).length >= 2, true);
   });
 });
 

@@ -224,6 +224,7 @@ async function resolveHotTvDetailByTitle(title, remarks = '') {
     return null;
   }
 
+  const sourceDetails = [];
   for (const [sourceKey, target] of Object.entries(PROXY_MAP)) {
     const searchData = await fetchSourceJson(target, { wd: query });
     const candidate = pickSourceListItem(searchData, query);
@@ -243,16 +244,10 @@ async function resolveHotTvDetailByTitle(title, remarks = '') {
     }
 
     detail._source_name = sourceKey;
-    if (!detail.vod_name) {
-      detail.vod_name = query;
-    }
-    if (!detail.vod_remarks && remarks) {
-      detail.vod_remarks = remarks;
-    }
-    return detail;
+    sourceDetails.push(detail);
   }
 
-  return null;
+  return mergeSourceDetails(query, remarks, sourceDetails);
 }
 
 async function fetchSourceJson(target, params) {
@@ -308,6 +303,71 @@ function pickSourceDetailItem(payload, vodId) {
   }
 
   return null;
+}
+
+function mergeSourceDetails(title, remarks, details) {
+  if (!Array.isArray(details) || details.length === 0) {
+    return null;
+  }
+
+  const merged = {
+    vod_id: String(details[0]?.vod_id || details[0]?.id || title).trim(),
+    vod_name: '',
+    vod_pic: '',
+    vod_remarks: '',
+    type_name: '',
+    vod_year: '',
+    vod_area: '',
+    vod_actor: '',
+    vod_director: '',
+    vod_content: '',
+    vod_score: '',
+    vod_play_from: '',
+    vod_play_url: '',
+    source_count: 0,
+  };
+
+  for (const detail of details) {
+    for (const field of ['vod_name', 'vod_pic', 'vod_remarks', 'type_name', 'vod_year', 'vod_area', 'vod_actor', 'vod_director', 'vod_content', 'vod_score']) {
+      if (!merged[field] && String(detail?.[field] || '').trim()) {
+        merged[field] = String(detail[field]).trim();
+      }
+    }
+  }
+
+  if (!merged.vod_name) {
+    merged.vod_name = title;
+  }
+  if (!merged.vod_remarks && remarks) {
+    merged.vod_remarks = remarks;
+  }
+
+  const playFromParts = [];
+  const playUrlParts = [];
+  const seen = new Set();
+  for (const detail of details) {
+    const playUrl = String(detail?.vod_play_url || '').trim();
+    if (!playUrl) {
+      continue;
+    }
+    const playFrom = String(detail?.vod_play_from || detail?._source_name || '').trim() || 'source';
+    const dedupeKey = `${playFrom}:::${playUrl}`;
+    if (seen.has(dedupeKey)) {
+      continue;
+    }
+    seen.add(dedupeKey);
+    playFromParts.push(playFrom);
+    playUrlParts.push(playUrl);
+  }
+
+  if (playUrlParts.length === 0) {
+    return null;
+  }
+
+  merged.vod_play_from = playFromParts.join('$$$');
+  merged.vod_play_url = playUrlParts.join('$$$');
+  merged.source_count = playUrlParts.length;
+  return merged;
 }
 
 function normalizeHotTvPayload(hotTv) {
