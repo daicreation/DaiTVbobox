@@ -7,8 +7,7 @@
 const DOMAIN = 'https://daitvbobox.chungshare.workers.dev';
 const GITHUB_OUTPUT_API_BASE = 'https://api.github.com/repos/daicreation/DaiTVbobox/contents/output';
 const GITHUB_FETCH_TIMEOUT_MS = 3000;
-const HOT_TV_CLASS = { type_id: 'douban_tv', type_name: '電視劇' };
-const HOT_TV_LEGACY_TYPE_ID = 'hot_tv';
+const HOT_TV_CLASS = { type_id: 'hot_tv', type_name: '電視劇' };
 const DOUBAN_REFERER = 'https://m.douban.com/subject_collection/tv_domestic';
 const SITE_NAME_BLOCKLIST = ['采集', '理論', '理论', '福利', '成人', '直播', '短剧', '短劇', '云盘', '雲盤', '网盘', '網盤', 'alist', '配置'];
 const SITE_URL_BLOCKLIST = ['.js', '.py', 'drpy', 'spider', 'get.js', '/lib/', 'live?url=', 'csp_', '/vod/json', 'json?url='];
@@ -154,7 +153,7 @@ function isHotTvDetail(url) {
 function isHotTvCategory(url) {
   const params = url.searchParams;
   const typeId = (params.get('t') || '').trim().toLowerCase();
-  if (typeId !== HOT_TV_CLASS.type_id && typeId !== HOT_TV_LEGACY_TYPE_ID) {
+  if (typeId !== HOT_TV_CLASS.type_id) {
     return false;
   }
 
