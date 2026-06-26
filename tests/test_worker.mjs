@@ -7,6 +7,7 @@ const workerModulePromise = loadWorkerModule();
 const GITHUB_HOT_TV_URL = 'https://api.github.com/repos/daicreation/DaiTVbobox/contents/output/hot_tv.json';
 const GITHUB_CONFIG_URL = 'https://api.github.com/repos/daicreation/DaiTVbobox/contents/output/config.json';
 const DEFAULT_PROXY_URL = 'https://bfzyapi.com/api.php/provide/vod';
+const HOT_TV_CLASS = { type_id: 'douban_tv', type_name: '電視劇' };
 
 const HOT_TV_FIXTURE = {
   update_time: '2026-06-26 00:00:00',
@@ -92,6 +93,7 @@ test('homepage-like api routes read hot_tv.json before proxying', async () => {
     const payload = await response.json();
 
     assert.deepEqual(payload.list, HOT_TV_FIXTURE.list);
+    assert.deepEqual(payload.class, [HOT_TV_CLASS]);
     assert.equal(calls.filter((call) => call.url === GITHUB_HOT_TV_URL).length, 1);
     assert.equal(calls.some((call) => call.url.startsWith(DEFAULT_PROXY_URL)), false);
   });
@@ -109,7 +111,7 @@ test('hot_tv category requests read hot_tv.json before proxying', async () => {
     }
     throw new Error(`Unexpected fetch: ${url}`);
   }, async (calls) => {
-    const response = await worker.fetch(new Request('https://worker.example/api?ac=list&t=hot_tv&pg=1'));
+    const response = await worker.fetch(new Request('https://worker.example/api?ac=list&t=douban_tv&pg=1'));
     const payload = await response.json();
 
     assert.deepEqual(payload.list, HOT_TV_FIXTURE.list);
@@ -130,7 +132,28 @@ test('hot_tv category requests without ac=list still read hot_tv.json before pro
     }
     throw new Error(`Unexpected fetch: ${url}`);
   }, async (calls) => {
-    const response = await worker.fetch(new Request('https://worker.example/api?t=hot_tv&pg=1'));
+    const response = await worker.fetch(new Request('https://worker.example/api?t=douban_tv&pg=1'));
+    const payload = await response.json();
+
+    assert.deepEqual(payload.list, HOT_TV_FIXTURE.list);
+    assert.equal(calls.filter((call) => call.url === GITHUB_HOT_TV_URL).length, 1);
+    assert.equal(calls.some((call) => call.url.startsWith(DEFAULT_PROXY_URL)), false);
+  });
+});
+
+test('legacy hot_tv category requests remain supported', async () => {
+  const worker = (await workerModulePromise).default;
+
+  await runWithFetchStub((url) => {
+    if (url === GITHUB_HOT_TV_URL) {
+      return makeGitHubFileResponse(HOT_TV_FIXTURE);
+    }
+    if (url.startsWith(DEFAULT_PROXY_URL)) {
+      return makeJsonResponse({ code: 1, list: [{ vod_id: 'proxy_only' }], class: [] });
+    }
+    throw new Error(`Unexpected fetch: ${url}`);
+  }, async (calls) => {
+    const response = await worker.fetch(new Request('https://worker.example/api?ac=videolist&t=hot_tv&pg=1'));
     const payload = await response.json();
 
     assert.deepEqual(payload.list, HOT_TV_FIXTURE.list);
