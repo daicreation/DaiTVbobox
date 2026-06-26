@@ -118,6 +118,27 @@ test('hot_tv category requests read hot_tv.json before proxying', async () => {
   });
 });
 
+test('hot_tv category requests without ac=list still read hot_tv.json before proxying', async () => {
+  const worker = (await workerModulePromise).default;
+
+  await runWithFetchStub((url) => {
+    if (url === GITHUB_HOT_TV_URL) {
+      return makeGitHubFileResponse(HOT_TV_FIXTURE);
+    }
+    if (url.startsWith(DEFAULT_PROXY_URL)) {
+      return makeJsonResponse({ code: 1, list: [{ vod_id: 'proxy_only' }], class: [] });
+    }
+    throw new Error(`Unexpected fetch: ${url}`);
+  }, async (calls) => {
+    const response = await worker.fetch(new Request('https://worker.example/api?t=hot_tv&pg=1'));
+    const payload = await response.json();
+
+    assert.deepEqual(payload.list, HOT_TV_FIXTURE.list);
+    assert.equal(calls.filter((call) => call.url === GITHUB_HOT_TV_URL).length, 1);
+    assert.equal(calls.some((call) => call.url.startsWith(DEFAULT_PROXY_URL)), false);
+  });
+});
+
 test('detail api routes return prebuilt hot_tv detail when the vod_id is matched', async () => {
   const worker = (await workerModulePromise).default;
 

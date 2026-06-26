@@ -153,7 +153,17 @@ function isHotTvDetail(url) {
 
 function isHotTvCategory(url) {
   const params = url.searchParams;
-  return (params.get('ac') || '').toLowerCase() === 'list' && (params.get('t') || '').trim().toLowerCase() === HOT_TV_CLASS.type_id;
+  const typeId = (params.get('t') || '').trim().toLowerCase();
+  if (typeId !== HOT_TV_CLASS.type_id) {
+    return false;
+  }
+
+  if (params.has('wd') || params.has('ids')) {
+    return false;
+  }
+
+  const ac = (params.get('ac') || '').toLowerCase();
+  return ac === '' || ac === 'list' || ac === 'videolist';
 }
 
 function getRequestedVodId(url) {
