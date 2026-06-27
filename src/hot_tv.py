@@ -218,6 +218,7 @@ def build_direct_hot_tv_dataset(
     feed_items: list[dict],
     similarity_threshold: float,
     direct_sources: tuple[tuple[str, str], ...] | None = None,
+    worker_domain: str | None = None,
 ) -> dict:
     """Build hot TV data by searching the direct-source APIs title by title."""
     homepage_list: list[dict] = []
@@ -239,6 +240,7 @@ def build_direct_hot_tv_dataset(
                 feed_item,
                 similarity_threshold,
                 source_targets,
+                worker_domain,
             )
             if not detail:
                 continue
@@ -467,6 +469,7 @@ def _build_direct_hot_tv_detail(
     feed_item: dict,
     similarity_threshold: float,
     direct_sources: tuple[tuple[str, str], ...],
+    worker_domain: str | None = None,
 ) -> dict | None:
     descriptor = _build_feed_descriptor(feed_item)
     if not descriptor.normalized_title:
@@ -481,6 +484,7 @@ def _build_direct_hot_tv_detail(
             feed_item,
             descriptor,
             similarity_threshold,
+            worker_domain,
         )
         if detail:
             source_details.append(detail)
@@ -495,10 +499,12 @@ def _search_direct_source_detail(
     feed_item: dict,
     descriptor: FeedDescriptor,
     similarity_threshold: float,
+    worker_domain: str | None = None,
 ) -> dict | None:
+    proxy_url = f"{worker_domain}/p/{source_name}" if worker_domain else base_url
     search_match = _search_direct_source_match(
         client,
-        base_url,
+        proxy_url,
         feed_item,
         descriptor,
         similarity_threshold,
@@ -512,7 +518,7 @@ def _search_direct_source_detail(
 
     payload = _request_direct_source_json(
         client,
-        base_url,
+        proxy_url,
         {"ac": "detail", "ids": vod_id},
     )
     detail_items = _extract_direct_source_items(payload)

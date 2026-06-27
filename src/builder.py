@@ -449,6 +449,7 @@ def build_all_outputs(all_items=None, rules_config=None, domain=""):
             hot_tv_dataset = build_direct_hot_tv_dataset(
                 hot_tv_feed_items,
                 similarity_threshold,
+                worker_domain=domain,
             )
 
     hot_variety_dataset = {"list": [], "details": {}, "update_time": update_time}
@@ -462,6 +463,7 @@ def build_all_outputs(all_items=None, rules_config=None, domain=""):
             hot_variety_dataset = build_direct_hot_tv_dataset(
                 hot_variety_feed_items,
                 similarity_threshold,
+                worker_domain=domain,
             )
 
     hot_tv_dataset = _merge_homepage_datasets(hot_tv_dataset, hot_variety_dataset)
