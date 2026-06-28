@@ -87,7 +87,7 @@ VARIETY_KEYWORDS = (
     "音乐会",
 )
 LIVE_KEYWORDS = ("直播", "卫视", "衛視", "央視", "央视", "体育", "體育")
-CORE_SITE_ORDER = ["chill", "bfzy", "ff", "sn", "lz", "360", "js", "jy", "yh", "md", "ik", "wj", "ry", "hn"]
+CORE_SITE_ORDER = ["chill", "bfzy", "ff", "sn", "lz", "360", "js", "jy", "yh", "md", "ik", "wj", "ry"]
 
 
 DEFAULT_FILTERS = {
@@ -172,7 +172,6 @@ def _core_sites(domain: str) -> list[dict]:
         {"key": "md", "name": "🏙️ 魔都", "type": 1, "api": f"{base}/p/md", "searchable": 1, "quickSearch": 1},
         {"key": "ik", "name": "🎵 iKun", "type": 1, "api": f"{base}/p/ik", "searchable": 1, "quickSearch": 1},
         {"key": "wj", "name": "♾️ 無盡", "type": 1, "api": f"{base}/p/wj", "searchable": 1, "quickSearch": 1},
-        {"key": "hn", "name": "🐂 紅牛", "type": 1, "api": f"{base}/p/hn", "searchable": 1, "quickSearch": 1},
         {"key": "ry", "name": "🍀 如意", "type": 1, "api": f"{base}/p/ry", "searchable": 1, "quickSearch": 1},
     ]
     order = {key: index for index, key in enumerate(CORE_SITE_ORDER)}

@@ -353,9 +353,9 @@ class TestBuildAllOutputs:
             config_root = json.load(f)
 
         site_keys = [site["key"] for site in config_root["sites"]]
-        assert site_keys == ["chill", "bfzy", "ff", "sn", "lz", "360", "js", "jy", "yh", "md", "ik", "wj", "ry", "hn"]
+        assert site_keys == ["chill", "bfzy", "ff", "sn", "lz", "360", "js", "jy", "yh", "md", "ik", "wj", "ry"]
 
-    def test_hongniu_is_appended_as_backup_source(self):
+    def test_ruyi_is_appended_as_backup_source(self):
         paths = build_all_outputs(
             {"movie": [], "tv": [], "variety": [], "live": []},
             {"output": {"max_sources_per_video": 10, "max_items_per_category": 100}},
@@ -365,9 +365,8 @@ class TestBuildAllOutputs:
         with open(paths["config"], "r", encoding="utf-8") as f:
             config_root = json.load(f)
 
-        assert [site["key"] for site in config_root["sites"][-2:]] == ["ry", "hn"]
-        assert config_root["sites"][-2]["api"] == "https://tv.example.com/p/ry"
-        assert config_root["sites"][-1]["api"] == "https://tv.example.com/p/hn"
+        assert config_root["sites"][-1]["key"] == "ry"
+        assert config_root["sites"][-1]["api"] == "https://tv.example.com/p/ry"
 
     def test_config_still_keeps_chill_tv_first(self):
         paths = build_all_outputs(

@@ -104,16 +104,8 @@
       "api": "https://chilltv.chungchung.online/p/ry",
       "searchable": 1,
       "quickSearch": 1
-    },
-    {
-      "key": "hn",
-      "name": "🐂 紅牛",
-      "type": 1,
-      "api": "https://chilltv.chungchung.online/p/hn",
-      "searchable": 1,
-      "quickSearch": 1
     }
   ],
-  "update_time": "2026-06-29 02:25:52",
+  "update_time": "2026-06-29 02:57:25",
   "region": "shared"
 }
