@@ -114,18 +114,18 @@
       "quickSearch": 1
     },
     {
-      "key": "auto_🍚小鸟动漫(聚)",
-      "name": "🍚小鸟动漫(聚)",
-      "type": 1,
-      "api": "http://xydm.baicai.buzz/api.php/provide/vod/",
-      "searchable": 1,
-      "quickSearch": 1
-    },
-    {
       "key": "auto_🥑盘看影视(聚)",
       "name": "🥑盘看影视(聚)",
       "type": 1,
       "api": "http://tvcaiji.pankk.cn/api.php/provide/vod/",
+      "searchable": 1,
+      "quickSearch": 1
+    },
+    {
+      "key": "auto_🍚小鸟动漫(聚)",
+      "name": "🍚小鸟动漫(聚)",
+      "type": 1,
+      "api": "http://xydm.baicai.buzz/api.php/provide/vod/",
       "searchable": 1,
       "quickSearch": 1
     },
@@ -138,6 +138,6 @@
       "quickSearch": 1
     }
   ],
-  "update_time": "2026-06-28 09:28:06",
+  "update_time": "2026-06-28 10:16:26",
   "region": "shared"
 }
