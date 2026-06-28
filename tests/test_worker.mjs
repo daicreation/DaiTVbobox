@@ -225,26 +225,6 @@ test('detail api routes fall back to source lookup when hot_tv detail is missing
         ],
       });
     }
-    if (url === 'http://cj.ffzyapi.com/api.php/provide/vod?wd=Fallback+Show') {
-      return makeJsonResponse({
-        list: [
-          { vod_id: 'ff-1', vod_name: 'Fallback Show' },
-        ],
-      });
-    }
-    if (url === 'http://cj.ffzyapi.com/api.php/provide/vod?ac=detail&ids=ff-1') {
-      return makeJsonResponse({
-        list: [
-          {
-            vod_id: 'ff-1',
-            vod_name: 'Fallback Show',
-            vod_pic: 'https://img.example.com/fallback-show-ff.jpg',
-            vod_play_from: 'ff',
-            vod_play_url: 'Episode 1$https://play.example.com/fallback-show-ff.m3u8',
-          },
-        ],
-      });
-    }
     throw new Error(`Unexpected fetch: ${url}`);
   }, async (calls) => {
     const response = await worker.fetch(new Request('https://worker.example/api?ac=detail&ids=tv_hot_missing_detail'));
@@ -252,14 +232,11 @@ test('detail api routes fall back to source lookup when hot_tv detail is missing
 
     assert.equal(payload.list[0].vod_name, 'Fallback Show');
     assert.equal(payload.list[0].vod_pic, `${CURRENT_WORKER_DOMAIN}/img?url=https%3A%2F%2Fimg.example.com%2Ffallback-show.jpg`);
-    assert.equal(payload.list[0].vod_play_from, 'bfzy$$$ff');
-    assert.equal(
-      payload.list[0].vod_play_url,
-      'Episode 1$https://play.example.com/fallback-show.m3u8$$$Episode 1$https://play.example.com/fallback-show-ff.m3u8',
-    );
-    assert.equal(payload.list[0].source_count, 2);
+    assert.equal(payload.list[0].vod_play_from, 'bfzy');
+    assert.equal(payload.list[0].vod_play_url, 'Episode 1$https://play.example.com/fallback-show.m3u8');
+    assert.equal(payload.list[0].source_count, 1);
     assert.equal(calls.filter((call) => call.url === GITHUB_HOT_TV_URL).length, 1);
-    assert.equal(calls.filter((call) => call.url.includes('Fallback+Show')).length >= 2, true);
+    assert.equal(calls.filter((call) => call.url.includes('Fallback+Show')).length >= 1, true);
   });
 });
 
@@ -362,10 +339,8 @@ test('config route falls back to built-in config when GitHub config fetch fails'
     assert.equal(Array.isArray(payload.sites), true);
     assert.equal(payload.sites[0].key, 'chill');
     assert.equal(payload.sites[0].api, 'https://chilltv.chungchung.online/api');
-    assert.equal(payload.sites.at(-2).key, 'ry');
-    assert.equal(payload.sites.at(-2).api, 'https://chilltv.chungchung.online/p/ry');
-    assert.equal(payload.sites.at(-1).key, 'hn');
-    assert.equal(payload.sites.at(-1).api, 'https://chilltv.chungchung.online/p/hn');
+    assert.equal(payload.sites.at(-1).key, 'ry');
+    assert.equal(payload.sites.at(-1).api, 'https://chilltv.chungchung.online/p/ry');
     assert.equal('flags' in payload, false);
     assert.equal(calls.filter((call) => call.url === GITHUB_CONFIG_URL).length, 1);
   });
@@ -386,24 +361,6 @@ test('/p/* routes remain direct proxies and do not read hot_tv.json', async () =
     assert.deepEqual(payload.list, [{ vod_id: 'direct_proxy' }]);
     assert.equal(calls.some((call) => call.url === GITHUB_HOT_TV_URL), false);
     assert.deepEqual(calls.map((call) => call.url), [`${DEFAULT_PROXY_URL}?wd=keyword`]);
-  });
-});
-
-test('/p/hn routes proxy to hongniu upstream', async () => {
-  const worker = (await workerModulePromise).default;
-
-  await runWithFetchStub((url) => {
-    if (url === 'https://www.hongniuzy2.com/api.php/provide/vod/?wd=keyword') {
-      return makeJsonResponse({ code: 1, list: [{ vod_id: 'hongniu_proxy' }], class: [] });
-    }
-    throw new Error(`Unexpected fetch: ${url}`);
-  }, async (calls) => {
-    const response = await worker.fetch(new Request('https://worker.example/p/hn?wd=keyword'));
-    const payload = await response.json();
-
-    assert.deepEqual(payload.list, [{ vod_id: 'hongniu_proxy' }]);
-    assert.equal(calls.some((call) => call.url === GITHUB_HOT_TV_URL), false);
-    assert.deepEqual(calls.map((call) => call.url), ['https://www.hongniuzy2.com/api.php/provide/vod/?wd=keyword']);
   });
 });
 

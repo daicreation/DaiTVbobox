@@ -29,7 +29,6 @@ function buildFallback() {
       { key: 'ik', name: 'iKun', type: 1, api: `${base}/p/ik`, searchable: 1, quickSearch: 1 },
       { key: 'wj', name: '♾️ 無盡', type: 1, api: `${base}/p/wj`, searchable: 1, quickSearch: 1 },
       { key: 'ry', name: '🍀 如意', type: 1, api: `${base}/p/ry`, searchable: 1, quickSearch: 1 },
-      { key: 'hn', name: '🐂 紅牛', type: 1, api: `${base}/p/hn`, searchable: 1, quickSearch: 1 },
     ],
     region: 'shared',
   };
@@ -105,7 +104,6 @@ const PROXY_MAP = {
   jy: 'https://jyzyapi.com/provide/vod/',
   wj: 'https://api.wujinapi.me/api.php/provide/vod',
   md: 'https://www.mdzyapi.com/api.php/provide/vod',
-  hn: 'https://www.hongniuzy2.com/api.php/provide/vod/',
   ry: 'https://cj.rycjapi.com/api.php/provide/vod',
 };
 
