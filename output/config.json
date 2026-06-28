@@ -98,46 +98,22 @@
       "quickSearch": 1
     },
     {
-      "key": "auto_🍌每天看看(优)",
-      "name": "🍌每天看看(优)",
+      "key": "ry",
+      "name": "🍀 如意",
       "type": 1,
-      "api": "http://47.113.126.237:1234/api.php/provide/vod/",
+      "api": "https://chilltv.chungchung.online/p/ry",
       "searchable": 1,
       "quickSearch": 1
     },
     {
-      "key": "auto_🍑诺讯资源(官)",
-      "name": "🍑诺讯资源(官)",
+      "key": "hn",
+      "name": "🐂 紅牛",
       "type": 1,
-      "api": "http://caiji.nxflv.com/api.php/provide/vod/",
-      "searchable": 1,
-      "quickSearch": 1
-    },
-    {
-      "key": "auto_🥑盘看影视(聚)",
-      "name": "🥑盘看影视(聚)",
-      "type": 1,
-      "api": "http://tvcaiji.pankk.cn/api.php/provide/vod/",
-      "searchable": 1,
-      "quickSearch": 1
-    },
-    {
-      "key": "auto_🍚小鸟动漫(聚)",
-      "name": "🍚小鸟动漫(聚)",
-      "type": 1,
-      "api": "http://xydm.baicai.buzz/api.php/provide/vod/",
-      "searchable": 1,
-      "quickSearch": 1
-    },
-    {
-      "key": "auto_🌶天堂资源(官)",
-      "name": "🌶天堂资源(官)",
-      "type": 1,
-      "api": "http://vipmv.cc/api.php/provide/vod/",
+      "api": "https://chilltv.chungchung.online/p/hn",
       "searchable": 1,
       "quickSearch": 1
     }
   ],
-  "update_time": "2026-06-28 10:16:26",
+  "update_time": "2026-06-29 02:25:52",
   "region": "shared"
 }

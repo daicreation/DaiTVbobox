@@ -362,6 +362,10 @@ test('config route falls back to built-in config when GitHub config fetch fails'
     assert.equal(Array.isArray(payload.sites), true);
     assert.equal(payload.sites[0].key, 'chill');
     assert.equal(payload.sites[0].api, 'https://chilltv.chungchung.online/api');
+    assert.equal(payload.sites.at(-2).key, 'ry');
+    assert.equal(payload.sites.at(-2).api, 'https://chilltv.chungchung.online/p/ry');
+    assert.equal(payload.sites.at(-1).key, 'hn');
+    assert.equal(payload.sites.at(-1).api, 'https://chilltv.chungchung.online/p/hn');
     assert.equal('flags' in payload, false);
     assert.equal(calls.filter((call) => call.url === GITHUB_CONFIG_URL).length, 1);
   });
@@ -382,6 +386,42 @@ test('/p/* routes remain direct proxies and do not read hot_tv.json', async () =
     assert.deepEqual(payload.list, [{ vod_id: 'direct_proxy' }]);
     assert.equal(calls.some((call) => call.url === GITHUB_HOT_TV_URL), false);
     assert.deepEqual(calls.map((call) => call.url), [`${DEFAULT_PROXY_URL}?wd=keyword`]);
+  });
+});
+
+test('/p/hn routes proxy to hongniu upstream', async () => {
+  const worker = (await workerModulePromise).default;
+
+  await runWithFetchStub((url) => {
+    if (url === 'https://www.hongniuzy2.com/api.php/provide/vod/?wd=keyword') {
+      return makeJsonResponse({ code: 1, list: [{ vod_id: 'hongniu_proxy' }], class: [] });
+    }
+    throw new Error(`Unexpected fetch: ${url}`);
+  }, async (calls) => {
+    const response = await worker.fetch(new Request('https://worker.example/p/hn?wd=keyword'));
+    const payload = await response.json();
+
+    assert.deepEqual(payload.list, [{ vod_id: 'hongniu_proxy' }]);
+    assert.equal(calls.some((call) => call.url === GITHUB_HOT_TV_URL), false);
+    assert.deepEqual(calls.map((call) => call.url), ['https://www.hongniuzy2.com/api.php/provide/vod/?wd=keyword']);
+  });
+});
+
+test('/p/ry routes proxy to ruyi upstream', async () => {
+  const worker = (await workerModulePromise).default;
+
+  await runWithFetchStub((url) => {
+    if (url === 'https://cj.rycjapi.com/api.php/provide/vod?wd=keyword') {
+      return makeJsonResponse({ code: 1, list: [{ vod_id: 'ruyi_proxy' }], class: [] });
+    }
+    throw new Error(`Unexpected fetch: ${url}`);
+  }, async (calls) => {
+    const response = await worker.fetch(new Request('https://worker.example/p/ry?wd=keyword'));
+    const payload = await response.json();
+
+    assert.deepEqual(payload.list, [{ vod_id: 'ruyi_proxy' }]);
+    assert.equal(calls.some((call) => call.url === GITHUB_HOT_TV_URL), false);
+    assert.deepEqual(calls.map((call) => call.url), ['https://cj.rycjapi.com/api.php/provide/vod?wd=keyword']);
   });
 });
 
