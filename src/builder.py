@@ -385,15 +385,8 @@ def _discover_sites(all_items: dict[str, list[VideoItem]]) -> list[dict]:
 
 def _build_config(all_items: dict[str, list[VideoItem]], domain: str, update_time: str, region: str) -> dict:
     core_sites = _core_sites(domain)
-    discovered = _discover_sites(all_items)
-    seen_apis = {site["api"] for site in core_sites}
-    sites = list(core_sites)
-    for site in discovered:
-        if site["api"] not in seen_apis:
-            seen_apis.add(site["api"])
-            sites.append(site)
     return {
-        "sites": sites,
+        "sites": list(core_sites),
         "update_time": update_time,
         "region": region,
     }
