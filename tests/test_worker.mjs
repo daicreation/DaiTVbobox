@@ -295,16 +295,13 @@ test('ac=list with extra filters stays on proxy instead of hot_tv homepage', asy
   });
 });
 
-test('hot_tv GitHub failures fall back to proxy for homepage and detail', async () => {
+test('hot_tv GitHub failures keep homepage on Chill-TV instead of falling back to proxy', async () => {
   const worker = (await workerModulePromise).default;
 
   await runWithFetchStub((url, init) => {
     if (url === GITHUB_HOT_TV_URL) {
       assert.ok(init.signal, 'GitHub fetch should include an abort signal');
       return Promise.reject(makeAbortError('timed out'));
-    }
-    if (url === DEFAULT_PROXY_URL) {
-      return makeJsonResponse({ code: 1, list: [{ vod_id: 'homepage_proxy' }], class: [] });
     }
     if (url === `${DEFAULT_PROXY_URL}?ac=detail&ids=tv_hot_1`) {
       return makeJsonResponse({ code: 1, list: [{ vod_id: 'detail_proxy' }], class: [] });
@@ -313,7 +310,9 @@ test('hot_tv GitHub failures fall back to proxy for homepage and detail', async 
   }, async (calls) => {
     const homepageResponse = await worker.fetch(new Request('https://worker.example/api'));
     const homepagePayload = await homepageResponse.json();
-    assert.deepEqual(homepagePayload.list, [{ vod_id: 'homepage_proxy' }]);
+    assert.deepEqual(homepagePayload.list, []);
+    assert.deepEqual(homepagePayload.class, []);
+    assert.equal(homepagePayload.total, 0);
 
     const detailResponse = await worker.fetch(new Request('https://worker.example/api?ac=detail&ids=tv_hot_1'));
     const detailPayload = await detailResponse.json();

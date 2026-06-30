@@ -52,6 +52,7 @@ export default {
         if (homepageResponse) {
           return homepageResponse;
         }
+        return json(buildEmptyHotTvHomepage(), 200, 'no-cache');
       }
 
       return proxyBrowse(url.search);
@@ -188,6 +189,20 @@ async function serveHotTvHomepage() {
     list: normalized.list,
     update_time: normalized.update_time || '',
   }, 200, 'no-cache');
+}
+
+function buildEmptyHotTvHomepage() {
+  return {
+    code: 1,
+    msg: '',
+    page: 1,
+    pagecount: 1,
+    limit: 0,
+    total: 0,
+    class: [],
+    list: [],
+    update_time: '',
+  };
 }
 
 async function serveHotTvDetail(url) {
