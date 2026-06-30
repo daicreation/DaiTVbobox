@@ -1,12 +1,12 @@
 {
-  "checked_at": "2026-06-29T14:40:23.454758",
+  "checked_at": "2026-06-30T07:46:24.428883",
   "sources": [
     {
       "key": "bfzy",
       "name": "暴風",
       "health_score": 100.0,
       "availability": 100,
-      "response_time_ms": 270.99013328552246,
+      "response_time_ms": 130.3095817565918,
       "search_success": 100.0,
       "detail_success": 100,
       "play_success": 100
@@ -16,7 +16,7 @@
       "name": "量子",
       "health_score": 100.0,
       "availability": 100,
-      "response_time_ms": 125.37813186645508,
+      "response_time_ms": 42.371273040771484,
       "search_success": 100.0,
       "detail_success": 100,
       "play_success": 100
@@ -26,7 +26,7 @@
       "name": "360",
       "health_score": 100.0,
       "availability": 100,
-      "response_time_ms": 458.6451053619385,
+      "response_time_ms": 277.21166610717773,
       "search_success": 100.0,
       "detail_success": 100,
       "play_success": 100
@@ -36,7 +36,7 @@
       "name": "金鷹",
       "health_score": 100.0,
       "availability": 100,
-      "response_time_ms": 191.4522647857666,
+      "response_time_ms": 132.22670555114746,
       "search_success": 100.0,
       "detail_success": 100,
       "play_success": 100
@@ -46,7 +46,7 @@
       "name": "索尼",
       "health_score": 40.0,
       "availability": 100,
-      "response_time_ms": 304.5065402984619,
+      "response_time_ms": 67.98601150512695,
       "search_success": 0.0,
       "detail_success": 0,
       "play_success": 0.0
@@ -56,7 +56,7 @@
       "name": "極速",
       "health_score": 40.0,
       "availability": 100,
-      "response_time_ms": 108.02268981933594,
+      "response_time_ms": 121.80423736572266,
       "search_success": 0.0,
       "detail_success": 0,
       "play_success": 0.0
@@ -64,9 +64,9 @@
     {
       "key": "ff",
       "name": "非凡",
-      "health_score": 15.0,
-      "availability": 0,
-      "response_time_ms": 0,
+      "health_score": 35.5,
+      "availability": 100,
+      "response_time_ms": 1089.88618850708,
       "search_success": 0.0,
       "detail_success": 0,
       "play_success": 0.0
