@@ -63,6 +63,9 @@ jobs:
       GITHUB_REPOSITORY: ${{ github.repository }}
       GITHUB_REPOSITORY_OWNER: ${{ github.repository_owner }}
       WORKER_DOMAIN: ${{ secrets.WORKER_DOMAIN || 'https://chilltv.chungchung.online' }}
+      CF_API_TOKEN: ${{ secrets.CF_API_TOKEN || '' }}
+      CF_ACCOUNT_ID: ${{ secrets.CF_ACCOUNT_ID || '' }}
+      CF_KV_NAMESPACE_ID: ${{ secrets.CF_KV_NAMESPACE_ID || '' }}
 
     steps:
       # ============================================================
@@ -368,6 +371,40 @@ jobs:
           success = publish(output_paths)
           if not success:
               print('WARNING: 發布過程有問題，請檢查日誌')
+          "
+
+      - name: Sync hot_tv.json to Cloudflare KV
+        if: ${{ env.CF_API_TOKEN != '' && env.CF_ACCOUNT_ID != '' && env.CF_KV_NAMESPACE_ID != '' }}
+        run: |
+          echo "===== Sync hot_tv.json to Cloudflare KV ====="
+          python -c "
+          import sys; sys.path.insert(0, '.')
+          import os
+          from pathlib import Path
+          import httpx
+
+          key = 'hot_tv.json'
+          account_id = os.environ['CF_ACCOUNT_ID']
+          namespace_id = os.environ['CF_KV_NAMESPACE_ID']
+          token = os.environ['CF_API_TOKEN']
+          payload_path = Path('output') / key
+          if not payload_path.exists():
+              raise SystemExit(f'ERROR: missing {payload_path}')
+
+          url = f'https://api.cloudflare.com/client/v4/accounts/{account_id}/storage/kv/namespaces/{namespace_id}/values/{key}'
+          headers = {
+              'Authorization': f'Bearer {token}',
+              'Content-Type': 'application/json; charset=utf-8',
+          }
+          content = payload_path.read_text(encoding='utf-8')
+
+          with httpx.Client(timeout=20.0) as client:
+              response = client.put(url, headers=headers, content=content.encode('utf-8'))
+              response.raise_for_status()
+              data = response.json()
+          if not data.get('success'):
+              raise SystemExit(f'ERROR: KV sync failed: {data}')
+          print('KV sync success: hot_tv.json')
           "
 
       # ============================================================

@@ -79,6 +79,37 @@ function makeAbortError(message = 'aborted') {
   return error;
 }
 
+function makeKvEnv(payload) {
+  return {
+    HOT_TV_KV: {
+      async get(key, type) {
+        assert.equal(key, 'hot_tv.json');
+        assert.equal(type, 'json');
+        return payload;
+      },
+    },
+  };
+}
+
+test('homepage-like api routes read hot_tv.json from KV before GitHub', async () => {
+  const worker = (await workerModulePromise).default;
+  const env = makeKvEnv(HOT_TV_FIXTURE);
+
+  await runWithFetchStub((url) => {
+    if (url.startsWith(DEFAULT_PROXY_URL)) {
+      return makeJsonResponse({ code: 1, list: [{ vod_id: 'proxy_only' }], class: [] });
+    }
+    throw new Error(`Unexpected fetch: ${url}`);
+  }, async (calls) => {
+    const response = await worker.fetch(new Request('https://worker.example/api'), env);
+    const payload = await response.json();
+
+    assert.equal(payload.list[0].vod_pic, `${CURRENT_WORKER_DOMAIN}/img?url=https%3A%2F%2Fimg.example.com%2Fhot-show.jpg`);
+    assert.deepEqual(payload.class, []);
+    assert.equal(calls.length, 0);
+  });
+});
+
 test('homepage-like api routes read hot_tv.json before proxying', async () => {
   const worker = (await workerModulePromise).default;
 
@@ -319,6 +350,24 @@ test('hot_tv GitHub failures keep homepage on Chill-TV instead of falling back t
     assert.deepEqual(detailPayload.list, [{ vod_id: 'detail_proxy' }]);
 
     assert.equal(calls.filter((call) => call.url === GITHUB_HOT_TV_URL).length, 2);
+  });
+});
+
+test('homepage-like api routes fall back to GitHub when KV has no hot_tv payload', async () => {
+  const worker = (await workerModulePromise).default;
+  const env = makeKvEnv(null);
+
+  await runWithFetchStub((url) => {
+    if (url === GITHUB_HOT_TV_URL) {
+      return makeGitHubFileResponse(HOT_TV_FIXTURE);
+    }
+    throw new Error(`Unexpected fetch: ${url}`);
+  }, async (calls) => {
+    const response = await worker.fetch(new Request('https://worker.example/api'), env);
+    const payload = await response.json();
+
+    assert.equal(payload.list[0].vod_name, 'Hot Show');
+    assert.equal(calls.filter((call) => call.url === GITHUB_HOT_TV_URL).length, 1);
   });
 });
 

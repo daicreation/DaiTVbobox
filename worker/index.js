@@ -7,6 +7,7 @@
 const DOMAIN = 'https://chilltv.chungchung.online';
 const GITHUB_OUTPUT_API_BASE = 'https://api.github.com/repos/daicreation/DaiTVbobox/contents/output';
 const GITHUB_FETCH_TIMEOUT_MS = 3000;
+const HOT_TV_KV_KEY = 'hot_tv.json';
 const HOT_TV_CLASS = { type_id: 'hot_tv', type_name: '電視劇' };
 const DOUBAN_REFERER = 'https://m.douban.com/subject_collection/tv_domestic';
 const SITE_NAME_BLOCKLIST = ['采集', '理論', '理论', '福利', '成人', '直播', '短剧', '短劇', '云盘', '雲盤', '网盘', '網盤', 'alist', '配置'];
@@ -35,20 +36,20 @@ function buildFallback() {
 }
 
 export default {
-  async fetch(request) {
+  async fetch(request, env) {
     const url = new URL(request.url);
     const route = parseRoute(url.pathname);
 
     if (route.kind === 'api') {
       if (isHotTvDetail(url)) {
-        const detailResponse = await serveHotTvDetail(url);
+        const detailResponse = await serveHotTvDetail(url, env);
         if (detailResponse) {
           return detailResponse;
         }
       }
 
       if (isHomepageLike(url) || isHotTvCategory(url)) {
-        const homepageResponse = await serveHotTvHomepage();
+        const homepageResponse = await serveHotTvHomepage(env);
         if (homepageResponse) {
           return homepageResponse;
         }
@@ -171,8 +172,8 @@ function getRequestedVodId(url) {
     .filter(Boolean)[0] || '';
 }
 
-async function serveHotTvHomepage() {
-  const hotTv = await fetchRepoOutputJson('hot_tv.json');
+async function serveHotTvHomepage(env) {
+  const hotTv = await fetchHotTvPayload(env);
   if (!hotTv || !Array.isArray(hotTv.list)) {
     return null;
   }
@@ -205,8 +206,30 @@ function buildEmptyHotTvHomepage() {
   };
 }
 
-async function serveHotTvDetail(url) {
-  const hotTv = await fetchRepoOutputJson('hot_tv.json');
+async function fetchHotTvPayload(env) {
+  const kvPayload = await fetchHotTvFromKv(env);
+  if (kvPayload && Array.isArray(kvPayload.list)) {
+    return kvPayload;
+  }
+  return fetchRepoOutputJson(HOT_TV_KV_KEY);
+}
+
+async function fetchHotTvFromKv(env) {
+  const namespace = env?.HOT_TV_KV;
+  if (!namespace || typeof namespace.get !== 'function') {
+    return null;
+  }
+
+  try {
+    return await namespace.get(HOT_TV_KV_KEY, 'json');
+  } catch (error) {
+    console.warn('HOT_TV_KV read failed:', error?.message || error);
+    return null;
+  }
+}
+
+async function serveHotTvDetail(url, env) {
+  const hotTv = await fetchHotTvPayload(env);
   const normalized = normalizeHotTvPayload(hotTv);
   const vodId = getRequestedVodId(url);
   let detail = normalized?.details?.[vodId];
