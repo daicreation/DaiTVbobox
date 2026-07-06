@@ -326,6 +326,37 @@ test('ac=list with extra filters stays on proxy instead of hot_tv homepage', asy
   });
 });
 
+test('proxy routes filter adult categories by type id and category name', async () => {
+  const worker = (await workerModulePromise).default;
+
+  await runWithFetchStub((url) => {
+    if (url === 'https://jszyapi.com/api.php/provide/vod/?ac=list') {
+      return makeJsonResponse({
+        code: 1,
+        class: [
+          { type_id: 1, type_name: '電影' },
+          { type_id: 29, type_name: '倫理片' },
+          { type_id: 88, type_name: '里番動漫' },
+          { type_id: 89, type_name: '成人劇情' },
+        ],
+        list: [
+          { vod_id: 'ok-1', type_id: 1, type_name: '電影', vod_name: '正常片' },
+          { vod_id: 'drop-1', type_id: 73, type_name: '其他', vod_name: '固定黑名單分類' },
+          { vod_id: 'drop-2', type_id: 88, type_name: '倫理片', vod_name: '名稱黑名單分類' },
+          { vod_id: 'drop-3', type_id: 99, type_name: '里番動漫', vod_name: '里番內容' },
+        ],
+      });
+    }
+    throw new Error(`Unexpected fetch: ${url}`);
+  }, async () => {
+    const response = await worker.fetch(new Request('https://worker.example/p/js?ac=list'));
+    const payload = await response.json();
+
+    assert.deepEqual(payload.class, [{ type_id: 1, type_name: '電影' }]);
+    assert.deepEqual(payload.list, [{ vod_id: 'ok-1', type_id: 1, type_name: '電影', vod_name: '正常片' }]);
+  });
+});
+
 test('hot_tv GitHub failures keep homepage on Chill-TV instead of falling back to proxy', async () => {
   const worker = (await workerModulePromise).default;
 

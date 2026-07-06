@@ -12,6 +12,8 @@ const HOT_TV_CLASS = { type_id: 'hot_tv', type_name: '電視劇' };
 const DOUBAN_REFERER = 'https://m.douban.com/subject_collection/tv_domestic';
 const SITE_NAME_BLOCKLIST = ['采集', '理論', '理论', '福利', '成人', '直播', '短剧', '短劇', '云盘', '雲盤', '网盘', '網盤', 'alist', '配置'];
 const SITE_URL_BLOCKLIST = ['.js', '.py', 'drpy', 'spider', 'get.js', '/lib/', 'live?url=', 'csp_', '/vod/json', 'json?url='];
+const BLOCKED_TYPE_IDS = new Set([29, 73]);
+const BLOCKED_CATEGORY_KEYWORDS = ['倫理', '伦理', '里番', '成人', '福利', '情色', 'AV片', 'av'];
 
 function buildFallback() {
   const base = DOMAIN;
@@ -544,17 +546,26 @@ async function proxyBrowse(search = '', target) {
     }
 
     const data = await response.json();
-    const blockedTypeIds = [29, 73];
     if (data.list) {
-      data.list = data.list.filter((item) => !blockedTypeIds.includes(item.type_id));
+      data.list = data.list.filter((item) => !isBlockedCategoryEntry(item));
     }
     if (data.class) {
-      data.class = data.class.filter((item) => !blockedTypeIds.includes(item.type_id));
+      data.class = data.class.filter((item) => !isBlockedCategoryEntry(item));
     }
     return json(data);
   } catch {
     return json({ code: 0, list: [], class: [] });
   }
+}
+
+function isBlockedCategoryEntry(entry) {
+  const typeId = Number(entry?.type_id);
+  if (BLOCKED_TYPE_IDS.has(typeId)) {
+    return true;
+  }
+
+  const typeName = String(entry?.type_name || entry?.type || entry?.vod_class || '').toLowerCase();
+  return BLOCKED_CATEGORY_KEYWORDS.some((keyword) => typeName.includes(keyword.toLowerCase()));
 }
 
 function json(data, status = 200, cacheControl = 'public, max-age=300') {
