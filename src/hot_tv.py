@@ -25,6 +25,7 @@ DIRECT_HOT_TV_SOURCES = (
     # Verified 2026-06-28 from Shenzhen: 29/30 Douban shows covered
     ("bfzy", "https://bfzyapi.com/api.php/provide/vod/"),
     ("lz", "https://cj.lziapi.com/api.php/provide/vod/"),
+    ("ry", "https://cj.rycjapi.com/api.php/provide/vod/"),
     ("wj", "https://api.wujinapi.me/api.php/provide/vod/"),
     ("360", "https://360zyzz.com/api.php/provide/vod/"),
     ("md", "https://www.mdzyapi.com/api.php/provide/vod/"),
