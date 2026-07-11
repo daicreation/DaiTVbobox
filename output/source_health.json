@@ -1,12 +1,12 @@
 {
-  "checked_at": "2026-07-10T10:41:00.474311",
+  "checked_at": "2026-07-11T07:23:27.013855",
   "sources": [
     {
       "key": "bfzy",
       "name": "暴風",
       "health_score": 100.0,
       "availability": 100,
-      "response_time_ms": 53.52020263671875,
+      "response_time_ms": 225.15296936035156,
       "search_success": 100.0,
       "detail_success": 100,
       "play_success": 100
@@ -16,7 +16,7 @@
       "name": "量子",
       "health_score": 100.0,
       "availability": 100,
-      "response_time_ms": 37.71328926086426,
+      "response_time_ms": 49.60966110229492,
       "search_success": 100.0,
       "detail_success": 100,
       "play_success": 100
@@ -26,7 +26,7 @@
       "name": "360",
       "health_score": 100.0,
       "availability": 100,
-      "response_time_ms": 281.21423721313477,
+      "response_time_ms": 344.7592258453369,
       "search_success": 100.0,
       "detail_success": 100,
       "play_success": 100
@@ -34,9 +34,9 @@
     {
       "key": "jy",
       "name": "金鷹",
-      "health_score": 95.5,
+      "health_score": 100.0,
       "availability": 100,
-      "response_time_ms": 982.778787612915,
+      "response_time_ms": 175.7035255432129,
       "search_success": 100.0,
       "detail_success": 100,
       "play_success": 100
@@ -46,7 +46,7 @@
       "name": "極速",
       "health_score": 85.0,
       "availability": 100,
-      "response_time_ms": 165.63105583190918,
+      "response_time_ms": 199.17058944702148,
       "search_success": 100.0,
       "detail_success": 100,
       "play_success": 0.0
@@ -56,7 +56,7 @@
       "name": "索尼",
       "health_score": 40.0,
       "availability": 100,
-      "response_time_ms": 49.712419509887695,
+      "response_time_ms": 56.58698081970215,
       "search_success": 0.0,
       "detail_success": 0,
       "play_success": 0.0
@@ -64,9 +64,9 @@
     {
       "key": "ff",
       "name": "非凡",
-      "health_score": 40.0,
-      "availability": 100,
-      "response_time_ms": 408.1406593322754,
+      "health_score": 15.0,
+      "availability": 0,
+      "response_time_ms": 0,
       "search_success": 0.0,
       "detail_success": 0,
       "play_success": 0.0
