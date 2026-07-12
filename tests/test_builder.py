@@ -157,7 +157,8 @@ class TestBuildAllOutputs:
         assert config_root["sites"] == config_hk["sites"] == config_cn["sites"]
         assert config_root["sites"][0]["api"] == "https://tv.example.com/api"
 
-    def test_generates_empty_hot_tv_shape(self):
+    def test_generates_empty_hot_tv_shape(self, monkeypatch: pytest.MonkeyPatch):
+        monkeypatch.setattr("src.builder.load_json", lambda path: None)
         tv_item = VideoItem(
             vod_id="tv_001",
             vod_name="Example TV Show",
@@ -193,6 +194,42 @@ class TestBuildAllOutputs:
         assert set(hot_tv_data) == {"list", "details", "update_time"}
         assert hot_tv_data["list"] == []
         assert hot_tv_data["details"] == {}
+
+    def test_preserves_previous_homepage_when_tv_feed_is_temporarily_empty(
+        self,
+        monkeypatch: pytest.MonkeyPatch,
+    ):
+        previous = {
+            "update_time": "2026-07-11 09:00:00",
+            "list": [
+                {
+                    "vod_id": "previous-tv",
+                    "vod_name": "Previous Drama",
+                    "vod_pic": "https://img.example.com/previous.jpg",
+                }
+            ],
+            "details": {
+                "previous-tv": {
+                    "vod_id": "previous-tv",
+                    "vod_name": "Previous Drama",
+                    "vod_play_url": "Episode 1$https://play.example.com/previous.m3u8",
+                }
+            },
+        }
+        monkeypatch.setattr("src.builder.load_json", lambda path: previous)
+        monkeypatch.setattr("src.builder.fetch_hot_tv_feed", lambda: [])
+
+        paths = build_all_outputs(
+            {"movie": [], "tv": [], "variety": [], "live": []},
+            {"output": {"max_sources_per_video": 10, "max_items_per_category": 100}},
+            "https://tv.example.com",
+        )
+
+        with open(paths["hot_tv"], "r", encoding="utf-8") as f:
+            hot_tv_data = json.load(f)
+
+        assert [item["vod_name"] for item in hot_tv_data["list"]] == ["Previous Drama"]
+        assert "previous-tv" in hot_tv_data["details"]
 
     def test_rewrites_hot_tv_covers_to_worker_proxy(self, monkeypatch: pytest.MonkeyPatch):
         monkeypatch.setattr("src.builder.fetch_hot_tv_feed", lambda: [{"title": "Hot Show A", "cover": "https://img.example.com/poster.jpg"}])

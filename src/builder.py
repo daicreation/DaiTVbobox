@@ -22,7 +22,7 @@ from .hot_tv import (
     fetch_hot_variety_feed,
 )
 from .models import Category, VideoItem
-from .utils import detect_platform, levenshtein_ratio, normalize_title, now_display, save_json
+from .utils import detect_platform, levenshtein_ratio, load_json, normalize_title, now_display, save_json
 
 
 SITE_NAME_BLOCKLIST = (
@@ -325,6 +325,20 @@ def _merge_homepage_datasets(*datasets: dict) -> dict:
     }
 
 
+def _load_previous_homepage_dataset() -> dict:
+    """Keep the last valid homepage data when a transient feed fetch fails."""
+    previous = load_json(OUTPUT_HOT_TV_JSON)
+    if not isinstance(previous, dict):
+        return {"list": [], "details": {}}
+
+    items = previous.get("list")
+    details = previous.get("details")
+    if not isinstance(items, list) or not isinstance(details, dict):
+        return {"list": [], "details": {}}
+
+    return {"list": items, "details": details}
+
+
 def _build_tvbox_json(items: list[VideoItem], category: str, update_time: str, max_sources_per_video: int) -> dict:
     prepared = []
     for item in items:
@@ -429,6 +443,7 @@ def build_all_outputs(all_items=None, rules_config=None, domain=""):
         save_json(data, output_path)
         paths[category] = output_path
 
+    previous_homepage_dataset = _load_previous_homepage_dataset()
     hot_tv_feed_items = fetch_hot_tv_feed()
     hot_variety_feed_items = fetch_hot_variety_feed()
 
@@ -457,6 +472,11 @@ def build_all_outputs(all_items=None, rules_config=None, domain=""):
                 hot_variety_feed_items,
                 similarity_threshold,
             )
+
+    # A temporary Douban/API failure must not erase the last working TV list.
+    # Variety can still be refreshed and merged in the same run.
+    if not hot_tv_dataset.get("list") and previous_homepage_dataset.get("list"):
+        hot_tv_dataset = _merge_homepage_datasets(previous_homepage_dataset, hot_tv_dataset)
 
     hot_tv_dataset = _merge_homepage_datasets(hot_tv_dataset, hot_variety_dataset)
     hot_tv_dataset = _rewrite_hot_tv_images(hot_tv_dataset, domain)
