@@ -1,12 +1,12 @@
 {
-  "checked_at": "2026-07-12T07:50:13.593289",
+  "checked_at": "2026-07-12T17:00:54.227152",
   "sources": [
     {
-      "key": "360",
-      "name": "360",
+      "key": "bfzy",
+      "name": "暴風",
       "health_score": 100.0,
       "availability": 100,
-      "response_time_ms": 485.5022430419922,
+      "response_time_ms": 376.4817714691162,
       "search_success": 100.0,
       "detail_success": 100,
       "play_success": 100
@@ -16,17 +16,17 @@
       "name": "量子",
       "health_score": 100.0,
       "availability": 100,
-      "response_time_ms": 119.60911750793457,
+      "response_time_ms": 190.5355453491211,
       "search_success": 100.0,
       "detail_success": 100,
       "play_success": 100
     },
     {
-      "key": "bfzy",
-      "name": "暴風",
-      "health_score": 95.5,
+      "key": "360",
+      "name": "360",
+      "health_score": 100.0,
       "availability": 100,
-      "response_time_ms": 1764.375925064087,
+      "response_time_ms": 184.8609447479248,
       "search_success": 100.0,
       "detail_success": 100,
       "play_success": 100
@@ -34,9 +34,9 @@
     {
       "key": "jy",
       "name": "金鷹",
-      "health_score": 95.5,
+      "health_score": 100.0,
       "availability": 100,
-      "response_time_ms": 1185.4679584503174,
+      "response_time_ms": 177.00719833374023,
       "search_success": 100.0,
       "detail_success": 100,
       "play_success": 100
@@ -46,7 +46,7 @@
       "name": "極速",
       "health_score": 85.0,
       "availability": 100,
-      "response_time_ms": 220.0479507446289,
+      "response_time_ms": 164.7496223449707,
       "search_success": 100.0,
       "detail_success": 100,
       "play_success": 0.0
@@ -56,7 +56,7 @@
       "name": "索尼",
       "health_score": 40.0,
       "availability": 100,
-      "response_time_ms": 297.5115776062012,
+      "response_time_ms": 103.92141342163086,
       "search_success": 0.0,
       "detail_success": 0,
       "play_success": 0.0
@@ -66,7 +66,7 @@
       "name": "非凡",
       "health_score": 35.5,
       "availability": 100,
-      "response_time_ms": 1621.1113929748535,
+      "response_time_ms": 1261.7332935333252,
       "search_success": 0.0,
       "detail_success": 0,
       "play_success": 0.0
