@@ -1,8 +1,8 @@
 {
-  "build_time": "2026-08-11 00:49:48",
-  "build_iso": "2026-08-11T00:49:48.875372+00:00",
+  "build_time": "2026-08-12 00:58:43",
+  "build_iso": "2026-08-12T00:58:43.196653+00:00",
   "total_items": 53,
-  "total_sources": 191,
+  "total_sources": 190,
   "availability_rate": "N/A",
   "categories": {
     "source_health": {
@@ -19,7 +19,7 @@
     },
     "hot_tv": {
       "total": 30,
-      "sources": 191
+      "sources": 190
     },
     "config.cn": {
       "total": 0,
