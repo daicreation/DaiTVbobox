@@ -1,12 +1,12 @@
 {
-  "checked_at": "2026-09-03T01:38:52.690458",
+  "checked_at": "2026-09-04T01:32:39.556861",
   "sources": [
     {
       "key": "bfzy",
       "name": "暴風",
       "health_score": 100.0,
       "availability": 100,
-      "response_time_ms": 336.49301528930664,
+      "response_time_ms": 386.98387145996094,
       "search_success": 100.0,
       "detail_success": 100,
       "play_success": 100
@@ -16,7 +16,7 @@
       "name": "量子",
       "health_score": 100.0,
       "availability": 100,
-      "response_time_ms": 126.54972076416016,
+      "response_time_ms": 139.88113403320312,
       "search_success": 100.0,
       "detail_success": 100,
       "play_success": 100
@@ -24,9 +24,9 @@
     {
       "key": "360",
       "name": "360",
-      "health_score": 95.5,
+      "health_score": 100.0,
       "availability": 100,
-      "response_time_ms": 540.6982898712158,
+      "response_time_ms": 264.8441791534424,
       "search_success": 100.0,
       "detail_success": 100,
       "play_success": 100
@@ -34,9 +34,9 @@
     {
       "key": "jy",
       "name": "金鷹",
-      "health_score": 95.5,
+      "health_score": 100.0,
       "availability": 100,
-      "response_time_ms": 641.167163848877,
+      "response_time_ms": 325.4525661468506,
       "search_success": 100.0,
       "detail_success": 100,
       "play_success": 100
@@ -46,7 +46,7 @@
       "name": "極速",
       "health_score": 85.0,
       "availability": 100,
-      "response_time_ms": 203.64880561828613,
+      "response_time_ms": 158.73289108276367,
       "search_success": 100.0,
       "detail_success": 100,
       "play_success": 0.0
@@ -56,7 +56,7 @@
       "name": "索尼",
       "health_score": 40.0,
       "availability": 100,
-      "response_time_ms": 88.31048011779785,
+      "response_time_ms": 87.28551864624023,
       "search_success": 0.0,
       "detail_success": 0,
       "play_success": 0.0
@@ -66,7 +66,7 @@
       "name": "非凡",
       "health_score": 35.5,
       "availability": 100,
-      "response_time_ms": 1182.6319694519043,
+      "response_time_ms": 1115.023136138916,
       "search_success": 0.0,
       "detail_success": 0,
       "play_success": 0.0
