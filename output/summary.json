@@ -1,8 +1,8 @@
 {
-  "build_time": "2026-10-01 02:43:34",
-  "build_iso": "2026-10-01T02:43:34.058800+00:00",
+  "build_time": "2026-10-02 02:50:45",
+  "build_iso": "2026-10-02T02:50:45.611503+00:00",
   "total_items": 46,
-  "total_sources": 186,
+  "total_sources": 167,
   "availability_rate": "N/A",
   "categories": {
     "variety": {
@@ -15,7 +15,7 @@
     },
     "hot_tv": {
       "total": 30,
-      "sources": 186
+      "sources": 167
     },
     "movie": {
       "total": 0,
