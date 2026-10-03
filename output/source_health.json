@@ -1,12 +1,12 @@
 {
-  "checked_at": "2026-10-02T02:44:32.098906",
+  "checked_at": "2026-10-03T02:30:58.543694",
   "sources": [
     {
       "key": "bfzy",
       "name": "暴風",
       "health_score": 100.0,
       "availability": 100,
-      "response_time_ms": 125.84638595581055,
+      "response_time_ms": 317.2776699066162,
       "search_success": 100.0,
       "detail_success": 100,
       "play_success": 100
@@ -16,7 +16,7 @@
       "name": "量子",
       "health_score": 100.0,
       "availability": 100,
-      "response_time_ms": 41.41736030578613,
+      "response_time_ms": 196.20275497436523,
       "search_success": 100.0,
       "detail_success": 100,
       "play_success": 100
@@ -26,7 +26,7 @@
       "name": "360",
       "health_score": 100.0,
       "availability": 100,
-      "response_time_ms": 202.44288444519043,
+      "response_time_ms": 325.12426376342773,
       "search_success": 100.0,
       "detail_success": 100,
       "play_success": 100
@@ -34,9 +34,9 @@
     {
       "key": "jy",
       "name": "金鷹",
-      "health_score": 100.0,
+      "health_score": 95.5,
       "availability": 100,
-      "response_time_ms": 167.65213012695312,
+      "response_time_ms": 591.8598175048828,
       "search_success": 100.0,
       "detail_success": 100,
       "play_success": 100
@@ -46,7 +46,7 @@
       "name": "極速",
       "health_score": 85.0,
       "availability": 100,
-      "response_time_ms": 388.35716247558594,
+      "response_time_ms": 135.47134399414062,
       "search_success": 100.0,
       "detail_success": 100,
       "play_success": 0.0
@@ -56,7 +56,7 @@
       "name": "索尼",
       "health_score": 40.0,
       "availability": 100,
-      "response_time_ms": 52.73628234863281,
+      "response_time_ms": 275.18200874328613,
       "search_success": 0.0,
       "detail_success": 0,
       "play_success": 0.0
@@ -66,7 +66,7 @@
       "name": "非凡",
       "health_score": 35.5,
       "availability": 100,
-      "response_time_ms": 850.4221439361572,
+      "response_time_ms": 1069.8330402374268,
       "search_success": 0.0,
       "detail_success": 0,
       "play_success": 0.0
