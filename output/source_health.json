@@ -1,12 +1,22 @@
 {
-  "checked_at": "2026-10-17T01:46:26.941654",
+  "checked_at": "2026-10-18T01:43:09.814335",
   "sources": [
     {
       "key": "lz",
       "name": "量子",
       "health_score": 100.0,
       "availability": 100,
-      "response_time_ms": 129.49013710021973,
+      "response_time_ms": 85.39843559265137,
+      "search_success": 100.0,
+      "detail_success": 100,
+      "play_success": 100
+    },
+    {
+      "key": "360",
+      "name": "360",
+      "health_score": 100.0,
+      "availability": 100,
+      "response_time_ms": 324.14770126342773,
       "search_success": 100.0,
       "detail_success": 100,
       "play_success": 100
@@ -16,7 +26,7 @@
       "name": "暴風",
       "health_score": 100.0,
       "availability": 100,
-      "response_time_ms": 228.5768985748291,
+      "response_time_ms": 233.6411476135254,
       "search_success": 100.0,
       "detail_success": 100,
       "play_success": 100
@@ -26,17 +36,7 @@
       "name": "金鷹",
       "health_score": 100.0,
       "availability": 100,
-      "response_time_ms": 284.23309326171875,
-      "search_success": 100.0,
-      "detail_success": 100,
-      "play_success": 100
-    },
-    {
-      "key": "360",
-      "name": "360",
-      "health_score": 95.5,
-      "availability": 100,
-      "response_time_ms": 521.066427230835,
+      "response_time_ms": 218.08671951293945,
       "search_success": 100.0,
       "detail_success": 100,
       "play_success": 100
@@ -46,7 +46,7 @@
       "name": "極速",
       "health_score": 85.0,
       "availability": 100,
-      "response_time_ms": 180.28783798217773,
+      "response_time_ms": 80.33394813537598,
       "search_success": 100.0,
       "detail_success": 100,
       "play_success": 0.0
@@ -56,7 +56,7 @@
       "name": "索尼",
       "health_score": 40.0,
       "availability": 100,
-      "response_time_ms": 290.3263568878174,
+      "response_time_ms": 252.95734405517578,
       "search_success": 0.0,
       "detail_success": 0,
       "play_success": 0.0
@@ -66,7 +66,7 @@
       "name": "非凡",
       "health_score": 35.5,
       "availability": 100,
-      "response_time_ms": 735.4304790496826,
+      "response_time_ms": 558.0394268035889,
       "search_success": 0.0,
       "detail_success": 0,
       "play_success": 0.0
