@@ -1,10 +1,14 @@
 {
-  "build_time": "2026-10-28 02:50:07",
-  "build_iso": "2026-10-28T02:50:07.934647+00:00",
+  "build_time": "2026-10-29 03:07:34",
+  "build_iso": "2026-10-29T03:07:34.064175+00:00",
   "total_items": 47,
-  "total_sources": 186,
+  "total_sources": 179,
   "availability_rate": "N/A",
   "categories": {
+    "config.cn": {
+      "total": 0,
+      "sources": 0
+    },
     "variety": {
       "total": 0,
       "sources": 0
@@ -13,9 +17,13 @@
       "total": 0,
       "sources": 0
     },
+    "tv": {
+      "total": 0,
+      "sources": 0
+    },
     "hot_tv": {
       "total": 30,
-      "sources": 186
+      "sources": 179
     },
     "movie": {
       "total": 0,
@@ -26,14 +34,6 @@
       "sources": 0
     },
     "source_health": {
-      "total": 0,
-      "sources": 0
-    },
-    "tv": {
-      "total": 0,
-      "sources": 0
-    },
-    "config.cn": {
       "total": 0,
       "sources": 0
     }
