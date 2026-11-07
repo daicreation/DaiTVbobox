@@ -28,7 +28,7 @@
   "filters": {},
   "list": [
     {
-      "vod_id": "live_荐片_6741874858069841571",
+      "vod_id": "live_荐片_1614231421565860855",
       "vod_name": "[直播] 16万•MV",
       "vod_pic": "",
       "vod_remarks": "·荐片",
@@ -46,7 +46,7 @@
       "source_rank": 0
     },
     {
-      "vod_id": "live_荐片_377306714001366598",
+      "vod_id": "live_荐片_8344444734404729236",
       "vod_name": "[直播] 24live",
       "vod_pic": "",
       "vod_remarks": "·荐片",
@@ -64,7 +64,7 @@
       "source_rank": 0
     },
     {
-      "vod_id": "live_荐片_7100865606443669794",
+      "vod_id": "live_荐片_6431054889135247359",
       "vod_name": "[直播] 360pai",
       "vod_pic": "",
       "vod_remarks": "·荐片",
@@ -82,7 +82,7 @@
       "source_rank": 0
     },
     {
-      "vod_id": "live_荐片_4589612042885745494",
+      "vod_id": "live_荐片_9214256697256479080",
       "vod_name": "[直播] 515001",
       "vod_pic": "",
       "vod_remarks": "·荐片",
@@ -100,7 +100,7 @@
       "source_rank": 0
     },
     {
-      "vod_id": "live_荐片_-8443614557508684443",
+      "vod_id": "live_荐片_4689534091614352334",
       "vod_name": "[直播] 88KQ",
       "vod_pic": "",
       "vod_remarks": "·荐片",
@@ -118,7 +118,7 @@
       "source_rank": 0
     },
     {
-      "vod_id": "live_飯太硬CDN_125153095398728391",
+      "vod_id": "live_飯太硬CDN_-48429291417205742",
       "vod_name": "[直播] Kimentanm",
       "vod_pic": "",
       "vod_remarks": "·飯太硬CDN",
@@ -136,7 +136,7 @@
       "source_rank": 0
     },
     {
-      "vod_id": "live_飯太硬CDN_-5836694894481158408",
+      "vod_id": "live_飯太硬CDN_2290713690926809313",
       "vod_name": "[直播] YY轮播",
       "vod_pic": "",
       "vod_remarks": "·飯太硬CDN",
@@ -154,7 +154,7 @@
       "source_rank": 0
     },
     {
-      "vod_id": "live_摸魚兒_-7325062866938587758",
+      "vod_id": "live_摸魚兒_3033655197557753628",
       "vod_name": "[直播] superiptv",
       "vod_pic": "",
       "vod_remarks": "·摸魚兒",
@@ -172,7 +172,7 @@
       "source_rank": 0
     },
     {
-      "vod_id": "live_荐片_-7452927469024070356",
+      "vod_id": "live_荐片_-6308432080135258374",
       "vod_name": "[直播] yoo体育(python)",
       "vod_pic": "",
       "vod_remarks": "·荐片",
@@ -190,7 +190,7 @@
       "source_rank": 0
     },
     {
-      "vod_id": "live_荐片_-716577567628291306",
+      "vod_id": "live_荐片_4064104966108945669",
       "vod_name": "[直播] 快直播体育(python)",
       "vod_pic": "",
       "vod_remarks": "·荐片",
@@ -208,7 +208,7 @@
       "source_rank": 0
     },
     {
-      "vod_id": "live_飯太硬CDN_3170214544774490079",
+      "vod_id": "live_飯太硬CDN_-2627836635236926676",
       "vod_name": "[直播] 斗鱼一起看",
       "vod_pic": "",
       "vod_remarks": "·飯太硬CDN",
@@ -226,7 +226,7 @@
       "source_rank": 0
     },
     {
-      "vod_id": "live_瀟灑CDN_-8819876669401047144",
+      "vod_id": "live_瀟灑CDN_-7623278295486809899",
       "vod_name": "[直播] 未知頻道",
       "vod_pic": "",
       "vod_remarks": "·瀟灑CDN",
@@ -244,7 +244,7 @@
       "source_rank": 0
     },
     {
-      "vod_id": "live_荐片_-2973365265727613566",
+      "vod_id": "live_荐片_6785017510895689938",
       "vod_name": "[直播] 极直播电视(php)",
       "vod_pic": "",
       "vod_remarks": "·荐片",
@@ -262,7 +262,7 @@
       "source_rank": 0
     },
     {
-      "vod_id": "live_飯太硬CDN_6821073644366819389",
+      "vod_id": "live_飯太硬CDN_2669669954083605149",
       "vod_name": "[直播] 牛播一",
       "vod_pic": "",
       "vod_remarks": "·飯太硬CDN",
@@ -280,7 +280,7 @@
       "source_rank": 0
     },
     {
-      "vod_id": "live_俊哥_-8216041392755474286",
+      "vod_id": "live_俊哥_-8594331103605346595",
       "vod_name": "[直播] 直播",
       "vod_pic": "",
       "vod_remarks": "·俊哥",
@@ -298,8 +298,8 @@
       "source_rank": 0
     },
     {
-      "vod_id": "live_飯太硬CDN_7485945157588589942",
-      "vod_name": "[直播] 综合直播",
+      "vod_id": "live_飯太硬CDN_-2914229052613262621",
+      "vod_name": "[直播] 综合",
       "vod_pic": "",
       "vod_remarks": "·飯太硬CDN",
       "type_name": "直播",
@@ -316,7 +316,25 @@
       "source_rank": 0
     },
     {
-      "vod_id": "live_飯太硬CDN_-4880154323259675075",
+      "vod_id": "live_王二小_-3334314304421114495",
+      "vod_name": "[直播] 综合直播",
+      "vod_pic": "",
+      "vod_remarks": "·王二小",
+      "type_name": "直播",
+      "vod_year": "",
+      "vod_area": "",
+      "vod_actor": "",
+      "vod_director": "",
+      "vod_content": "",
+      "vod_score": "",
+      "vod_play_from": "",
+      "vod_play_url": "",
+      "vod_quality": "未知",
+      "source_count": 0,
+      "source_rank": 0
+    },
+    {
+      "vod_id": "live_飯太硬CDN_6916048300305932666",
       "vod_name": "[直播] 虎牙一起看",
       "vod_pic": "",
       "vod_remarks": "·飯太硬CDN",
@@ -334,9 +352,9 @@
       "source_rank": 0
     }
   ],
-  "total": 17,
+  "total": 18,
   "page": 1,
   "pagecount": 1,
   "limit": 50,
-  "update_time": "2026-11-06 03:52:51"
+  "update_time": "2026-11-07 03:26:19"
 }
