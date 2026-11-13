@@ -1,12 +1,12 @@
 {
-  "checked_at": "2026-11-12T04:30:41.134143",
+  "checked_at": "2026-11-13T03:44:50.238568",
   "sources": [
     {
       "key": "360",
       "name": "360",
       "health_score": 100.0,
       "availability": 100,
-      "response_time_ms": 252.2745132446289,
+      "response_time_ms": 465.1527404785156,
       "search_success": 100.0,
       "detail_success": 100,
       "play_success": 100
@@ -16,7 +16,7 @@
       "name": "極速",
       "health_score": 100.0,
       "availability": 100,
-      "response_time_ms": 110.92543601989746,
+      "response_time_ms": 129.03904914855957,
       "search_success": 100.0,
       "detail_success": 100,
       "play_success": 100
@@ -26,7 +26,7 @@
       "name": "金鷹",
       "health_score": 100.0,
       "availability": 100,
-      "response_time_ms": 214.26796913146973,
+      "response_time_ms": 130.19442558288574,
       "search_success": 100.0,
       "detail_success": 100,
       "play_success": 100
@@ -36,7 +36,7 @@
       "name": "暴風",
       "health_score": 95.5,
       "availability": 100,
-      "response_time_ms": 569.8227882385254,
+      "response_time_ms": 532.0847034454346,
       "search_success": 100.0,
       "detail_success": 100,
       "play_success": 100
@@ -44,9 +44,9 @@
     {
       "key": "lz",
       "name": "量子",
-      "health_score": 91.0,
+      "health_score": 95.5,
       "availability": 100,
-      "response_time_ms": 3691.2200450897217,
+      "response_time_ms": 974.9209880828857,
       "search_success": 100.0,
       "detail_success": 100,
       "play_success": 100
@@ -56,7 +56,7 @@
       "name": "索尼",
       "health_score": 40.0,
       "availability": 100,
-      "response_time_ms": 271.8048095703125,
+      "response_time_ms": 51.65863037109375,
       "search_success": 0.0,
       "detail_success": 0,
       "play_success": 0.0
@@ -66,7 +66,7 @@
       "name": "非凡",
       "health_score": 35.5,
       "availability": 100,
-      "response_time_ms": 1014.0936374664307,
+      "response_time_ms": 759.6867084503174,
       "search_success": 0.0,
       "detail_success": 0,
       "play_success": 0.0
