@@ -1,31 +1,11 @@
 {
-  "build_time": "2026-11-20 04:36:28",
-  "build_iso": "2026-11-20T04:36:28.759914+00:00",
-  "total_items": 32,
-  "total_sources": 102,
+  "build_time": "2026-11-21 04:31:29",
+  "build_iso": "2026-11-21T04:31:29.067276+00:00",
+  "total_items": 45,
+  "total_sources": 165,
   "availability_rate": "N/A",
   "categories": {
-    "hot_tv": {
-      "total": 15,
-      "sources": 102
-    },
-    "config.cn": {
-      "total": 0,
-      "sources": 0
-    },
-    "source_health": {
-      "total": 0,
-      "sources": 0
-    },
     "movie": {
-      "total": 0,
-      "sources": 0
-    },
-    "live": {
-      "total": 17,
-      "sources": 0
-    },
-    "variety": {
       "total": 0,
       "sources": 0
     },
@@ -33,8 +13,28 @@
       "total": 0,
       "sources": 0
     },
+    "hot_tv": {
+      "total": 28,
+      "sources": 165
+    },
+    "source_health": {
+      "total": 0,
+      "sources": 0
+    },
+    "variety": {
+      "total": 0,
+      "sources": 0
+    },
+    "config.cn": {
+      "total": 0,
+      "sources": 0
+    },
     "config.hk": {
       "total": 0,
+      "sources": 0
+    },
+    "live": {
+      "total": 17,
       "sources": 0
     }
   },
