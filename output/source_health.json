@@ -1,12 +1,12 @@
 {
-  "checked_at": "2026-11-24T07:15:13.689554",
+  "checked_at": "2026-11-25T05:48:41.457621",
   "sources": [
     {
       "key": "bfzy",
       "name": "暴風",
       "health_score": 100.0,
       "availability": 100,
-      "response_time_ms": 320.8036422729492,
+      "response_time_ms": 375.0729560852051,
       "search_success": 100.0,
       "detail_success": 100,
       "play_success": 100
@@ -16,7 +16,7 @@
       "name": "極速",
       "health_score": 100.0,
       "availability": 100,
-      "response_time_ms": 103.22117805480957,
+      "response_time_ms": 149.3237018585205,
       "search_success": 100.0,
       "detail_success": 100,
       "play_success": 100
@@ -26,7 +26,7 @@
       "name": "360",
       "health_score": 100.0,
       "availability": 100,
-      "response_time_ms": 451.7860412597656,
+      "response_time_ms": 281.6948890686035,
       "search_success": 100.0,
       "detail_success": 100,
       "play_success": 100
@@ -36,7 +36,7 @@
       "name": "金鷹",
       "health_score": 100.0,
       "availability": 100,
-      "response_time_ms": 124.74894523620605,
+      "response_time_ms": 155.31587600708008,
       "search_success": 100.0,
       "detail_success": 100,
       "play_success": 100
@@ -46,7 +46,7 @@
       "name": "量子",
       "health_score": 95.5,
       "availability": 100,
-      "response_time_ms": 1270.5748081207275,
+      "response_time_ms": 1124.4711875915527,
       "search_success": 100.0,
       "detail_success": 100,
       "play_success": 100
@@ -56,7 +56,7 @@
       "name": "索尼",
       "health_score": 40.0,
       "availability": 100,
-      "response_time_ms": 56.752681732177734,
+      "response_time_ms": 210.63756942749023,
       "search_success": 0.0,
       "detail_success": 0,
       "play_success": 0.0
@@ -66,7 +66,7 @@
       "name": "非凡",
       "health_score": 35.5,
       "availability": 100,
-      "response_time_ms": 1300.3602027893066,
+      "response_time_ms": 1198.1236934661865,
       "search_success": 0.0,
       "detail_success": 0,
       "play_success": 0.0
